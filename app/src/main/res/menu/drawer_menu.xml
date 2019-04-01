@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/book_info_menu"
+        android:title="Book Information" />
+    <item
+        android:id="@+id/find_arena_menu"
+        android:title="Find Arena" />
+    <item
+        android:id="@+id/favourite_menu"
+        android:title="Favourite" />
+    <item
+        android:id="@+id/about_us_menu"
+        android:title="About us" />
+</menu>
