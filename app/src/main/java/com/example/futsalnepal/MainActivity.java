@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.balysv.materialmenu.MaterialMenu;
 import com.balysv.materialmenu.MaterialMenuDrawable;
@@ -34,9 +35,10 @@ import static com.balysv.materialmenu.MaterialMenuDrawable.IconState.BURGER;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private Toolbar mainToolbar;
-    private MaterialMenuDrawable materialMenu;
 
     private SliderLayout sliderShow;
+
+    private Button searchBtn;
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         //toolbar
-        mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        mainToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
         mainToolbar.setTitle("Futsal Nepal");
         ActionBar actionbar = getSupportActionBar();
@@ -62,12 +64,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
         //Nav Bar
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        drawerLayout =  findViewById(R.id.drawer);
         navigationView = findViewById(R.id.nav_bar);
         navigationView.setNavigationItemSelectedListener(this);
 
         //image slider
-        sliderShow = (SliderLayout) findViewById(R.id.slider);
+        sliderShow =  findViewById(R.id.slider);
         for(int position =0 ; position < images.length ; position ++ ){
             DefaultSliderView sliderView = new DefaultSliderView(this);
             sliderView
@@ -83,6 +85,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sliderShow.setCustomAnimation(new DescriptionAnimation());
         sliderShow.setDuration(9000);
 
+        searchBtn = findViewById(R.id.home_search);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchIntent = new Intent(MainActivity.this, SearchLayout.class);
+                startActivity(searchIntent);
+            }
+        });
 
 
 
