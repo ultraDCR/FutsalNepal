@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/futsal_card_view"
@@ -13,7 +12,8 @@
     android:layout_marginBottom="8dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="5dp"
+    android:padding="0dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="5dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.0"
@@ -28,7 +28,7 @@
         <ImageView
             android:id="@+id/futsal_profile"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,13 +50,10 @@
         <ImageView
             android:id="@+id/location_icon"
             android:layout_width="15dp"
-            android:layout_height="18dp"
+            android:layout_height="15dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/futsal_address"
-            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/futsal_profile"
             app:layout_constraintTop_toBottomOf="@+id/futsal_name"
             app:srcCompat="@drawable/ic_location"
@@ -66,40 +63,41 @@
             android:id="@+id/futsal_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginLeft="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:text="kapan-3"
             android:textColor="@android:color/background_light"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/futsal_profile"
+            android:textSize="10sp"
+            app:layout_constraintStart_toEndOf="@+id/location_icon"
             app:layout_constraintTop_toBottomOf="@+id/futsal_name" />
 
         <ImageView
             android:id="@+id/time_icon"
-            android:layout_width="17dp"
-            android:layout_height="18dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="2dp"
             app:layout_constraintStart_toStartOf="@+id/location_icon"
             app:layout_constraintTop_toBottomOf="@+id/location_icon"
-            app:srcCompat="@drawable/ic_time"
+            app:srcCompat="@drawable/ic_access_time"
             tools:ignore="VectorDrawableCompat" />
 
         <TextView
             android:id="@+id/futsal_available_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="3dp"
             android:text="Available time: 6am - 9pm"
             android:textColor="@android:color/background_light"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintStart_toEndOf="@+id/time_icon"
             app:layout_constraintTop_toBottomOf="@+id/futsal_address" />
 
         <Button
             android:id="@+id/book_now_btn"
-            android:layout_width="80dp"
+            android:layout_width="70dp"
             android:layout_height="26dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
@@ -114,7 +112,7 @@
 
         <ImageView
             android:id="@+id/futsal_rating_1"
-            android:layout_width="24dp"
+            android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
@@ -123,45 +121,45 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/futsal_profile"
             app:layout_constraintTop_toBottomOf="@+id/futsal_available_time"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/ic_star_full" />
 
         <ImageView
             android:id="@+id/futsal_rating_2"
-            android:layout_width="24dp"
+            android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/futsal_rating_3"
             app:layout_constraintTop_toBottomOf="@+id/futsal_available_time"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/ic_star_half" />
 
         <ImageView
             android:id="@+id/futsal_rating_3"
-            android:layout_width="24dp"
+            android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/futsal_rating_5"
             app:layout_constraintTop_toBottomOf="@+id/futsal_available_time"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/ic_star_full" />
 
         <ImageView
             android:id="@+id/futsal_rating_4"
-            android:layout_width="24dp"
+            android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/futsal_rating_1"
             app:layout_constraintTop_toBottomOf="@+id/futsal_available_time"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/ic_star_full" />
 
         <ImageView
             android:id="@+id/futsal_rating_5"
-            android:layout_width="24dp"
+            android:layout_width="15dp"
             android:layout_height="14dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/futsal_rating_4"
             app:layout_constraintTop_toBottomOf="@+id/futsal_available_time"
-            app:srcCompat="@drawable/star" />
+            app:srcCompat="@drawable/ic_star_full" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
