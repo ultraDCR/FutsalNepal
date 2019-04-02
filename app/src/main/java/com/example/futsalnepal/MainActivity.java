@@ -14,6 +14,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AlertDialogLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,8 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             "https://assets.materialup.com/uploads/76d63bbc-54a1-450a-a462-d90056be881b/preview.png"
 
     };
+    List<Data> data = fill_with_data();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
+        FutsalRecycleView adapter = new FutsalRecycleView(data, getApplication());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
 
 
@@ -148,5 +157,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
+    public List<Data> fill_with_data() {
+
+        List<Data> data = new ArrayList<>();
+
+        data.add(new Data("WhiteHouse", "Kapan-3","Available TIme: 6am - 6pm", R.drawable.ic_launcher_background));
+        data.add(new Data("BlackHouse", "Chabahil","Available TIme: 9am - 9pm", R.drawable.ic_launcher_background));
+
+        return data;
+    }
 
 }
