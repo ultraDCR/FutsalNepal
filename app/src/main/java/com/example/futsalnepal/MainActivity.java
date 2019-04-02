@@ -49,9 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView = null;
 
     private String[] images = {
-            "https://assets.materialup.com/uploads/dcc07ea4-845a-463b-b5f0-4696574da5ed/preview.jpg",
-            "https://assets.materialup.com/uploads/20ded50d-cc85-4e72-9ce3-452671cf7a6d/preview.jpg",
-            "https://assets.materialup.com/uploads/76d63bbc-54a1-450a-a462-d90056be881b/preview.png"
+            "https://5.imimg.com/data5/JJ/PX/MY-5974440/futsal-ground-artificial-grass-500x500.jpg",
+            "https://ranknepal.com/wp-content/uploads/2014/06/footsal-ground-inside-kathmandu-valley.jpg",
+            "https://5.imimg.com/data5/OE/GB/MY-2392315/futsal-artificial-grass-ground-500x500.jpg"
 
     };
     List<Data> data = fill_with_data();
