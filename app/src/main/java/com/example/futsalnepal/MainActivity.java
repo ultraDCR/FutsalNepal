@@ -1,11 +1,14 @@
 package com.example.futsalnepal;
 
 import android.content.Intent;
+
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +17,10 @@ import android.support.v7.widget.AlertDialogLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.balysv.materialmenu.MaterialMenu;
+import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
@@ -23,13 +29,16 @@ import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.balysv.materialmenu.MaterialMenuDrawable.IconState.BURGER;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private Toolbar mainToolbar;
+    private MaterialMenuDrawable materialMenu;
 
     private SliderLayout sliderShow;
 
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
 
@@ -44,10 +53,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //toolbar
         mainToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
+        mainToolbar.setTitle("Futsal Nepal");
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        getSupportActionBar().setTitle("Futsal Nepal");
+        //Nav Bar
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        navigationView = findViewById(R.id.nav_bar);
+        navigationView.setNavigationItemSelectedListener(this);
 
         //image slider
         sliderShow = (SliderLayout) findViewById(R.id.slider);
@@ -61,21 +78,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             sliderShow.addSlider(sliderView);
         }
 
-
-        sliderShow.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        sliderShow.setPresetTransformer(SliderLayout.Transformer.ZoomOutSlide);
         sliderShow.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         sliderShow.setCustomAnimation(new DescriptionAnimation());
-        sliderShow.setDuration(4000);
+        sliderShow.setDuration(9000);
 
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-        mDrawerLayout.addDrawerListener(mToggle);
-        mToggle.setDrawerIndicatorEnabled(true);
-        mToggle.syncState();
 
-        navigationView = findViewById(R.id.nav_bar);
-        navigationView.setNavigationItemSelectedListener(this);
+
+
+
 
     }
     @Override
@@ -104,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 return true;
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
+                drawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
 
 
@@ -122,8 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         }
-
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
