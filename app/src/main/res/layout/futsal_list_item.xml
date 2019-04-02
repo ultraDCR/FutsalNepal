@@ -10,6 +10,7 @@
     android:layout_marginLeft="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp"
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="5dp"
@@ -31,7 +32,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
             tools:srcCompat="@mipmap/ic_futsal_foreground" />
 
         <TextView
