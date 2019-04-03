@@ -17,6 +17,7 @@ import android.support.v7.widget.AlertDialogLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -130,15 +131,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.action_login_btn:
 
-//                Intent settingsIntent = new Intent(MainActivity.this, SetupActivity.class);
-//                startActivity(settingsIntent);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+// ...Irrelevant code for customizing the buttons and title
+                LayoutInflater inflater = this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
+                dialogBuilder.setView(dialogView);
 
+//                EditText editText = (EditText) dialogView.findViewById(R.id.label_field);
+//                editText.setText("test label");
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
-
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<Data> data = new ArrayList<>();
 
         data.add(new Data("WhiteHouse", "Kapan-3","Available TIme: 6am - 6pm", R.mipmap.ic_futsal_foreground));
-        data.add(new Data("BlackHouse", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground));
+        data.add(new Data("BlackHouses", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground));
 
         return data;
     }

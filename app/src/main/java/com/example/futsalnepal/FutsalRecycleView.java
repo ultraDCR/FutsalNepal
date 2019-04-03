@@ -80,9 +80,9 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             super(itemView);
             cv =  itemView.findViewById(R.id.futsal_card_view);
             name =  itemView.findViewById(R.id.futsal_name);
-            address = (TextView) itemView.findViewById(R.id.futsal_address);
-            time = (TextView) itemView.findViewById(R.id.futsal_available_time);
-            profile = (ImageView) itemView.findViewById(R.id.futsal_profile);
+            address =  itemView.findViewById(R.id.futsal_address);
+            time =  itemView.findViewById(R.id.futsal_available_time);
+            profile =  itemView.findViewById(R.id.futsal_profile);
             add = itemView.findViewById(R.id.location_icon);
             clock = itemView.findViewById(R.id.time_icon);
             rating1 = itemView.findViewById(R.id.futsal_rating_1);
