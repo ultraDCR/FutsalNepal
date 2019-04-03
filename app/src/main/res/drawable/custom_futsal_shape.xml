@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:top="2dp"
+    android:left="5dp"
+    android:bottom="2dp"
+    >
+    <shape>
+        <corners
 
-        android:radius="8dp" />
+            android:radius="8dp" />
 
-    <gradient
-        android:angle="45"
-        android:centerX="50"
-        android:centerY="50"
-        android:endColor="#86E061"
-        android:gradientRadius="200dp"
-        android:startColor="#5FBA3A"
-        android:type="linear" />
+        <gradient
+            android:angle="45"
+            android:centerX="50"
+            android:centerY="50"
+            android:endColor="#86E061"
+            android:gradientRadius="200dp"
+            android:startColor="#5FBA3A"
+            android:type="linear" />
+    </shape>
+</item>
+<item
+    android:drawable="@drawable/ic_football"
+    android:gravity="right"
+    android:bottom="15dp"
+    android:left="5dp"
+    android:right="-25dp"
+    android:top="-25dp"
+    android:height="100dp"
+    android:width="100dp"
+    />
 
-</shape>
+</layer-list>
