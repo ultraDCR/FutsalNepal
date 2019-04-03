@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<Data> data = new ArrayList<>();
 
         data.add(new Data("WhiteHouse", "Kapan-3","Available TIme: 6am - 6pm", R.mipmap.ic_futsal_foreground));
-        data.add(new Data("BlackHouse", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground));
+        data.add(new Data("BlackHouses", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground));
 
         return data;
     }
