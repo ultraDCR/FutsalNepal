@@ -6,40 +6,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
-    private Context mContext;
-
-    int resId = 0;
+    private Context context;
+//    private List<DataObject> dataObjectList;
+    private LayoutInflater layoutInflater;
 
     public LoginSignupFragmentPagerAdapter(Context context) {
-        mContext = context;
+        this.context = context;
+        this.layoutInflater = (LayoutInflater)this.context.getSystemService(this.context.LAYOUT_INFLATER_SERVICE);
+
     }
-
-
-
-    public Object instantiateItem(ViewGroup collection, int position) {
-
-
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        switch (position) {
-            case 0:
-                resId = R.layout.fragment_login;
-                break;
-
-            case 1:
-                resId = R.layout.fragment_sign_up;
-                break;
-        }
-        //return new LoginFragment();
-        ViewGroup layout = (ViewGroup) inflater.inflate(resId, collection, false);
-        collection.addView(layout);
-        return layout;
-    }
-
     @Override
     public int getCount() {
         return 2;
@@ -49,15 +31,45 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
         return view == o;
     }
+
+    public Object instantiateItem(ViewGroup collection, int position) {
+        int resId ;
+        switch (position) {
+            case 0:
+                resId = R.layout.fragment_login;
+                break;
+
+            case 1:
+                resId = R.layout.fragment_sign_up;
+                break;
+
+            default:
+                resId = R.layout.fragment_login;
+        }
+        //return new LoginFragment();
+        Log.d( "instantiateItem:","resid : "+resId+"position : "+position);
+
+        View layout = this.layoutInflater.inflate( resId, collection, false);
+        if(position == 0){
+            EditText name = layout.findViewById(R.id.label_field);
+            name.setText("ranjan");
+        }
+
+        collection.addView(layout);
+        return layout;
+    }
+
+
+
     @Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
         switch (position) {
             case 0:
-                return mContext.getString(R.string.Login);
+                return this.context.getString(R.string.Login);
 
             case 1:
-                return mContext.getString(R.string.SignUp);
+                return this.context.getString(R.string.SignUp);
             default:
                 return null;
         }

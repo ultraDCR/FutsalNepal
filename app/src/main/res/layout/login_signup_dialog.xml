@@ -11,6 +11,10 @@
         android:id="@+id/login_dialog_cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         app:cardCornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +22,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/colorTransparent">
 
             <android.support.design.widget.TabLayout
@@ -40,20 +44,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/custom_futsal_shape"
-                    android:text="Login" />
+                    android:text="@string/Login" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/signup_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Signup" />
+                    android:text="@string/SignUp" />
 
             </android.support.design.widget.TabLayout>
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/login_signup_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="300dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/login_sign_maintab" />

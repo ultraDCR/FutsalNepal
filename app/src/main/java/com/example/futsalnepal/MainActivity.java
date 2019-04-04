@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -136,19 +137,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.action_login_btn:
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+
                 LayoutInflater inflater = this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
-                dialog.setView(dialogView);
+                builder.setView(dialogView);
 
                 LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
                 ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
                 TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
                 tabLayout.setupWithViewPager(viewPager);
                 viewPager.setAdapter(adapter);
-                EditText editText = viewPager.findViewById(R.id.label_field);
-                editText.setText("test label");
+//                EditText editText = viewPager.findViewById(R.id.label_field);
+//                editText.setText("test label");
+                AlertDialog dialog = builder.create();
                 dialog.show();
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
 
 
 
