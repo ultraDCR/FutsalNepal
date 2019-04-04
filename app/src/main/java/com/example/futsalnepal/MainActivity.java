@@ -148,8 +148,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
                 tabLayout.setupWithViewPager(viewPager);
                 viewPager.setAdapter(adapter);
-//                EditText editText = viewPager.findViewById(R.id.label_field);
-//                editText.setText("test label");
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));

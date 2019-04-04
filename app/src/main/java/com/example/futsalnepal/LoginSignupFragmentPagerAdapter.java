@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     private Context context;
@@ -51,13 +52,16 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
         View layout = this.layoutInflater.inflate( resId, collection, false);
         if(position == 0){
-            EditText name = layout.findViewById(R.id.label_field);
-            name.setText("ranjan");
+            LoginDataHandler(layout);
+
+        }else if(position == 1){
+            SignupDataHandler(layout);
         }
 
         collection.addView(layout);
         return layout;
     }
+
 
 
 
@@ -75,4 +79,14 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
         }
     }
 
+
+    private void LoginDataHandler(View layout) {
+
+        EditText name = layout.findViewById(R.id.email_field);
+        String hello = name.getText().toString();
+        System.out.print(hello);
+    }
+
+    private void SignupDataHandler(View layout) {
+    }
 }
