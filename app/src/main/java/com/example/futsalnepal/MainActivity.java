@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.balysv.materialmenu.MaterialMenu;
 import com.balysv.materialmenu.MaterialMenuDrawable;
@@ -145,11 +146,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
                 tabLayout.setupWithViewPager(viewPager);
                 viewPager.setAdapter(adapter);
+                EditText editText = viewPager.findViewById(R.id.label_field);
+                editText.setText("test label");
                 dialog.show();
 
-//
-//                EditText editText = (EditText) dialogView.findViewById(R.id.label_field);
-//                editText.setText("test label");
+
+
 
                 return true;
             case android.R.id.home:
