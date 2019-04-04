@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -39,6 +40,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             holder.address.setText(list.get(position).address);
             holder.time.setText(list.get(position).time);
             holder.profile.setImageResource(list.get(position).imageId);
+            holder.ratingBar.setRating(list.get(position).rating);
 
             //animate(holder);
 
@@ -75,6 +77,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         TextView address;
         TextView time;
         ImageView profile,add,clock,rating1,rating2,rating3,rating4,rating5;
+        RatingBar ratingBar;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -85,11 +88,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             profile =  itemView.findViewById(R.id.futsal_profile);
             add = itemView.findViewById(R.id.location_icon);
             clock = itemView.findViewById(R.id.time_icon);
-            rating1 = itemView.findViewById(R.id.futsal_rating_1);
-            rating2 = itemView.findViewById(R.id.futsal_rating_2);
-            rating3 = itemView.findViewById(R.id.futsal_rating_3);
-            rating4 = itemView.findViewById(R.id.futsal_rating_4);
-            rating5 = itemView.findViewById(R.id.futsal_rating_5);
+            ratingBar = itemView.findViewById(R.id.futsal_rating);
 
         }
     }

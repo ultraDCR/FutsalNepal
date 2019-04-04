@@ -1,10 +1,12 @@
 package com.example.futsalnepal;
 
+import android.app.Dialog;
 import android.content.Intent;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,10 +19,12 @@ import android.support.v7.widget.AlertDialogLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import com.balysv.materialmenu.MaterialMenu;
@@ -131,16 +135,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.action_login_btn:
 
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-// ...Irrelevant code for customizing the buttons and title
+                AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
                 LayoutInflater inflater = this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
-                dialogBuilder.setView(dialogView);
+                dialog.setView(dialogView);
 
+                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
+                ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
+                TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
+                tabLayout.setupWithViewPager(viewPager);
+                viewPager.setAdapter(adapter);
+                dialog.show();
+
+//
 //                EditText editText = (EditText) dialogView.findViewById(R.id.label_field);
 //                editText.setText("test label");
-                AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
+
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
@@ -168,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         List<Data> data = new ArrayList<>();
 
-        data.add(new Data("WhiteHouse", "Kapan-3","Available TIme: 6am - 6pm", R.mipmap.ic_futsal_foreground));
-        data.add(new Data("BlackHouses", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground));
+        data.add(new Data("WhiteHouse", "Kapan-3","Available TIme: 6am - 6pm", R.mipmap.ic_futsal_foreground,4));
+        data.add(new Data("BlackHouses", "Chabahil","Available TIme: 9am - 9pm", R.mipmap.ic_futsal_foreground,2));
 
         return data;
     }
