@@ -2,16 +2,12 @@ package com.example.futsalnepal;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     private Context context;
@@ -82,7 +78,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
     private void LoginDataHandler(View layout) {
 
-        EditText name = layout.findViewById(R.id.email_field);
+        EditText name = layout.findViewById(R.id.login_email_field);
         String hello = name.getText().toString();
         System.out.print(hello);
     }

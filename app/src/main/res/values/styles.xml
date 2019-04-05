@@ -40,4 +40,9 @@
         <item name="android:windowBackground">@color/colorTransparent</item>
     </style>
 
+
+    <style name="switchTextAppearance">
+        <item name="colorControlActivated">@color/colorPrimary</item>
+    </style>
+
 </resources>
