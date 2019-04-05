@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -18,11 +19,16 @@ import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
 //import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
-public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
-
+public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
+    DatePickerDialog dpd;
     private TextView dateSearch,timeSearch;
+    private EditText searchByName,searchByLocation;
+    public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +41,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
         dateSearch = findViewById(R.id.date_search);
         timeSearch = findViewById(R.id.time_search);
+        searchByName =findViewById(R.id.futsal_name_search);
+        searchByLocation = findViewById(R.id.location_search);
 
         //time picker
         timeSearch.setOnClickListener(new View.OnClickListener() {
@@ -57,20 +65,23 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             }
         });
 
-//        dateSearch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar now = Calendar.getInstance();
-//                DatePickerDialog dpd = new AlertDialog.Builder(
-//                        SearchLayout.this,
-//                        now.get(Calendar.YEAR), // Initial year selection
-//                        now.get(Calendar.MONTH), // Initial month selection
-//                        now.get(Calendar.DAY_OF_MONTH) // Inital day selection
-//                );
-//                dpd.show();
-//
-//            }
-//        });
+        dateSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar now = Calendar.getInstance();
+                 int day = now.get(Calendar.YEAR); // Initial year selection
+                 int month = now.get(Calendar.MONTH); // Initial month selection
+                 int year = now.get(Calendar.DAY_OF_MONTH);// Inital day selection
+
+                dpd = new DatePickerDialog(SearchLayout.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDayOfMonth) {
+                        dateSearch.setText(MONTHS[mDayOfMonth]+" "+ mMonth +","+mYear);
+                    }
+                },day,month,year);
+                dpd.show();
+            }
+        });
 
     }
     // for toolbar
@@ -83,19 +94,30 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     @Override
     public void onTimeSet(RadialPickerLayout view, int hourOfDay,int minute, int hourOfDayEnd, int minuteEnd) {
-        String hourString = hourOfDay < 10 ? "0"+hourOfDay : ""+hourOfDay;
-        //String minuteString = minute < 10 ? "0"+minute : ""+minute;
-        String hourStringEnd = hourOfDayEnd < 10 ? "0"+hourOfDayEnd : ""+hourOfDayEnd;
-       // String minuteStringEnd = minuteEnd < 10 ? "0"+minuteEnd : ""+minuteEnd;
-        String time = hourString+" - "+hourStringEnd;
 
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("hh a");
+
+        Date date1 = null;
+        String str1 = null;
+        Date date2 = null;
+        String str2 = null;
+
+        try {
+            date1 = inputFormat.parse(""+hourOfDay);
+            str1 = outputFormat.format(date1);
+            date2 = inputFormat.parse(""+hourOfDayEnd);
+            str2 = outputFormat.format(date2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String time = str1+" - "+str2;
         timeSearch.setText(time);
+
     }
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        String date =dayOfMonth+" "+ month +"-"+year;
-        dateSearch.setText(date);
-    }
+
 
 }
