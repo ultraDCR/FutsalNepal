@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/futsal_card_view"
@@ -23,11 +24,11 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/custom_futsal_shape">
+        android:background="@drawable/pending_request_bg">
 
         <ImageView
-            android:id="@+id/futsal_profile"
-            android:layout_width="100dp"
+            android:id="@+id/p_futsal_profile"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,7 +37,7 @@
             tools:srcCompat="@drawable/logo" />
 
         <TextView
-            android:id="@+id/futsal_name"
+            android:id="@+id/p_futsal_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -45,7 +46,7 @@
             android:text="Hamro Futsal"
             android:textColor="@android:color/background_light"
             android:textSize="20dp"
-            app:layout_constraintStart_toEndOf="@+id/futsal_profile"
+            app:layout_constraintStart_toEndOf="@+id/p_futsal_profile"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -55,23 +56,23 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="6dp"
-            app:layout_constraintStart_toEndOf="@+id/futsal_profile"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_name"
+            app:layout_constraintStart_toEndOf="@+id/p_futsal_profile"
+            app:layout_constraintTop_toBottomOf="@+id/p_futsal_name"
             app:srcCompat="@drawable/ic_location"
             tools:ignore="VectorDrawableCompat" />
 
         <TextView
-            android:id="@+id/futsal_address"
+            android:id="@+id/p_futsal_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="6dp"
             android:text="kapan-3"
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/location_icon"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_name" />
+            app:layout_constraintTop_toBottomOf="@+id/p_futsal_name" />
 
         <TextView
             android:id="@+id/time_icon"
@@ -80,7 +81,7 @@
             android:layout_marginTop="4dp"
             android:drawableStart="@drawable/ic_time_white_15dp"
             android:drawableLeft="@drawable/ic_time_white_15dp"
-            android:drawablePadding="5dp"
+            android:drawablePadding="9dp"
             android:text="Available time :"
             android:textColor="@color/white"
             android:textSize="12sp"
@@ -88,25 +89,25 @@
             app:layout_constraintTop_toBottomOf="@+id/location_icon" />
 
         <TextView
-            android:id="@+id/futsal_available_time"
+            android:id="@+id/pending_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="5dp"
             android:text=" 6 AM - 7PM"
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/time_icon"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_address" />
+            app:layout_constraintTop_toBottomOf="@+id/p_futsal_address" />
 
         <Button
-            android:id="@+id/book_now_btn"
+            android:id="@+id/cancle_btn"
             android:layout_width="70dp"
             android:layout_height="22dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/book_btn"
-            android:text="Book Now"
+            android:text="Cancel"
             android:textAllCaps="false"
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
@@ -114,12 +115,12 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <RatingBar
-            android:id="@+id/futsal_rating"
+            android:id="@+id/p_futsal_rating"
             android:layout_width="235dp"
             android:layout_height="41dp"
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:isIndicator="true"
             android:numStars="5"
             android:progressTint="@color/yellow"
@@ -127,7 +128,7 @@
             android:scaleX="0.4"
             android:scaleY="0.4"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_address" />
+            app:layout_constraintTop_toBottomOf="@+id/p_futsal_address" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

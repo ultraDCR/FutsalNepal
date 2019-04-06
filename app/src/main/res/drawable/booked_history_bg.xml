@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+
+        >
+        <shape>
+            <corners
+
+                android:radius="8dp" />
+
+            <gradient
+                android:angle="45"
+                android:centerX="50"
+                android:centerY="50"
+                android:endColor="#A1A1A1"
+                android:gradientRadius="200dp"
+                android:startColor="#464646"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/ic_football"
+        android:gravity="right"
+        android:bottom="15dp"
+        android:left="5dp"
+        android:right="-25dp"
+        android:top="-25dp"
+        android:height="100dp"
+        android:width="100dp"
+        />
+
+</layer-list>
