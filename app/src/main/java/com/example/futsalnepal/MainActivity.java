@@ -175,7 +175,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         switch(item.getItemId()){
-
+            case R.id.book_info_menu:
+                Intent bookInfoIntent = new Intent(MainActivity.this, BookingInformation.class);
+                startActivity(bookInfoIntent);
 
         }
         drawerLayout.closeDrawer(GravityCompat.START);
