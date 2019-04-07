@@ -14,6 +14,7 @@ public class BookingInformation extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
     }
 
     // for toolbar

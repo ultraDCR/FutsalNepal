@@ -157,9 +157,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                 | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 
-
-
-
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
@@ -178,13 +175,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.book_info_menu:
                 Intent bookInfoIntent = new Intent(MainActivity.this, BookingInformation.class);
                 startActivity(bookInfoIntent);
+                return true;
+
             case R.id.find_arena_menu:
                 Intent findArenaIntent = new Intent(MainActivity.this, SearchLayout.class);
                 startActivity(findArenaIntent);
+                return true;
 
         }
         drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
 
