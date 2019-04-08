@@ -20,16 +20,70 @@
         app:title="Booking Information"
         app:titleTextColor="@color/white" />
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/tab_custom_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/book_info_toolbar">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/tab_custom_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabGravity="fill"
+            app:tabIndicator="@drawable/tab_indicater_shape"
+            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorGravity="center"
+            app:tabIndicatorHeight="40dp"
+            app:tabMaxWidth="150dp"
+            app:tabRippleColor="@color/colorTransparent"
+            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabTextColor="@android:color/white">
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Booked" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="History" />
+        </android.support.design.widget.TabLayout>
+    </android.support.constraint.ConstraintLayout>
+
     <TextView
         android:id="@+id/pending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Pending Request"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/book_info_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/pending_rview"

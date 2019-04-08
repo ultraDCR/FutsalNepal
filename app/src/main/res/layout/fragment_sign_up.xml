@@ -8,7 +8,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/br_person_name_"
@@ -39,11 +40,9 @@
             android:id="@+id/signup_email_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:background="@drawable/input_field"
             android:ems="10"
             android:hint="Email or Phone "
@@ -70,11 +69,9 @@
             android:id="@+id/signup_password_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="15dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:background="@drawable/input_field"
             android:ems="10"
             android:gravity="clip_vertical"
@@ -100,11 +97,9 @@
             android:id="@+id/signup_confirm_pass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="15dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:background="@drawable/input_field"
             android:ems="10"
             android:gravity="clip_vertical"

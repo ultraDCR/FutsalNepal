@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent settingIntent = new Intent(MainActivity.this, UserInfoEdit.class);
+                Intent settingIntent = new Intent(MainActivity.this, FutsalInfoEdit.class);
                 startActivity(settingIntent);
             }
         });
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(favouriteIntent);
                 return true;
 
-            case R.id.setting_btn:
+            case R.id.about_us_menu:
 
                 return true;
 
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<Data> data = new ArrayList<>();
 
         data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
-        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.logo,2));
+        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.ic_profile,2));
 
         return data;
     }
