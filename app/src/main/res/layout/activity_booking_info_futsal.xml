@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BookingInfoFutsal">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/book_info_futsal_toolbar"
+        style="@style/ToolBarStyle.Event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Booking Information"
+        app:titleTextColor="@color/white" />
+
+    <TextView
+        android:id="@+id/booked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Booked Time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/book_info_futsal_toolbar" />
+
+    <TextView
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Filter:"
+        app:layout_constraintEnd_toStartOf="@+id/filter_text"
+        app:layout_constraintTop_toBottomOf="@+id/book_info_futsal_toolbar" />
+
+    <EditText
+        android:id="@+id/filter_text"
+        android:layout_width="72dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Today"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/book_info_futsal_toolbar" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rview_book_info_futsal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/book_info_futsal_toolbar" />
+
+</android.support.constraint.ConstraintLayout>

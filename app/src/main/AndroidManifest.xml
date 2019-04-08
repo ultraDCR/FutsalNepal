@@ -13,7 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BookingInformation"></activity>
+        <activity android:name=".Favourite"></activity>
+        <activity android:name=".BookingRequest" />
+        <activity android:name=".BookingInfoFutsal" />
+        <activity android:name=".BookingInformation" />
         <activity android:name=".SearchLayout">
 
             <!-- android:parentActivityName=".MainActivity" > -->
