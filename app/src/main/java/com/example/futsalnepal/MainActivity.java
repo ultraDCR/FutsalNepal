@@ -30,6 +30,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.balysv.materialmenu.MaterialMenu;
 import com.balysv.materialmenu.MaterialMenuDrawable;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
+    private ImageView settingBtn, logOutBtn;
 
     private String[] images = {
             "https://5.imimg.com/data5/JJ/PX/MY-5974440/futsal-ground-artificial-grass-500x500.jpg",
@@ -82,6 +84,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout =  findViewById(R.id.drawer);
         navigationView = findViewById(R.id.nav_bar);
         navigationView.setNavigationItemSelectedListener(this);
+        //nav bar header elements
+        View header = navigationView.getHeaderView(0);
+        settingBtn = header.findViewById(R.id.setting_btn);
+        settingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingIntent = new Intent(MainActivity.this, UserInfoEdit.class);
+                startActivity(settingIntent);
+            }
+        });
 
         //image slider
         sliderShow =  findViewById(R.id.slider);
@@ -100,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sliderShow.setCustomAnimation(new DescriptionAnimation());
         sliderShow.setDuration(9000);
 
+        //search
         searchBtn = findViewById(R.id.home_search);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
+        //top rated futsal
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
         FutsalRecycleView adapter = new FutsalRecycleView(data, getApplication());
         recyclerView.setAdapter(adapter);
@@ -180,6 +193,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.find_arena_menu:
                 Intent findArenaIntent = new Intent(MainActivity.this, SearchLayout.class);
                 startActivity(findArenaIntent);
+                return true;
+
+            case R.id.favourite_menu:
+                Intent favouriteIntent = new Intent(MainActivity.this, Favourite.class);
+                startActivity(favouriteIntent);
+                return true;
+
+            case R.id.setting_btn:
+
                 return true;
 
         }
