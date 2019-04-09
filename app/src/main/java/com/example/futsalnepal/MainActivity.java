@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.action_login_btn:
 
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
 
                 LayoutInflater inflater = this.getLayoutInflater();
