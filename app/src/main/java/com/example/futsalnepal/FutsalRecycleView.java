@@ -1,6 +1,7 @@
 package com.example.futsalnepal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         @Override
         public FutsalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             //Inflate the layout, initialize the View Holder
+            context=parent.getContext();
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.futsal_list_item, parent, false);
             FutsalViewHolder holder = new FutsalViewHolder(v);
             return holder;
@@ -43,6 +45,16 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             holder.ratingBar.setRating(list.get(position).rating);
 
             //animate(holder);
+
+
+            holder.cv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent futsal = new Intent(context, FutsalIndivisualDetails.class);
+                    futsal.putExtra("futsal_name", list.get(position).name);
+                    context.startActivity(futsal);
+                }
+            });
 
         }
 
