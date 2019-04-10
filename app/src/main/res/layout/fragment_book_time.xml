@@ -67,6 +67,7 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/book_time_rview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
