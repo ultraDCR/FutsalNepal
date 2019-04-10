@@ -95,6 +95,24 @@
                 app:layout_collapseMode="pin"
                 app:srcCompat="@drawable/ic_favourite_unselected_white" />
 
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="15dp"
+                app:layout_collapseMode="parallax"
+                app:srcCompat="@drawable/ic_up" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:text="swip up"
+                app:layout_collapseMode="parallax" />
+
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

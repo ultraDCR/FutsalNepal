@@ -176,7 +176,7 @@
                     android:layout_marginRight="16dp"
                     app:layout_constraintEnd_toStartOf="@+id/orgination_name"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_lock_outline" />
+                    app:srcCompat="@drawable/ic_icon_organization_green" />
 
                 <EditText
                     android:id="@+id/orgination_name"
