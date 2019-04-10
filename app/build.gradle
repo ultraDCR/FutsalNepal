@@ -52,5 +52,6 @@ dependencies {
 //        exclude group: 'androidx.appcompat'
 //    }
 
+    implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
 
 }
