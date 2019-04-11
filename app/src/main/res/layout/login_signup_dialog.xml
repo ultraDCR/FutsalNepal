@@ -35,7 +35,6 @@
                 app:tabBackground="@color/white"
                 app:tabIndicatorColor="@color/colorPrimary"
                 app:tabIndicatorGravity="stretch"
-                app:tabRippleColor="@color/colorPrimaryDark"
                 app:tabSelectedTextColor="@color/white"
                 app:tabTextColor="@color/colorPrimary">
 
@@ -43,7 +42,6 @@
                     android:id="@+id/login_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/custom_futsal_shape"
                     android:text="@string/Login" />
 
                 <android.support.design.widget.TabItem

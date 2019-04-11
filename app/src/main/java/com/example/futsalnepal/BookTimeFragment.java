@@ -1,6 +1,7 @@
 package com.example.futsalnepal;
 
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,8 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -17,8 +21,10 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class BookTimeFragment extends Fragment {
-
+    public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    DatePickerDialog dpd;
     private RecyclerView bookTime;
+    private TextView fDatePicker;
     List<BookTime> data = fill_with_data();
 
     public BookTimeFragment() {
@@ -38,6 +44,25 @@ public class BookTimeFragment extends Fragment {
         BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(data,getContext());
         recyclerView.setAdapter(adapter);
 
+        fDatePicker = view.findViewById(R.id.date_picker_futsal);
+
+        fDatePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar now = Calendar.getInstance();
+                int day = now.get(Calendar.YEAR); // Initial year selection
+                int month = now.get(Calendar.MONTH); // Initial month selection
+                int year = now.get(Calendar.DAY_OF_MONTH);// Inital day selection
+
+                dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDayOfMonth) {
+                        fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
+                    }
+                },day,month,year);
+                dpd.show();
+            }
+        });
 
         return view;
     }
@@ -60,4 +85,6 @@ public class BookTimeFragment extends Fragment {
 
         return data;
     }
+
+
 }

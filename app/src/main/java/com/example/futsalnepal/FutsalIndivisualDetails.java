@@ -56,6 +56,11 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
 
 
     }
-
+    // for toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 }

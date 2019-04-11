@@ -115,7 +115,7 @@
 
         <RatingBar
             android:id="@+id/futsal_rating"
-            android:layout_width="235dp"
+            android:layout_width="wrap_content"
             android:layout_height="41dp"
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"

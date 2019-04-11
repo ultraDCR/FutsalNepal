@@ -33,6 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/favourite_toolbar" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/favourite_rview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

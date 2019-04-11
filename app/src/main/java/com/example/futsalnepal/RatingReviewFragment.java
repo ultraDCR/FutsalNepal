@@ -32,7 +32,6 @@ public class RatingReviewFragment extends Fragment {
 
         mRating = view.findViewById(R.id.futsal_rating_input);
         mReview = view.findViewById(R.id.review_of_futsal);
-        mPost.setBackgroundResource(R.drawable.tab_custom_shape);
 
         return view;
     }

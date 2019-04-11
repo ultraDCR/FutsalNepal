@@ -76,7 +76,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 dpd = new DatePickerDialog(SearchLayout.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDayOfMonth) {
-                        dateSearch.setText(MONTHS[mDayOfMonth]+" "+ mMonth +","+mYear);
+                        dateSearch.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
                     }
                 },day,month,year);
                 dpd.show();
