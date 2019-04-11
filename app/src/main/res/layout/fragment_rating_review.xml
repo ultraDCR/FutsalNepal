@@ -3,334 +3,336 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
     tools:context=".RatingReviewFragment">
 
-    <android.support.constraint.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="Rate this futsal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <RatingBar
-            android:id="@+id/futsal_rating_input"
-            style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:isIndicator="false"
-            android:numStars="5"
-            android:progressBackgroundTint="@color/yellow"
-            android:progressTint="@color/yellow"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="Tell us what you think"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-        <EditText
-            android:id="@+id/review_of_futsal"
-            android:layout_width="250dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="64dp"
-            android:layout_marginRight="64dp"
-            android:background="@drawable/layout_stroke_green"
-            android:ems="10"
-            android:hint="Write a review"
-            android:inputType="textPersonName"
-            android:paddingLeft="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_rating_input" />
-
-        <Button
-            android:id="@+id/review_post_btn"
-            android:layout_width="60dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/tab_custom_shape"
-            android:text="post"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/review_of_futsal"
-            app:layout_constraintTop_toBottomOf="@+id/futsal_rating_input" />
-
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/constraintLayout7"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/review_of_futsal">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Rating and Reviews"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="Rate this futsal"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/rating_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:layout_marginLeft="36dp"
-                android:layout_marginTop="8dp"
-                android:text="3.5"
-                android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
             <RatingBar
-                android:id="@+id/rating_indicater"
-                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:id="@+id/futsal_rating_input"
+                style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:progressTint="@color/yellow"
-                android:rating="3.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rating_number" />
-
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_people_black_24dp"
-                android:drawablePadding="5dp"
-                android:text="1000"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/rating_indicater"
-                app:layout_constraintStart_toStartOf="@+id/rating_indicater"
-                app:layout_constraintTop_toBottomOf="@+id/rating_indicater" />
-
-            <TextView
-                android:id="@+id/progress_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="5"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/progress_for_5"
-                app:layout_constraintTop_toTopOf="@+id/progress_for_5" />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress_for_5"
-                android:layout_width="150dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toTopOf="parent"
-                app:rcBackgroundColor="@color/gray"
-                app:rcBackgroundPadding="2dp"
-                app:rcMax="100"
-                app:rcProgress="50"
-                app:rcProgressColor="@color/colorPrimary"
-                app:rcRadius="10dp"
-                app:rcReverse="false">
-
-            </com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar>
-
-            <TextView
-                android:id="@+id/progress_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="4"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/progress_for_4"
-                app:layout_constraintTop_toTopOf="@+id/progress_for_4" />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress_for_4"
-                android:layout_width="150dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/progress_for_5"
-                app:rcBackgroundColor="@color/gray"
-                app:rcBackgroundPadding="2dp"
-                app:rcMax="100"
-                app:rcProgress="10"
-                app:rcProgressColor="@color/colorPrimary"
-                app:rcRadius="10dp"
-                app:rcReverse="false" />
-
-            <TextView
-                android:id="@+id/progress_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="3"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/progress_for_3"
-                app:layout_constraintTop_toTopOf="@+id/progress_for_3" />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress_for_3"
-                android:layout_width="150dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/progress_for_4"
-                app:rcBackgroundColor="@color/gray"
-                app:rcBackgroundPadding="2dp"
-                app:rcMax="100"
-                app:rcProgress="20"
-                app:rcProgressColor="@color/colorPrimary"
-                app:rcRadius="10dp"
-                app:rcReverse="false" />
-
-            <TextView
-                android:id="@+id/progress_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="2"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/progress_for_2"
-                app:layout_constraintTop_toTopOf="@+id/progress_for_2" />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress_for_2"
-                android:layout_width="150dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/progress_for_3"
-                app:rcBackgroundColor="@color/gray"
-                app:rcBackgroundPadding="2dp"
-                app:rcMax="100"
-                app:rcProgress="5"
-                app:rcProgressColor="@color/colorPrimary"
-                app:rcRadius="10dp"
-                app:rcReverse="false" />
-
-            <TextView
-                android:id="@+id/progress_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="1"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/progress_for_1"
-                app:layout_constraintTop_toTopOf="@+id/progress_for_1" />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress_for_1"
-                android:layout_width="150dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/progress_for_2"
-                app:rcBackgroundColor="@color/gray"
-                app:rcBackgroundPadding="2dp"
-                app:rcMax="100"
-                app:rcProgress="7"
-                app:rcProgressColor="@color/colorPrimary"
-                app:rcRadius="10dp"
-                app:rcReverse="false" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout7">
-
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="398dp"
-                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:scrollbars="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:isIndicator="false"
+                android:numStars="5"
+                android:progressBackgroundTint="@color/yellow"
+                android:progressTint="@color/yellow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="Tell us what you think"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:itemCount="3"
-                tools:listitem="@layout/review_layout"/>
-        </android.support.constraint.ConstraintLayout>
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-    </android.support.constraint.ConstraintLayout>
+            <EditText
+                android:id="@+id/review_of_futsal"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginRight="64dp"
+                android:background="@drawable/layout_stroke_green"
+                android:ems="10"
+                android:hint="Write a review"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/futsal_rating_input" />
+
+            <Button
+                android:id="@+id/review_post_btn"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/tab_custom_shape"
+                android:text="post"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/review_of_futsal"
+                app:layout_constraintTop_toBottomOf="@+id/futsal_rating_input" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayout7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/review_of_futsal">
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Rating and Reviews"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/rating_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginLeft="36dp"
+                    android:layout_marginTop="8dp"
+                    android:text="3.5"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+                <RatingBar
+                    android:id="@+id/rating_indicater"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressTint="@color/yellow"
+                    android:rating="3.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rating_number" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/ic_people_black_24dp"
+                    android:drawablePadding="5dp"
+                    android:text="1000"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/rating_indicater"
+                    app:layout_constraintStart_toStartOf="@+id/rating_indicater"
+                    app:layout_constraintTop_toBottomOf="@+id/rating_indicater" />
+
+                <TextView
+                    android:id="@+id/progress_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="5"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/progress_for_5"
+                    app:layout_constraintTop_toTopOf="@+id/progress_for_5" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/progress_for_5"
+                    android:layout_width="150dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:rcBackgroundColor="@color/gray"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="50"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false">
+
+                </com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar>
+
+                <TextView
+                    android:id="@+id/progress_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="4"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/progress_for_4"
+                    app:layout_constraintTop_toTopOf="@+id/progress_for_4" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/progress_for_4"
+                    android:layout_width="150dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_for_5"
+                    app:rcBackgroundColor="@color/gray"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="10"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <TextView
+                    android:id="@+id/progress_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="3"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/progress_for_3"
+                    app:layout_constraintTop_toTopOf="@+id/progress_for_3" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/progress_for_3"
+                    android:layout_width="150dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_for_4"
+                    app:rcBackgroundColor="@color/gray"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="20"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <TextView
+                    android:id="@+id/progress_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="2"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/progress_for_2"
+                    app:layout_constraintTop_toTopOf="@+id/progress_for_2" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/progress_for_2"
+                    android:layout_width="150dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_for_3"
+                    app:rcBackgroundColor="@color/gray"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="5"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+                <TextView
+                    android:id="@+id/progress_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="1"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/progress_for_1"
+                    app:layout_constraintTop_toTopOf="@+id/progress_for_1" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/progress_for_1"
+                    android:layout_width="150dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/progress_for_2"
+                    app:rcBackgroundColor="@color/gray"
+                    app:rcBackgroundPadding="2dp"
+                    app:rcMax="100"
+                    app:rcProgress="7"
+                    app:rcProgressColor="@color/colorPrimary"
+                    app:rcRadius="10dp"
+                    app:rcReverse="false" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout7">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/review_rview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/review_layout" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>

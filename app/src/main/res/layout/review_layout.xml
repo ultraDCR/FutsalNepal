@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/review_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@drawable/user_info_bg"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="20dp">
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="7dp"
+    app:cardElevation="6dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_height="match_parent"
         android:background="@drawable/input_field">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -35,12 +38,12 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:text="Ranjan Parajuli"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@+id/review_user_pp"
             app:layout_constraintTop_toTopOf="parent" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/rating_bar"
             style="@android:style/Widget.Material.Light.RatingBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +67,7 @@
             android:layout_marginTop="8dp"
             android:text="04/06/2019"
             android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@+id/ratingBar"
+            app:layout_constraintStart_toEndOf="@+id/rating_bar"
             app:layout_constraintTop_toBottomOf="@+id/review_user_name" />
 
         <TextView
@@ -75,18 +78,20 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:text="Review:"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/review_user_pp"
             app:layout_constraintTop_toBottomOf="@+id/review_date" />
 
         <TextView
             android:id="@+id/review_text"
-            android:layout_width="252dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:text="Great futsal areana i love the features provided by this futsal ."
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/review"
