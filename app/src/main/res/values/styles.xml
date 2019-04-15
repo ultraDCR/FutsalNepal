@@ -50,4 +50,8 @@
         <item name="colorControlActivated">@color/gray</item>
     </style>
 
+    <style name="collapseToolbar" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textSize">30sp</item>
+    </style>
+
 </resources>

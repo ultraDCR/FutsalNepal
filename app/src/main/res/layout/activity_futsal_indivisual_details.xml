@@ -22,25 +22,28 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginBottom="45dp"
+            app:expandedTitleMarginStart="90dp"
+            app:expandedTitleTextAppearance="@style/collapseToolbar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:scrimAnimationDuration="200">
 
-            <android.support.v4.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll">
+            <!--<android.support.v4.widget.NestedScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+            <!--app:layout_collapseMode="parallax"-->
+            <!--app:layout_scrollFlags="scroll">-->
 
-                <ImageView
-                    android:id="@+id/htab_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/footsal_ground"
-                    android:fitsSystemWindows="true"
-                    android:scaleType="centerCrop"
-                    app:layout_collapseMode="parallax" />
-            </android.support.v4.widget.NestedScrollView>
+            <ImageView
+                android:id="@+id/htab_header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/footsal_ground"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
+
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/htab_toolbar"
@@ -50,13 +53,22 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="15dp"
+                android:src="@drawable/logo_placeholder_circle"
+                app:layout_collapseMode="parallax" />
+
             <TextView
                 android:id="@+id/tab_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="30dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="90dp"
+                android:layout_marginBottom="25dp"
                 android:text="Chabahel,kathmandu"
                 android:textSize="12sp"
                 app:layout_collapseMode="parallax"
@@ -67,7 +79,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="105dp"
+                android:layout_marginLeft="165dp"
+                android:layout_marginBottom="10dp"
                 android:text="97869473425"
                 android:textSize="12sp"
                 app:layout_collapseMode="parallax"
@@ -78,7 +91,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="90dp"
+                android:layout_marginBottom="10dp"
                 android:text="Phone: +977-"
                 android:textSize="12sp"
                 app:layout_collapseMode="parallax"
@@ -88,9 +102,9 @@
                 android:id="@+id/favourite_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="20dp"
+                android:layout_gravity="bottom|end"
                 android:layout_marginRight="10dp"
+                android:layout_marginBottom="15dp"
                 android:background="@color/colorTransparent"
                 app:layout_collapseMode="pin"
                 app:srcCompat="@drawable/ic_favourite_unselected_white" />
@@ -120,11 +134,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_collapseMode="parallax"
+        app:layout_scrollFlags="scroll">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout6"
@@ -180,17 +197,18 @@
             </android.support.design.widget.TabLayout>
         </android.support.constraint.ConstraintLayout>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/futsal_viewpager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:isScrollContainer="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
-    </android.support.constraint.ConstraintLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/futsal_viewpager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:isScrollContainer="true"
+                android:overScrollMode="always"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
 
+    </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

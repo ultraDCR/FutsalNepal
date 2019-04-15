@@ -7,9 +7,13 @@
     android:clickable="true"
     tools:context=".RatingReviewFragment">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_collapseMode="parallax"
+        app:layout_scrollFlags="scroll"
+        >
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -106,8 +110,8 @@
                     android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
                     android:layout_marginTop="8dp"
                     android:text="Rating and Reviews"
                     app:layout_constraintStart_toStartOf="parent"
@@ -117,12 +121,11 @@
                     android:id="@+id/rating_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="36dp"
-                    android:layout_marginLeft="36dp"
                     android:layout_marginTop="8dp"
                     android:text="3.5"
                     android:textSize="24sp"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/textView7"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
                     app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
                 <RatingBar
@@ -130,13 +133,12 @@
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
                     android:isIndicator="true"
                     android:numStars="5"
                     android:progressTint="@color/yellow"
                     android:rating="3.5"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/rating_number"
+                    app:layout_constraintStart_toStartOf="@+id/rating_number"
                     app:layout_constraintTop_toBottomOf="@+id/rating_number" />
 
                 <TextView
@@ -165,13 +167,13 @@
 
                 <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                     android:id="@+id/progress_for_5"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textView7"
                     app:layout_constraintTop_toTopOf="parent"
@@ -198,15 +200,11 @@
 
                 <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                     android:id="@+id/progress_for_4"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_for_5"
+                    app:layout_constraintStart_toStartOf="@+id/progress_for_5"
                     app:layout_constraintTop_toBottomOf="@+id/progress_for_5"
                     app:rcBackgroundColor="@color/gray"
                     app:rcBackgroundPadding="2dp"
@@ -229,15 +227,11 @@
 
                 <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                     android:id="@+id/progress_for_3"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_for_4"
+                    app:layout_constraintStart_toStartOf="@+id/progress_for_4"
                     app:layout_constraintTop_toBottomOf="@+id/progress_for_4"
                     app:rcBackgroundColor="@color/gray"
                     app:rcBackgroundPadding="2dp"
@@ -260,15 +254,11 @@
 
                 <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                     android:id="@+id/progress_for_2"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_for_3"
+                    app:layout_constraintStart_toStartOf="@+id/progress_for_3"
                     app:layout_constraintTop_toBottomOf="@+id/progress_for_3"
                     app:rcBackgroundColor="@color/gray"
                     app:rcBackgroundPadding="2dp"
@@ -291,17 +281,13 @@
 
                 <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                     android:id="@+id/progress_for_1"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView7"
+                    app:layout_constraintEnd_toEndOf="@+id/progress_for_2"
+                    app:layout_constraintStart_toStartOf="@+id/progress_for_2"
                     app:layout_constraintTop_toBottomOf="@+id/progress_for_2"
                     app:rcBackgroundColor="@color/gray"
                     app:rcBackgroundPadding="2dp"
@@ -334,5 +320,5 @@
             </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

@@ -27,7 +27,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        CollapsingToolbarLayout collapsingToolbarLayout =(CollapsingToolbarLayout) findViewById(R.id.htab_collapse_toolbar);
+        CollapsingToolbarLayout collapsingToolbarLayout =findViewById(R.id.htab_collapse_toolbar);
 
 
         collapsingToolbarLayout.setTitle("HamroFutsal");
