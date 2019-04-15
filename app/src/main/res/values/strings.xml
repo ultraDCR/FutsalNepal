@@ -12,4 +12,7 @@
     <string name="book_time">Book Time</string>
     <string name="futsal_info">Futsal Info</string>
     <string name="rating_review"><![CDATA[Rating & Review]]></string>
+    <string name="pending_time">Pending</string>
+    <string name="booked">Booked</string>
+    <string name="history">History</string>
 </resources>

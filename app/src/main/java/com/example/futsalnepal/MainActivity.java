@@ -38,6 +38,9 @@ import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
     private ImageView settingBtn, logOutBtn;
-
+    private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
     private String[] images = {
             "https://5.imimg.com/data5/JJ/PX/MY-5974440/futsal-ground-artificial-grass-500x500.jpg",
             "https://ranknepal.com/wp-content/uploads/2014/06/footsal-ground-inside-kathmandu-valley.jpg",
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAuth = FirebaseAuth.getInstance();
 
         //toolbar
         mainToolbar = findViewById(R.id.main_toolbar);
@@ -94,6 +99,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(settingIntent);
             }
         });
+
+        logOutBtn = header.findViewById(R.id.logout_btn);
+        logOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(signOutIntent);
+                finish();
+            }
+        });
+
 
         //image slider
         sliderShow =  findViewById(R.id.slider);
@@ -131,6 +148,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        currentUser = mAuth.getCurrentUser();
+
+    }
+
     @Override
     protected void onStop() {
         sliderShow.stopAutoCycle();
@@ -142,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        if(currentUser!=null){
+            MenuItem item = menu.findItem(R.id.action_login_btn);
+            item.setVisible(false);
+        }
         return true;
 
     }
@@ -159,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
                 builder.setView(dialogView);
 
-                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
+                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this,mAuth);
                 ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
                 TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
                 tabLayout.setupWithViewPager(viewPager);
@@ -216,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<Data> data = new ArrayList<>();
 
         data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
-        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.ic_profile,2));
+        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.logo,2));
 
         return data;
     }
