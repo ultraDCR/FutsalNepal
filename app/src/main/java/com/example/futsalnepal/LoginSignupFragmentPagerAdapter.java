@@ -27,9 +27,9 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 //    private List<DataObject> dataObjectList;
     private LayoutInflater layoutInflater;
 
-    public LoginSignupFragmentPagerAdapter(Context context,FirebaseAuth mAuth) {
+    public LoginSignupFragmentPagerAdapter(Context context) {
         this.context = context;
-        this.mAuth = mAuth;
+        mAuth = FirebaseAuth.getInstance();
         this.layoutInflater = (LayoutInflater)this.context.getSystemService(this.context.LAYOUT_INFLATER_SERVICE);
 
     }

@@ -28,7 +28,7 @@
 
         <ImageView
             android:id="@+id/p_futsal_profile"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="0dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"

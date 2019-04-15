@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Nav Bar
         drawerLayout =  findViewById(R.id.drawer);
         navigationView = findViewById(R.id.nav_bar);
+
         navigationView.setNavigationItemSelectedListener(this);
+
         //nav bar header elements
         View header = navigationView.getHeaderView(0);
         settingBtn = header.findViewById(R.id.setting_btn);
@@ -99,8 +101,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(settingIntent);
             }
         });
-
         logOutBtn = header.findViewById(R.id.logout_btn);
+
+        //hide nav bar item on login
+        Menu nav_Menu = navigationView.getMenu();
+        if(mAuth.getCurrentUser() != null){
+            nav_Menu.findItem(R.id.book_info_menu).setVisible(true);
+            nav_Menu.findItem(R.id.favourite_menu).setVisible(true);
+
+            logOutBtn.setVisibility(View.VISIBLE);
+        }else{
+            nav_Menu.findItem(R.id.book_info_menu).setVisible(false);
+            nav_Menu.findItem(R.id.favourite_menu).setVisible(false);
+
+            logOutBtn.setVisibility(View.INVISIBLE);
+        }
+
         logOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -168,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        //hide login menu if not login
         if(currentUser!=null){
             MenuItem item = menu.findItem(R.id.action_login_btn);
             item.setVisible(false);
@@ -189,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
                 builder.setView(dialogView);
 
-                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this,mAuth);
+                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
                 ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
                 TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
                 tabLayout.setupWithViewPager(viewPager);
