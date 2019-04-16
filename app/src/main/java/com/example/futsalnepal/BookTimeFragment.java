@@ -41,7 +41,7 @@ public class BookTimeFragment extends Fragment {
         RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
-        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(data,getContext());
+        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(data,getContext(),getActivity());
         recyclerView.setAdapter(adapter);
 
         fDatePicker = view.findViewById(R.id.date_picker_futsal);

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     private Context context;
     private FirebaseAuth mAuth;
+    private int resId = 0;
 //    private List<DataObject> dataObjectList;
     private LayoutInflater layoutInflater;
 
@@ -44,7 +46,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     }
 
     public Object instantiateItem(ViewGroup collection, int position) {
-        int resId ;
+
         switch (position) {
             case 0:
                 resId = R.layout.fragment_login;
@@ -53,9 +55,6 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
             case 1:
                 resId = R.layout.fragment_sign_up;
                 break;
-
-            default:
-                resId = R.layout.fragment_login;
         }
         //return new LoginFragment();
         Log.d( "instantiateItem:","resid : "+resId+"position : "+position);
@@ -84,9 +83,9 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
             case 1:
                 return this.context.getString(R.string.SignUp);
-            default:
-                return null;
+
         }
+        return null;
     }
 
 
@@ -94,7 +93,13 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
         EditText name = layout.findViewById(R.id.login_email_field);
         EditText pass = layout.findViewById(R.id.login_password_field);
         Button ulogin = layout.findViewById(R.id.login_btn);
-
+        Switch logintype = layout.findViewById(R.id.login_switch);
+        String userType;
+        if(logintype.isChecked()){
+            userType = logintype.getTextOn().toString();
+        }else {
+            userType = logintype.getTextOff().toString();
+        }
 
         ulogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +108,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 String password = pass.getText().toString();
                 if (!TextUtils.isEmpty(email)||!TextUtils.isEmpty(password)){
 
-                    login_userId(email,password);
+                    login_userId(email,password,userType);
                 }
                 else if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                     name.setError("Field required");
@@ -122,6 +127,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
         EditText name = layout.findViewById(R.id.signup_email_field);
         EditText pass = layout.findViewById(R.id.signup_password_field);
         EditText cpass = layout.findViewById(R.id.signup_confirm_pass);
+        Switch signup_type = layout.findViewById(R.id.signup_switch);
         Button usignup = layout.findViewById(R.id.signup_btn);
 
         usignup.setOnClickListener(new View.OnClickListener() {
@@ -130,9 +136,16 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 String email = name.getText().toString();
                 String password = pass.getText().toString();
                 String confirm_password = cpass.getText().toString();
+                String userType;
+                if(signup_type.isChecked()){
+                    userType = signup_type.getTextOn().toString();
+                }else {
+                    userType = signup_type.getTextOff().toString();
+                }
+                Log.d("SwitchOn", "onClick: "+userType);
                 if (!TextUtils.isEmpty(email)||!TextUtils.isEmpty(password) ||!TextUtils.isEmpty(confirm_password)){
                     if(password.equals(confirm_password)){
-                        signup_userId(email,password);
+                        signup_userId(email,password,userType);
                     }
                     else{
                         cpass.setError("Doesn't match with password");
@@ -156,7 +169,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
 
 
-    public void  login_userId(String email, String password){
+    public void  login_userId(String email, String password,String type){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context,new OnCompleteListener<AuthResult>() {
                     @Override
@@ -168,6 +181,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                             Intent signin = new Intent(context,MainActivity.class);
                             signin.putExtra("futsal_name", user);
                             context.startActivity(signin);
+                            ((Activity) context).finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("signIn", "signInWithEmail:failure", task.getException());
@@ -179,7 +193,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 });
     }
 
-    public void  signup_userId(String email, String password) {
+    public void  signup_userId(String email, String password,String userType) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -188,9 +202,17 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("signup", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent signup = new Intent(context,MainActivity.class);
-                            signup.putExtra("User", user);
-                            context.startActivity(signup);
+                            if(userType.equals("user")) {
+                                Intent futsalUserIntent = new Intent(context, UserInfoEdit.class);
+                                futsalUserIntent.putExtra("User", user);
+                                context.startActivity(futsalUserIntent);
+                                ((Activity) context).finish();
+                            }else{
+                                Intent futsalUserIntent = new Intent(context, FutsalInfoEdit.class);
+                                futsalUserIntent.putExtra("User", user);
+                                context.startActivity(futsalUserIntent);
+                                ((Activity) context).finish();
+                            }
 
                         } else {
                             // If sign in fails, display a message to the user.

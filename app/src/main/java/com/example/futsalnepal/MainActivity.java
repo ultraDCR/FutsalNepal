@@ -200,25 +200,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case R.id.action_login_btn:
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
-
-                LayoutInflater inflater = this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
-                builder.setView(dialogView);
-
-                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
-                ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
-                TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
-                tabLayout.setupWithViewPager(viewPager);
-                viewPager.setAdapter(adapter);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
-                dialog.getWindow().clearFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+                LoginDialog dialog = new LoginDialog(MainActivity.this,this);
+                dialog.startLoginDialog();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
+//
+//                LayoutInflater inflater = this.getLayoutInflater();
+//                View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
+//                builder.setView(dialogView);
+//
+//                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
+//                ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
+//                TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
+//                tabLayout.setupWithViewPager(viewPager);
+//                viewPager.setAdapter(adapter);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
+//                dialog.getWindow().clearFlags(
+//                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+//                                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 
                 return true;
             case android.R.id.home:
