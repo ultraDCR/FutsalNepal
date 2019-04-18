@@ -95,9 +95,16 @@ public class FutsalInfoEdit extends AppCompatActivity {
                         String phone = task.getResult().getString("futsal_phone");
                         String open_time = task.getResult().getString("opening_hour");
                         String close_time = task.getResult().getString("closing_hour");
-                        String week_days_price = task.getResult().getData().toString();
+                        Map<String , Object> week_price = task.getResult().getData();
+                        String w_morning = week_price.get("morning_price").toString();
+                        String w_day = week_price.get("day_price").toString();
+                        String w_evening = week_price.get("evening_price").toString();
+                        for( DocumentSnapshot document : task.getResuly ) {
+                            String we_morning = week_price.get("morning_price").toString();
+                            String we_day = week_price.get("day_price").toString();
+                            String we_evening = week_price.get("evening_price").toString();
 
-
+                        }
                         mainImageURI = Uri.parse(image);
 
                         fName.setText(name);
@@ -128,9 +135,27 @@ public class FutsalInfoEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String user_name = fName.getText().toString();
+                final String futsal_name = fName.getText().toString();
+                final String futsal_address = fAddress.getText().toString();
+                final String futsal_phone = fPhone.getText().toString();
+                final String opening_hour = fOpenTime.getText().toString();
+                final String closing_hour = fCloseTime.getText().toString();
+                final String week_price_m = fWeakPriceM.getText().toString();
+                final String week_price_d = fWeakPriceD.getText().toString();
+                final String week_price_e = fWeakPriceE.getText().toString();
+                final String week_end_price_m = fWeakendPriceM.getText().toString();
+                final String week_end_price_d = fWeakendPriceD.getText().toString();
+                final String week_end_price_e = fWeakendPriceE.getText().toString();
 
-                if (!TextUtils.isEmpty(user_name) && mainImageURI != null) {
+
+
+
+                if (!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
+                        && !TextUtils.isEmpty(futsal_phone) && !TextUtils.isEmpty(opening_hour)
+                        && !TextUtils.isEmpty(closing_hour) && !TextUtils.isEmpty(week_end_price_m)
+                        && !TextUtils.isEmpty(week_price_d) && !TextUtils.isEmpty(week_price_e)
+                        && !TextUtils.isEmpty(week_price_m) && !TextUtils.isEmpty(week_end_price_d) && !TextUtils.isEmpty(week_end_price_e)
+                ) {
 
                     if (isChanged) {
 
@@ -169,7 +194,11 @@ public class FutsalInfoEdit extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
                                 if (task.isSuccessful()) {
-                                    storeFirestore(task, user_name);
+                                    storeFirestore(task, futsal_name, futsal_address,
+                                            futsal_phone,opening_hour,closing_hour,
+                                            week_price_m,week_price_d,week_price_e,
+                                            week_end_price_m, week_end_price_d,week_end_price_e
+                                            );
                                 } else {
                                     String error = task.getException().getMessage();
                                     Toast.makeText(FutsalInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
@@ -196,7 +225,11 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
                     } else {
 
-                        storeFirestore(null, user_name);
+                        storeFirestore(null, futsal_name, futsal_address,
+                                futsal_phone,opening_hour,closing_hour,
+                                week_price_m,week_price_d,week_price_e,
+                                week_end_price_m, week_end_price_d,week_end_price_e
+                                );
 
                     }
 
@@ -236,7 +269,10 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
     }
 
-    private void storeFirestore(@NonNull Task<Uri> task, String user_name) {
+    private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String  futsal_address,
+                                String futsal_phone, String opening_hour, String closing_hour,
+                                String week_price_m, String week_price_d, String week_price_e,
+                                String week_end_price_m, String week_end_price_d, String week_end_price_e) {
 
         Uri download_uri;
 
@@ -249,12 +285,32 @@ public class FutsalInfoEdit extends AppCompatActivity {
             download_uri = mainImageURI;
 
         }
+        Map<String, Object> time = new HashMap<>();
+        time.put("Day", futsal_name);
 
-        Map<String, String> userMap = new HashMap<>();
-        userMap.put("name", user_name);
-        userMap.put("image", download_uri.toString());
 
-        fDatabase.collection("futsal_list").document(user_id).set(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        Map<String, Object> futsalMap = new HashMap<>();
+        futsalMap.put("futsal_name", futsal_name);
+        futsalMap.put("futsal_logo", download_uri);
+        futsalMap.put("opening_hour", time);
+        futsalMap.put("closing_hour", time);
+
+        Map<String, Object> week_price = new HashMap<>();
+        week_price.put("morning_price", week_price_m);
+        week_price.put("day_price", week_price_d);
+        week_price.put("evening_price", week_price_e);
+
+        futsalMap.put("week_day_price", week_price);
+
+        Map<String, Object> week_end_price = new HashMap<>();
+        week_end_price.put("morning_price", week_end_price_m);
+        week_end_price.put("day_price", week_end_price_d);
+        week_end_price.put("evening_price", week_end_price_e);
+
+        futsalMap.put("week_end_price", week_end_price);
+
+
+        fDatabase.collection("futsal_list").document(user_id).set(futsalMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
