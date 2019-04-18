@@ -3,6 +3,7 @@ package com.example.futsalnepal;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.text.TextUtils;
@@ -15,23 +16,34 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
     private Context context;
     private FirebaseAuth mAuth;
     private int resId = 0;
+    private FirebaseFirestore fDatabase;
 //    private List<DataObject> dataObjectList;
     private LayoutInflater layoutInflater;
 
     public LoginSignupFragmentPagerAdapter(Context context) {
         this.context = context;
         mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseFirestore.getInstance();
         this.layoutInflater = (LayoutInflater)this.context.getSystemService(this.context.LAYOUT_INFLATER_SERVICE);
 
     }
@@ -138,9 +150,9 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 String confirm_password = cpass.getText().toString();
                 String userType;
                 if(signup_type.isChecked()){
-                    userType = signup_type.getTextOn().toString();
+                    userType = "futsal_list";
                 }else {
-                    userType = signup_type.getTextOff().toString();
+                    userType = "user_list";
                 }
                 Log.d("SwitchOn", "onClick: "+userType);
                 if (!TextUtils.isEmpty(email)||!TextUtils.isEmpty(password) ||!TextUtils.isEmpty(confirm_password)){
@@ -176,12 +188,30 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("signIn", "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent signin = new Intent(context,MainActivity.class);
-                            signin.putExtra("futsal_name", user);
-                            context.startActivity(signin);
-                            ((Activity) context).finish();
+                            String user_id = mAuth.getCurrentUser().getUid();
+                            fDatabase.collection(type).document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                                    if (task.isSuccessful()) {
+
+                                        if (task.getResult().exists()) {
+                                            if(type.equals("user_list")) {
+                                                Intent signin = new Intent(context, MainActivity.class);
+                                                context.startActivity(signin);
+                                                ((Activity) context).finish();
+                                            }
+                                        }
+
+                                    } else {
+                                        mAuth.signOut();
+                                        Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            });
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("signIn", "signInWithEmail:failure", task.getException());
@@ -200,23 +230,49 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("signup", "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if(userType.equals("user")) {
-                                Intent futsalUserIntent = new Intent(context, UserInfoEdit.class);
-                                futsalUserIntent.putExtra("User", user);
-                                context.startActivity(futsalUserIntent);
-                                ((Activity) context).finish();
+                            String user_id = mAuth.getCurrentUser().getUid();
+                            Map<String, Object> updates = new HashMap<>();
+                            updates.put("created_at", FieldValue.serverTimestamp());
+                            if(userType.equals("user_list")) {
+                                fDatabase.collection("user_list").document(user_id).set(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Intent futsalUserIntent = new Intent(context, UserInfoEdit.class);
+                                            context.startActivity(futsalUserIntent);
+                                            ((Activity) context).finish();
+
+                                        } else {
+
+                                            String error = task.getException().getMessage();
+                                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+
+                                        }
+                                    }
+                                });
+
                             }else{
-                                Intent futsalUserIntent = new Intent(context, FutsalInfoEdit.class);
-                                futsalUserIntent.putExtra("User", user);
-                                context.startActivity(futsalUserIntent);
-                                ((Activity) context).finish();
+                                fDatabase.collection("futsal_list").document(user_id).set(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Intent futsalUserIntent = new Intent(context, FutsalInfoEdit.class);
+                                            context.startActivity(futsalUserIntent);
+                                            ((Activity) context).finish();
+
+                                        } else {
+
+                                            String error = task.getException().getMessage();
+                                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+
+                                        }
+                                    }
+                                });
+
                             }
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w("signup", "signInWithEmail:failure", task.getException());
                             Toast.makeText(context, "Authentication failed.",
                                     Toast.LENGTH_LONG).show();
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -31,21 +32,34 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.balysv.materialmenu.MaterialMenu;
 import com.balysv.materialmenu.MaterialMenuDrawable;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.balysv.materialmenu.MaterialMenuDrawable.IconState.BURGER;
 
@@ -60,9 +74,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
+    private CircleImageView dUserPic;
+    private TextView dUserName, dUserAddress, dUserPhone;
     private ImageView settingBtn, logOutBtn;
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mDatabase;
+    private StorageReference mStorage;
+    private String user_id;
+    private Uri mainImageURI = null;
     private String[] images = {
             "https://5.imimg.com/data5/JJ/PX/MY-5974440/futsal-ground-artificial-grass-500x500.jpg",
             "https://ranknepal.com/wp-content/uploads/2014/06/footsal-ground-inside-kathmandu-valley.jpg",
@@ -70,13 +90,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     };
     List<Data> data = fill_with_data();
+    private Boolean haveInfo = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
+        mStorage = FirebaseStorage.getInstance().getReference();
 
+        //redirect for futsal user
+        if(mAuth.getCurrentUser() != null) {
+            user_id = mAuth.getCurrentUser().getUid();
+
+            mDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()) {
+                        if (task.getResult().exists()) {
+                            //redirect to futsal page
+                            Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
+                            startActivity(futsalhome);
+                            //finish();
+                        }
+                    }
+                }
+            });
+
+            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()) {
+                        if (task.getResult().exists()) {
+                            Log.d("TestingInfo", "onComplete: "+ task.getResult().getString("user_name"));
+                            if (task.getResult().getString("user_name") == null){
+                                Log.d("TestingInfo1", "onComplete: "+ task.getResult().getString("user_name"));
+                                Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
+                                startActivity(user_info_edit);
+                                finish();
+                            }else{
+                                haveInfo = true;
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
         //toolbar
         mainToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
@@ -93,7 +154,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //nav bar header elements
         View header = navigationView.getHeaderView(0);
+        dUserName = header.findViewById(R.id.user_name);
+        dUserAddress = header.findViewById(R.id.user_address);
+        dUserPhone = header.findViewById(R.id.user_number);
+        dUserPic = header.findViewById(R.id.user_image);
+
         settingBtn = header.findViewById(R.id.setting_btn);
+
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,7 +229,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
 
+        if(mAuth.getCurrentUser() != null) {
 
+            if(haveInfo == true){
+            //data for drawer header elements
+            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                    if (task.isSuccessful()) {
+
+                        if (task.getResult().exists()) {
+                            String name = task.getResult().getString("user_name");
+                            String image = task.getResult().getString("user_logo");
+                            String address = task.getResult().getString("user_address");
+                            String phone = task.getResult().getString("user_phone");
+
+                            mainImageURI = Uri.parse(image);
+
+                            dUserName.setText(name);
+                            dUserAddress.setText(address);
+                            dUserPhone.setText(phone);
+
+
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            placeholderRequest.placeholder(R.drawable.profile_image);
+
+                            Glide.with(MainActivity.this).setDefaultRequestOptions(placeholderRequest).load(image).into(dUserPic);
+
+
+                        }
+
+                    } else {
+
+                        String error = task.getException().getMessage();
+                        Toast.makeText(MainActivity.this, "(FIRESTORE Retrieve Error) : " + error, Toast.LENGTH_LONG).show();
+
+                    }
+                }
+            });
+
+        }
+
+        }
     }
 
 

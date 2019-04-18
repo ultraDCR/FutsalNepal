@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -61,7 +62,6 @@ public class FutsalInfoEdit extends AppCompatActivity {
         setContentView(R.layout.activity_futsal_info_edit);
 
         fAuth = FirebaseAuth.getInstance();
-        user_id = fAuth.getCurrentUser().getUid();
 
         fDatabase = FirebaseFirestore.getInstance();
         fStorage = FirebaseStorage.getInstance().getReference();
@@ -80,6 +80,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
         fProfilePic = findViewById(R.id.futsal_profile_pic);
         saveBtn = findViewById(R.id.f_save_btn);
         saveBtn.setEnabled(false);
+        user_id = fAuth.getCurrentUser().getUid();
 
         fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -88,35 +89,42 @@ public class FutsalInfoEdit extends AppCompatActivity {
                 if(task.isSuccessful()){
 
                     if(task.getResult().exists()){
+                        if (task.getResult().getString("futsal_name") != null) {
+                            Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
+                            String name = task.getResult().getString("futsal_name");
+                            String image = task.getResult().getString("futsal_logo");
+                            String address = task.getResult().getString("futsal_address");
+                            String phone = task.getResult().getString("futsal_phone");
+                            String open_time = task.getResult().getString("opening_hour");
+                            String close_time = task.getResult().getString("closing_hour");
+                            Map<String, String> week_price = (Map<String, String>) task.getResult().get("week_end_price");
+                            String w_morning = week_price.get("morning_price");
+                            String w_day = week_price.get("day_price");
+                            String w_evening = week_price.get("evening_price");
+                            String we_morning = week_price.get("morning_price");
+                            String we_day = week_price.get("day_price");
+                            String we_evening = week_price.get("evening_price");
 
-                        String name = task.getResult().getString("futsal_name");
-                        String image = task.getResult().getString("futsal_logo");
-                        String address = task.getResult().getString("futsal_address");
-                        String phone = task.getResult().getString("futsal_phone");
-                        String open_time = task.getResult().getString("opening_hour");
-                        String close_time = task.getResult().getString("closing_hour");
-                        Map<String , Object> week_price = task.getResult().getData();
-                        String w_morning = week_price.get("morning_price").toString();
-                        String w_day = week_price.get("day_price").toString();
-                        String w_evening = week_price.get("evening_price").toString();
-                        for( DocumentSnapshot document : task.getResuly ) {
-                            String we_morning = week_price.get("morning_price").toString();
-                            String we_day = week_price.get("day_price").toString();
-                            String we_evening = week_price.get("evening_price").toString();
 
+                            mainImageURI = Uri.parse(image);
+
+                            fName.setText(name);
+                            fAddress.setText(address);
+                            fPhone.setText(phone);
+                            fOpenTime.setText(open_time);
+                            fCloseTime.setText(close_time);
+                            fWeakPriceM.setText(w_morning);
+                            fWeakPriceD.setText(w_day);
+                            fWeakPriceE.setText(w_evening);
+                            fWeakendPriceM.setText(we_morning);
+                            fWeakendPriceD.setText(we_day);
+                            fWeakendPriceE.setText(we_evening);
+
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            placeholderRequest.placeholder(R.drawable.profile_image);
+
+                            Glide.with(FutsalInfoEdit.this).setDefaultRequestOptions(placeholderRequest).load(image).into(fProfilePic);
                         }
-                        mainImageURI = Uri.parse(image);
-
-                        fName.setText(name);
-                        fAddress.setText(address);
-                        fPhone.setText(phone);
-                        fOpenTime.setText(open_time);
-                        fCloseTime.setText(close_time);
-                        RequestOptions placeholderRequest = new RequestOptions();
-                        placeholderRequest.placeholder(R.drawable.profile_image);
-
-                        Glide.with(FutsalInfoEdit.this).setDefaultRequestOptions(placeholderRequest).load(image).into(fProfilePic);
-
 
                     }
 
@@ -177,7 +185,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] thumbData = baos.toByteArray();
-                        StorageReference ref = fStorage.child("futsal_image").child(user_id + ".jpg");
+                        StorageReference ref = fStorage.child("futsal_pic_list").child(user_id).child("logo").child("logo.png");
                         UploadTask image_path = ref.putBytes(thumbData);
 
                         Task<Uri> urlTask = image_path.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -285,15 +293,14 @@ public class FutsalInfoEdit extends AppCompatActivity {
             download_uri = mainImageURI;
 
         }
-        Map<String, Object> time = new HashMap<>();
-        time.put("Day", futsal_name);
-
 
         Map<String, Object> futsalMap = new HashMap<>();
         futsalMap.put("futsal_name", futsal_name);
-        futsalMap.put("futsal_logo", download_uri);
-        futsalMap.put("opening_hour", time);
-        futsalMap.put("closing_hour", time);
+        futsalMap.put("futsal_logo", download_uri.toString());
+        futsalMap.put("futsal_address",futsal_address);
+        futsalMap.put("futsal_phone",futsal_phone);
+        futsalMap.put("opening_hour", opening_hour);
+        futsalMap.put("closing_hour", closing_hour);
 
         Map<String, Object> week_price = new HashMap<>();
         week_price.put("morning_price", week_price_m);

@@ -55,28 +55,22 @@
             android:id="@+id/user_address"
             android:layout_width="wrap_content"
             android:layout_height="15dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:text="Kapan -13, Budanilkantha"
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.541"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/user_name"
+            app:layout_constraintStart_toStartOf="@+id/user_name"
             app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
         <TextView
             android:id="@+id/user_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:text="+977-9813300993"
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.464"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/user_address"
+            app:layout_constraintStart_toStartOf="@+id/user_address"
             app:layout_constraintTop_toBottomOf="@+id/user_address" />
 
     </android.support.constraint.ConstraintLayout>

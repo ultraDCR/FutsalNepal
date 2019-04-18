@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FutsalIndivisualDetails"></activity>
+        <activity android:name=".FutsalHome"></activity>
+        <activity android:name=".FutsalIndivisualDetails" />
         <activity android:name=".FutsalInfoEdit" />
         <activity android:name=".UserInfoEdit" />
         <activity android:name=".Favourite" />
