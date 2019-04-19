@@ -48,8 +48,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             "https://5.imimg.com/data5/OE/GB/MY-2392315/futsal-artificial-grass-ground-500x500.jpg"
 
     };
-    List<Data> data = fill_with_data();
+    List<Futsal> futsalList ;
     private Boolean haveInfo = false;
 
     @Override
@@ -100,44 +104,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDatabase = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance().getReference();
 
-        //redirect for futsal user
-        if(mAuth.getCurrentUser() != null) {
-            user_id = mAuth.getCurrentUser().getUid();
-
-            mDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()) {
-                        if (task.getResult().exists()) {
-                            //redirect to futsal page
-                            Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
-                            startActivity(futsalhome);
-                            //finish();
-                        }
-                    }
-                }
-            });
-
-            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()) {
-                        if (task.getResult().exists()) {
-                            Log.d("TestingInfo", "onComplete: "+ task.getResult().getString("user_name"));
-                            if (task.getResult().getString("user_name") == null){
-                                Log.d("TestingInfo1", "onComplete: "+ task.getResult().getString("user_name"));
-                                Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
-                                startActivity(user_info_edit);
-                                finish();
-                            }else{
-                                haveInfo = true;
-                            }
-
-                        }
-                    }
-                }
-            });
-        }
         //toolbar
         mainToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
@@ -223,16 +189,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         //top rated futsal
+        futsalList = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
-        FutsalRecycleView adapter = new FutsalRecycleView(data, getApplication());
+        FutsalRecycleView adapter = new FutsalRecycleView(futsalList, getApplication());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+        mDatabase.collection("futsal_list").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if(!documentSnapshots.isEmpty()) {
+                    for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
+
+                        if (doc.getType() == DocumentChange.Type.ADDED) {
+
+                            String futsalId = doc.getDocument().getId();
+
+                            Futsal futsals = doc.getDocument().toObject(Futsal.class).withId(futsalId);
+                            futsalList.add(futsals);
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    }
+                }
+            }
+        });
 
 
         if(mAuth.getCurrentUser() != null) {
 
-            if(haveInfo == true){
             //data for drawer header elements
+            user_id = mAuth.getCurrentUser().getUid();
             mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -269,9 +257,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-        }
+         }
 
-        }
     }
 
 
@@ -280,8 +267,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null) {
 
+            user_id = mAuth.getCurrentUser().getUid();
+
+            mDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().exists()) {
+                            //redirect to futsal page
+                            Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
+                            startActivity(futsalhome);
+                            //finish();
+                        } else {
+                            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        if (task.getResult().exists()) {
+                                            Log.d("TestingInfo", "onComplete: " + task.getResult().getString("user_name"));
+                                            if (task.getResult().getString("user_name") == null) {
+                                                Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
+                                                startActivity(user_info_edit);
+                                                finish();
+                                            } else {
+                                                haveInfo = true;
+                                            }
+
+                                        }
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                }
+            });
+
+        }
     }
 
     @Override
@@ -296,7 +321,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getMenuInflater().inflate(R.menu.main_menu, menu);
         //hide login menu if not login
-        if(currentUser!=null){
+        currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
             MenuItem item = menu.findItem(R.id.action_login_btn);
             item.setVisible(false);
         }
@@ -369,14 +395,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    public List<Data> fill_with_data() {
-
-        List<Data> data = new ArrayList<>();
-
-        data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
-        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.logo,2));
-
-        return data;
-    }
+//    public List<Data> fill_with_data() {
+//
+//        List<Data> data = new ArrayList<>();
+//
+//        data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
+//        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.logo,2));
+//
+//        return data;
+//    }
 
 }

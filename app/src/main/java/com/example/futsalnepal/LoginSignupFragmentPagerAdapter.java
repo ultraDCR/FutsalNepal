@@ -106,18 +106,20 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
         EditText pass = layout.findViewById(R.id.login_password_field);
         Button ulogin = layout.findViewById(R.id.login_btn);
         Switch logintype = layout.findViewById(R.id.login_switch);
-        String userType;
-        if(logintype.isChecked()){
-            userType = logintype.getTextOn().toString();
-        }else {
-            userType = logintype.getTextOff().toString();
-        }
+
+
 
         ulogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = name.getText().toString();
                 String password = pass.getText().toString();
+                String userType;
+                if(logintype.isChecked()){
+                    userType = "futsal_list";
+                }else {
+                    userType = "user_list";
+                }
                 if (!TextUtils.isEmpty(email)||!TextUtils.isEmpty(password)){
 
                     login_userId(email,password,userType);
@@ -126,7 +128,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                     name.setError("Field required");
                     pass.setError("Field required");
                 } else {
-                    Toast.makeText(context, "Some error occure. Check you information and try again.",
+                    Toast.makeText(context, "Some error occur. Check you information and try again.",
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -201,11 +203,14 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                 context.startActivity(signin);
                                                 ((Activity) context).finish();
                                             }
+                                        }else{
+                                            mAuth.signOut();
+                                            Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
+                                                    Toast.LENGTH_SHORT).show();
                                         }
 
                                     } else {
-                                        mAuth.signOut();
-                                        Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
+                                        Toast.makeText(context, "Something went wrong",
                                                 Toast.LENGTH_SHORT).show();
 
                                     }

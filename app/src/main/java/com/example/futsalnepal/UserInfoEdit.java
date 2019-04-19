@@ -20,12 +20,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.MainActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -82,10 +84,10 @@ public class UserInfoEdit extends AppCompatActivity {
                     if(task.getResult().exists()){
                         if (task.getResult().getString("user_name") != null) {
                             Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
-                            String name = task.getResult().getString("futsal_name");
-                            String image = task.getResult().getString("futsal_logo");
-                            String address = task.getResult().getString("futsal_address");
-                            String phone = task.getResult().getString("futsal_phone");
+                            String name = task.getResult().getString("user_name");
+                            String image = task.getResult().getString("user_logo");
+                            String address = task.getResult().getString("user_address");
+                            String phone = task.getResult().getString("user_phone");
 
 
                             mainImageURI = Uri.parse(image);
@@ -118,11 +120,11 @@ public class UserInfoEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String futsal_name = uName.getText().toString();
-                final String futsal_address = uAddress.getText().toString();
-                final String futsal_phone = uPhone.getText().toString();
+                final String user_name = uName.getText().toString();
+                final String user_address = uAddress.getText().toString();
+                final String user_phone = uPhone.getText().toString();
 
-                if (!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address) && !TextUtils.isEmpty(futsal_phone))
+                if (!TextUtils.isEmpty(user_name) && mainImageURI != null && !TextUtils.isEmpty(user_address) && !TextUtils.isEmpty(user_phone))
                 {
 
                     if (isChanged) {
@@ -162,7 +164,7 @@ public class UserInfoEdit extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
                                 if (task.isSuccessful()) {
-                                    storeFirestore(task, futsal_name, futsal_address, futsal_phone);
+                                    storeFirestore(task, user_name, user_address, user_phone);
                                 } else {
                                     String error = task.getException().getMessage();
                                     Toast.makeText(UserInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
@@ -189,8 +191,8 @@ public class UserInfoEdit extends AppCompatActivity {
 
                     } else {
 
-                        storeFirestore(null, futsal_name, futsal_address,
-                                futsal_phone);
+                        storeFirestore(null, user_name, user_address,
+                                user_phone);
 
                     }
 
@@ -230,7 +232,7 @@ public class UserInfoEdit extends AppCompatActivity {
 
     }
 
-    private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String  futsal_address, String futsal_phone) {
+    private void storeFirestore(@NonNull Task<Uri> task, String user_name, String  user_address, String user_phone) {
 
         Uri download_uri;
 
@@ -244,15 +246,15 @@ public class UserInfoEdit extends AppCompatActivity {
 
         }
 
-        Map<String, String> futsalMap = new HashMap<>();
-        futsalMap.put("futsal_name", futsal_name);
-        futsalMap.put("futsal_logo", download_uri.toString());
-        futsalMap.put("futsal_address",futsal_address);
-        futsalMap.put("futsal_phone",futsal_phone);
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("user_name", user_name);
+        userMap.put("user_logo", download_uri.toString());
+        userMap.put("user_address",user_address);
+        userMap.put("user_phone",user_phone);
 
 
 
-        uDatabase.collection("futsal_list").document(user_id).set(futsalMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        uDatabase.collection("user_list").document(user_id).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 

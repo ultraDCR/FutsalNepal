@@ -11,15 +11,18 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.Collections;
 import java.util.List;
 
 public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.FutsalViewHolder> {
 
-        List<Data> list = Collections.emptyList();
+        List<Futsal> list ;
         Context context;
 
-        public FutsalRecycleView(List<Data> list, Context context) {
+        public FutsalRecycleView(List<Futsal> list, Context context) {
             this.list = list;
             this.context = context;
         }
@@ -37,12 +40,13 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         @Override
         public void onBindViewHolder(FutsalViewHolder holder, int position) {
 
-            //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-            holder.name.setText(list.get(position).name);
-            holder.address.setText(list.get(position).address);
-            holder.time.setText(list.get(position).time);
-            holder.profile.setImageResource(list.get(position).imageId);
-            holder.ratingBar.setRating(list.get(position).rating);
+            final String futsalId = list.get(position).FutsalId;
+
+            holder.setFutsalName(list.get(position).getFutsal_name());
+            holder.setFutsalAddress(list.get(position).getFutsal_address());
+            holder.setFutsalTime(list.get(position).getOpening_hour(),list.get(position).getClosing_hour());
+            holder.setFutsalLogo(list.get(position).getFutsal_logo());
+           // holder.setFutsalRating(list.get(position).getRating());
 
             //animate(holder);
 
@@ -51,7 +55,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
                 @Override
                 public void onClick(View v) {
                     Intent futsal = new Intent(context, FutsalIndivisualDetails.class);
-                    futsal.putExtra("futsal_name", list.get(position).name);
+                    futsal.putExtra("futsal_id", futsalId);
                     context.startActivity(futsal);
                 }
             });
@@ -61,7 +65,11 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         @Override
         public int getItemCount() {
             //returns the number of elements the RecyclerView will display
-            return list.size();
+            if(list != null) {
+                return list.size();
+            } else {
+                return 0;
+            }
         }
 
         @Override
@@ -70,13 +78,13 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         }
 
         // Insert a new item to the RecyclerView on a predefined position
-        public void insert(int position, Data data) {
+        public void insert(int position, Futsal data) {
             list.add(position, data);
             notifyItemInserted(position);
         }
 
         // Remove a RecyclerView item containing a specified Data object
-        public void remove(Data data) {
+        public void remove(Futsal data) {
             int position = list.indexOf(data);
             list.remove(position);
             notifyItemRemoved(position);
@@ -84,24 +92,49 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
 
     public class FutsalViewHolder extends RecyclerView.ViewHolder {
 
-        CardView cv;
-        TextView name;
-        TextView address;
-        TextView time;
-        ImageView profile,add,clock,rating1,rating2,rating3,rating4,rating5;
-        RatingBar ratingBar;
+        private CardView cv;
+        private TextView name;
+        private TextView address;
+        private TextView time;
+        private ImageView profile;
+        private RatingBar ratingBar;
+        private View mView;
 
-        FutsalViewHolder(View itemView) {
+        public FutsalViewHolder(View itemView) {
             super(itemView);
+            mView = itemView;
+
             cv =  itemView.findViewById(R.id.futsal_card_view);
-            name =  itemView.findViewById(R.id.futsal_name);
-            address =  itemView.findViewById(R.id.futsal_address);
-            time =  itemView.findViewById(R.id.futsal_available_time);
             profile =  itemView.findViewById(R.id.futsal_profile);
-            add = itemView.findViewById(R.id.location_icon);
             ratingBar = itemView.findViewById(R.id.futsal_rating);
 
         }
+
+        public void setFutsalName(String futsal_name){
+            name =  itemView.findViewById(R.id.futsal_name);
+            name.setText(futsal_name);
+        }
+
+        public void setFutsalAddress(String futsal_address){
+            address =  itemView.findViewById(R.id.futsal_address);
+            address.setText(futsal_address);
+        }
+        public void setFutsalTime(String open, String close){
+            time =  itemView.findViewById(R.id.futsal_available_time);
+            time.setText(open+"-"+close);
+        }
+        public void setFutsalLogo(String futsal_logo){
+            profile =  itemView.findViewById(R.id.futsal_profile);
+            RequestOptions placeholderRequest = new RequestOptions();
+            placeholderRequest.placeholder(R.drawable.logo);
+
+            Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(profile);
+        }
+//        public void setFutsalRating(float rating){
+//            ratingBar =  itemView.findViewById(R.id.futsal_rating);
+//            ratingBar.setRating(rating);
+//        }
+
     }
 
 }

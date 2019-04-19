@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Favourite extends AppCompatActivity {
-    List<Data> data = fill_with_data();
+    List<Futsal> data = fill_with_data();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,12 +32,11 @@ public class Favourite extends AppCompatActivity {
         return true;
     }
 
-    public List<Data> fill_with_data() {
+    public List<Futsal> fill_with_data() {
 
-        List<Data> data = new ArrayList<>();
+        List<Futsal> data = new ArrayList<>();
 
-        data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
-        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.ic_profile,2));
+        data.add(new Futsal("WhiteHouse", "Kapan-3","6AM","6PM", "9796875685",null));
 
         return data;
     }
