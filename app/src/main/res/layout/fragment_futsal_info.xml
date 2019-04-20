@@ -194,7 +194,7 @@ tools:context=".FutsalInfoFragment">
                 android:drawableLeft="@drawable/ic_full_sun"
                 android:drawablePadding="8dp"
                 android:text="Day - Rs"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
             <TextView
@@ -209,20 +209,18 @@ tools:context=".FutsalInfoFragment">
                 android:drawablePadding="8dp"
                 android:text="Evening - Rs"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView21"
                 app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
             <TextView
                 android:id="@+id/textView23"
                 android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:drawableLeft="@drawable/ic_half_sun"
                 android:drawablePadding="8dp"
                 android:text="Morning - Rs"
-                app:layout_constraintStart_toEndOf="@+id/fwd_morning_price"
+                app:layout_constraintEnd_toStartOf="@+id/fwe_morning_price"
                 app:layout_constraintTop_toBottomOf="@+id/textView19" />
 
             <TextView
@@ -240,8 +238,8 @@ tools:context=".FutsalInfoFragment">
                 android:id="@+id/textView25"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginLeft="6dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_night_moon"
@@ -268,56 +266,58 @@ tools:context=".FutsalInfoFragment">
                 android:id="@+id/fwd_day_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:padding="3dp"
                 android:text="1254"
                 android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView21"
                 app:layout_constraintStart_toEndOf="@+id/textView21"
-                app:layout_constraintTop_toBottomOf="@+id/fwd_morning_price" />
+                app:layout_constraintTop_toTopOf="@+id/textView21" />
 
             <TextView
                 android:id="@+id/fwd_evening_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:padding="3dp"
                 android:text="1235"
                 android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView22"
                 app:layout_constraintStart_toEndOf="@+id/textView22"
-                app:layout_constraintTop_toBottomOf="@+id/fwd_day_price" />
+                app:layout_constraintTop_toTopOf="@+id/textView22" />
 
             <TextView
                 android:id="@+id/fwe_morning_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:padding="3dp"
                 android:text="1233"
                 android:textSize="14sp"
-                app:layout_constraintStart_toEndOf="@+id/textView23"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView19" />
 
             <TextView
                 android:id="@+id/fwe_day_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:padding="3dp"
                 android:text="5254"
                 android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView24"
                 app:layout_constraintStart_toEndOf="@+id/textView24"
-                app:layout_constraintTop_toBottomOf="@+id/fwe_morning_price" />
+                app:layout_constraintTop_toTopOf="@+id/textView24" />
 
             <TextView
                 android:id="@+id/fwe_evening_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:padding="3dp"
                 android:text="1234"
                 android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView25"
                 app:layout_constraintStart_toEndOf="@+id/textView25"
-                app:layout_constraintTop_toBottomOf="@+id/fwe_day_price" />
+                app:layout_constraintTop_toTopOf="@+id/textView25" />
         </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

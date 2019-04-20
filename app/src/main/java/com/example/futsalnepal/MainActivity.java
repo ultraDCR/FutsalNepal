@@ -292,8 +292,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                 Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
                                                 startActivity(user_info_edit);
                                                 finish();
-                                            } else {
-                                                haveInfo = true;
                                             }
 
                                         }

@@ -27,7 +27,7 @@
 
         <ImageView
             android:id="@+id/futsal_profile"
-            android:layout_width="100dp"
+            android:layout_width="105dp"
             android:layout_height="0dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="Hamro Futsal"
             android:textColor="@android:color/background_light"
             android:textSize="20dp"
