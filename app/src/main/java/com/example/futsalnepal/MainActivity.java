@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             String address = task.getResult().getString("user_address");
                             String phone = task.getResult().getString("user_phone");
 
-                            mainImageURI = Uri.parse(image);
+                            //mainImageURI = Uri.parse(image);
 
                             dUserName.setText(name);
                             dUserAddress.setText(address);
@@ -268,6 +268,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d("TestingInfo1", "onComplete: "+ currentUser);
+
         if(currentUser != null) {
 
             user_id = mAuth.getCurrentUser().getUid();
@@ -276,16 +278,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
+                        Log.d("TestingInfo2", "onComplete: "+ currentUser);
                         if (task.getResult().exists()) {
                             //redirect to futsal page
                             Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
                             startActivity(futsalhome);
                             //finish();
                         } else {
+                            Log.d("TestingInfo3", "onComplete: "+ mDatabase.collection("user_list").document(user_id).get());
                             mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    Log.d("TestingInfo4", "onComplete: "+task);
                                     if (task.isSuccessful()) {
+                                        Log.d("TestingInfo4", "onComplete: "+ task.getResult().exists());
                                         if (task.getResult().exists()) {
                                             Log.d("TestingInfo", "onComplete: " + task.getResult().getString("user_name"));
                                             if (task.getResult().getString("user_name") == null) {
