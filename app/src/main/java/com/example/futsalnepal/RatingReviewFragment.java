@@ -57,7 +57,7 @@ public class RatingReviewFragment extends Fragment {
     private float three_star_rating = 0;
     private float four_star_rating = 0;
     private float five_star_rating = 0;
-    private int total_rated_by = 0;
+    private float total_rated_by = 0;
     float overall_rating = 0;
 
 
@@ -136,6 +136,7 @@ public class RatingReviewFragment extends Fragment {
                 int rating = (int) mRating.getRating();
                 String review = mReview.getText().toString();
                 number_of_rating(rating);
+                total_rated_by = total_rated_by +1;
                 float overalRatings =calculateOveralRating();
                 Map<String, Object> ratingInfo = new HashMap<>();
                 ratingInfo.put("overall_rating",overalRatings);
@@ -145,7 +146,7 @@ public class RatingReviewFragment extends Fragment {
                 starMap.put("three_star_rating",three_star_rating);
                 starMap.put("four_star_rating",four_star_rating);
                 starMap.put("five_star_rating",five_star_rating);
-                starMap.put("total_rated_by",total_rated_by);
+                starMap.put("total_rated_by", total_rated_by);
                 ratingInfo.put("rating_brief_info", starMap);
                 mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
 
@@ -155,7 +156,7 @@ public class RatingReviewFragment extends Fragment {
                 rating_by.put("timeStamp",FieldValue.serverTimestamp());
                 mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by);
                 mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
-
+                loadRating(futsal_id);
             }
         });
 
@@ -180,32 +181,36 @@ public class RatingReviewFragment extends Fragment {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     Map<String, Number> week_price = (Map<String, Number>) task.getResult().get("rating_brief_info");
+                    Log.d("TRating", "onComplete: "+week_price.get("one_star_rating"));
                     if(week_price.get("one_star_rating") != null){
-                        one_star_rating = (float)week_price.get("one_star_rating");
+                        one_star_rating = week_price.get("one_star_rating").floatValue();
                     }
                     if(week_price.get("two_star_rating") != null){
-                        two_star_rating = (float)week_price.get("two_star_rating");
+                        two_star_rating = week_price.get("two_star_rating").floatValue();
                     }
                     if(week_price.get("three_star_rating") != null){
-                        three_star_rating = (float)week_price.get("three_star_rating");
+                        three_star_rating = week_price.get("three_star_rating").floatValue();
                     }
                     if(week_price.get("four_star_rating") != null){
-                        four_star_rating = (float)week_price.get("four_star_rating");
+                        four_star_rating = week_price.get("four_star_rating").floatValue();
                     }
                     if(week_price.get("five_star_rating") != null){
-                        five_star_rating = (float)week_price.get("five_star_rating");
+                        five_star_rating = week_price.get("five_star_rating").floatValue();
                     }
                     if(week_price.get("total_rated_by") != null){
-                        total_rated_by = (int)week_price.get("total_rated_by");
+                        total_rated_by = week_price.get("total_rated_by").floatValue();
                     }
                     if(task.getResult().get("overall_rating") != null) {
-                        overall_rating = (float) task.getResult().get("overall_rating");
+                        Number dumy=  (Number)task.getResult().get("overall_rating");
+                        overall_rating = dumy.floatValue();
                     }
 
 
-                    mRatingIndicator.setRating(overall_rating);
-                    String overalRating =Float.toString(overall_rating);
-                    mOverallRating.setText(overalRating);
+                    mRatingIndicator.setRating((float) overall_rating);
+                    String totalRatings = String.valueOf(total_rated_by);
+                    String ff = String.valueOf(overall_rating);
+                    mOverallRating.setText(ff);
+                    mTotalNoRating.setText(totalRatings);
                     mProgressOne.setMax(total_rated_by);
                     mProgressTwo.setMax(total_rated_by);
                     mProgressThree.setMax(total_rated_by);
@@ -257,7 +262,7 @@ public class RatingReviewFragment extends Fragment {
                 two_star_rating ++;
                 break;
             case 3:
-                two_star_rating ++;
+                three_star_rating ++;
                 break;
             case 4:
                 four_star_rating ++;
