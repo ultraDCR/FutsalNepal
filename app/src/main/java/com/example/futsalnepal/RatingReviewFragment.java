@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.protobuf.Any;
 
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -59,7 +60,7 @@ public class RatingReviewFragment extends Fragment {
     private float five_star_rating = 0;
     private float total_rated_by = 0;
     float overall_rating = 0;
-
+    private static DecimalFormat df2 = new DecimalFormat("#.#");
 
 
     public RatingReviewFragment() {
@@ -91,45 +92,7 @@ public class RatingReviewFragment extends Fragment {
         mProgressFive = view.findViewById(R.id.progress_for_5);
         mRatingIndicator = view.findViewById(R.id.rating_indicater);
         loadRating(futsal_id);
-
-        mRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if(rating != 0) {
-                    filledR = true;
-                    check();
-                }else if(rating == 0) {
-                    filledR=false;
-                    check();
-                }
-
-            }
-        });
-
-        mReview.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("ONCHANGE", "onTextChanged: "+s+""+start+""+before+""+count);
-                if(count != 0 ){
-                    filledT=true;
-                    check();
-                }
-                else if(count == 0){
-                    filledT=false;
-                    check();
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-
+        validateRatingInput();
         mPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,9 +131,50 @@ public class RatingReviewFragment extends Fragment {
         return view;
     }
 
+    private void validateRatingInput() {
+        mRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if(rating != 0) {
+                    filledR = true;
+                    check();
+                }else if(rating == 0) {
+                    filledR=false;
+                    check();
+                }
+
+            }
+        });
+
+        mReview.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("ONCHANGE", "onTextChanged: "+s+""+start+""+before+""+count);
+                if(count != 0 ){
+                    filledT=true;
+                    check();
+                }
+                else if(count == 0 && start == 0){
+                    filledT=false;
+                    check();
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
     private float calculateOveralRating() {
         if(total_rated_by != 0){
-            overall_rating = (float) ((( 5.0 * five_star_rating) + (4.0 * four_star_rating) +(3.0 * three_star_rating) +(2.0 * two_star_rating) +(1.0 * one_star_rating))/(total_rated_by));
+            double Rating = ((( 5.0 * five_star_rating) + (4.0 * four_star_rating) +(3.0 * three_star_rating) +(2.0 * two_star_rating) +(1.0 * one_star_rating))/(total_rated_by));
+            overall_rating = Float.parseFloat(df2.format(Rating));
+            Log.d("RTT", "calculateOveralRating: "+overall_rating);
         }
         return overall_rating;
     }
@@ -207,7 +211,7 @@ public class RatingReviewFragment extends Fragment {
 
 
                     mRatingIndicator.setRating((float) overall_rating);
-                    String totalRatings = String.valueOf(total_rated_by);
+                    String totalRatings = String.valueOf((int)total_rated_by);
                     String ff = String.valueOf(overall_rating);
                     mOverallRating.setText(ff);
                     mTotalNoRating.setText(totalRatings);
