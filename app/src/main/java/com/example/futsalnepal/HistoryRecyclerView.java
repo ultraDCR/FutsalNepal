@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.futsalnepal.Model.Data;
+
 import java.util.Collections;
 import java.util.List;
 

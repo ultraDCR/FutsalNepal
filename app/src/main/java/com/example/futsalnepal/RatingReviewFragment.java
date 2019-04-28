@@ -1,9 +1,5 @@
 package com.example.futsalnepal;
 
-import android.app.DatePickerDialog;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,25 +12,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
+import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.Model.Review;
+import com.example.futsalnepal.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.protobuf.Any;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +45,8 @@ public class RatingReviewFragment extends Fragment {
     private RatingBar mRating, mRatingIndicator;
     private TextView mOverallRating,mTotalNoRating;
     private RoundCornerProgressBar mProgressOne,mProgressTwo,mProgressThree,mProgressFour,mProgressFive;
-    List<User> user = fill_with_data();
+    List<User> user_list;
+    List<Review> review_list;
     private Boolean filledR = false;
     private Boolean filledT = false;
     private FirebaseAuth mAuth;
@@ -123,10 +122,43 @@ public class RatingReviewFragment extends Fragment {
             }
         });
 
+
+        user_list = new ArrayList<>();
+        review_list = new ArrayList<>();
         RecyclerView recyclerView =  view.findViewById(R.id.review_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        ReviewRecyclerView adapter = new ReviewRecyclerView(user,getContext());
+        ReviewRecyclerView adapter = new ReviewRecyclerView(user_list,review_list,getContext());
         recyclerView.setAdapter(adapter);
+
+        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if(!documentSnapshots.isEmpty()) {
+                    for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
+
+                        if (doc.getType() == DocumentChange.Type.ADDED) {
+
+                            String userId = doc.getDocument().getId();
+                            Review review = doc.getDocument().toObject(Review.class);
+                            mDatabase.collection("user_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        User user = task.getResult().toObject(User.class);
+                                        review_list.add(review);
+                                        user_list.add(user);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            });
+
+
+                        }
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -232,20 +264,6 @@ public class RatingReviewFragment extends Fragment {
             }
         });
     }
-
-    public List<User> fill_with_data() {
-
-        List<User> user = new ArrayList<>();
-
-        user.add(new User("Ranjan Parajuli", "20/10/2019",3));
-        user.add(new User(" Deependra Dhakal", "22/11/2019",4));
-        user.add(new User(" Krishna Singh", "22/11/2019",2));
-        user.add(new User(" Pradeep Shrestha", "22/11/2019",5));
-
-
-        return user;
-    }
-
     //check if rating and review is filled
     public void check(){
         if(filledR && filledT){

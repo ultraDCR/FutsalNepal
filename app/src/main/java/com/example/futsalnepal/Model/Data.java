@@ -1,4 +1,4 @@
-package com.example.futsalnepal;
+package com.example.futsalnepal.Model;
 
 public class Data {
     public String name;
@@ -7,7 +7,7 @@ public class Data {
     public int imageId;
     public float rating;
 
-    Data(String name, String address, String time, int imageId, float rating) {
+    public Data(String name, String address, String time, int imageId, float rating) {
         this.name = name;
         this.address = address;
         this.time = time;

@@ -1,6 +1,6 @@
-package com.example.futsalnepal;
+package com.example.futsalnepal.Model;
 
-public class Futsal extends FutsalId {
+public class Futsal extends com.example.futsalnepal.Model.FutsalId {
 
     public String futsal_name;
     public String futsal_address;

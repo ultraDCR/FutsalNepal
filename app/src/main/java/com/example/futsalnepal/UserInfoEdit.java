@@ -73,6 +73,7 @@ public class UserInfoEdit extends AppCompatActivity {
         saveBtn = findViewById(R.id.save_btn);
         saveBtn.setEnabled(false);
         user_id = uAuth.getCurrentUser().getUid();
+        String user_email = uAuth.getCurrentUser().getEmail();
 
 
         uDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -82,12 +83,12 @@ public class UserInfoEdit extends AppCompatActivity {
                 if(task.isSuccessful()){
 
                     if(task.getResult().exists()){
-                        if (task.getResult().getString("user_name") != null) {
+                        if (task.getResult().getString("user_full_name") != null) {
                             Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
-                            String name = task.getResult().getString("user_name");
-                            String image = task.getResult().getString("user_logo");
+                            String name = task.getResult().getString("user_full_name");
+                            String image = task.getResult().getString("user_profile_image");
                             String address = task.getResult().getString("user_address");
-                            String phone = task.getResult().getString("user_phone");
+                            String phone = task.getResult().getString("user_phone_number");
 
 
                             mainImageURI = Uri.parse(image);
@@ -164,7 +165,7 @@ public class UserInfoEdit extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
                                 if (task.isSuccessful()) {
-                                    storeFirestore(task, user_name, user_address, user_phone);
+                                    storeFirestore(task, user_name, user_address, user_phone, user_email);
                                 } else {
                                     String error = task.getException().getMessage();
                                     Toast.makeText(UserInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
@@ -191,8 +192,7 @@ public class UserInfoEdit extends AppCompatActivity {
 
                     } else {
 
-                        storeFirestore(null, user_name, user_address,
-                                user_phone);
+                        storeFirestore(null, user_name, user_address, user_phone, user_email);
 
                     }
 
@@ -232,7 +232,7 @@ public class UserInfoEdit extends AppCompatActivity {
 
     }
 
-    private void storeFirestore(@NonNull Task<Uri> task, String user_name, String  user_address, String user_phone) {
+    private void storeFirestore(@NonNull Task<Uri> task, String user_name, String  user_address, String user_phone, String user_email) {
 
         Uri download_uri;
 
@@ -247,10 +247,11 @@ public class UserInfoEdit extends AppCompatActivity {
         }
 
         Map<String, String> userMap = new HashMap<>();
-        userMap.put("user_name", user_name);
-        userMap.put("user_logo", download_uri.toString());
+        userMap.put("user_full_name", user_name);
+        userMap.put("user_profile_image", download_uri.toString());
         userMap.put("user_address",user_address);
-        userMap.put("user_phone",user_phone);
+        userMap.put("user_phone_number",user_phone);
+        userMap.put("user_email",user_email);
 
 
 

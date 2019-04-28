@@ -82,6 +82,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
         saveBtn = findViewById(R.id.f_save_btn);
         saveBtn.setEnabled(false);
         user_id = fAuth.getCurrentUser().getUid();
+        String futsal_email = fAuth.getCurrentUser().getEmail();
 
         fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -206,7 +207,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
                                     storeFirestore(task, futsal_name, futsal_address,
                                             futsal_phone,opening_hour,closing_hour,
                                             week_price_m,week_price_d,week_price_e,
-                                            week_end_price_m, week_end_price_d,week_end_price_e
+                                            week_end_price_m, week_end_price_d,week_end_price_e,futsal_email
                                             );
                                 } else {
                                     String error = task.getException().getMessage();
@@ -237,7 +238,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
                         storeFirestore(null, futsal_name, futsal_address,
                                 futsal_phone,opening_hour,closing_hour,
                                 week_price_m,week_price_d,week_price_e,
-                                week_end_price_m, week_end_price_d,week_end_price_e
+                                week_end_price_m, week_end_price_d,week_end_price_e,futsal_email
                                 );
 
                     }
@@ -281,7 +282,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
     private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String  futsal_address,
                                 String futsal_phone, String opening_hour, String closing_hour,
                                 String week_price_m, String week_price_d, String week_price_e,
-                                String week_end_price_m, String week_end_price_d, String week_end_price_e) {
+                                String week_end_price_m, String week_end_price_d, String week_end_price_e, String futsal_email) {
 
         Uri download_uri;
 
@@ -302,6 +303,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
         futsalMap.put("futsal_phone",futsal_phone);
         futsalMap.put("opening_hour", opening_hour);
         futsalMap.put("closing_hour", closing_hour);
+        futsalMap.put("futsal_email",futsal_email);
 
         Map<String, Object> week_price = new HashMap<>();
         week_price.put("morning_price", week_price_m);

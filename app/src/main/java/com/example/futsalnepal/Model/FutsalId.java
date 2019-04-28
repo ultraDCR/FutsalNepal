@@ -1,4 +1,4 @@
-package com.example.futsalnepal;
+package com.example.futsalnepal.Model;
 
 import android.support.annotation.NonNull;
 
