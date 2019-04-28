@@ -3,6 +3,7 @@ package com.example.futsalnepal;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,18 +48,17 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
     public void onBindViewHolder(com.example.futsalnepal.ReviewRecyclerView.ReviewViewHolder holder, int position) {
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-
+        holder.setIsRecyclable(false);
         String user_name = user_list.get(position).getUser_full_name();
         String user_profile = user_list.get(position).getUser_profile_image();
 
         holder.setUserInfo(user_name, user_profile);
 
-        long millisecond = review_list.get(position).getTimestamp().getTime();
-        String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
-        float rating  = review_list.get(position).getRating().floatValue();
+        float rating  = review_list.get(position).getRating();
         String review =  review_list.get(position).getReview();
+        Date date = review_list.get(position).getTimeStamp();
 
-        holder.setFutsalReview(dateString,rating,review);
+        holder.setFutsalReview(date,rating,review);
         //animate(holder);
 
 
@@ -115,9 +115,13 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
             Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(profile_pic).into(profile);
         }
 
-        public void setFutsalReview(String timestamp,float ratingNo, String review){
+        public void setFutsalReview(Date timestamp,float ratingNo, String review){
+
+            Log.d("RANJAN", "setFutsalReview: "+ratingNo+" "+timestamp+" "+review);
             rating.setRating(ratingNo);
-            time.setText(timestamp);
+            long millisecond = timestamp.getTime();
+            String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
+            time.setText(dateString);
             reviewText.setText(review);
         }
     }

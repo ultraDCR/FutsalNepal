@@ -6,16 +6,16 @@ import java.util.Date;
 
 public class Review {
     public String review;
-    public Number rating;
-    public Date timestamp;
+    public float rating;
+    public Date timeStamp;
 
     public Review() {
     }
 
-    public Review(String review, Number rating, Date timestamp) {
+    public Review(String review, float rating, Date timeStamp) {
         this.review = review;
         this.rating = rating;
-        this.timestamp = timestamp;
+        this.timeStamp = timeStamp;
     }
 
     public String getReview() {
@@ -26,19 +26,19 @@ public class Review {
         this.review = review;
     }
 
-    public Number getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(Number rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }
