@@ -2,6 +2,7 @@ package com.example.futsalnepal;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DecimalFormat;
@@ -45,6 +47,7 @@ public class RatingReviewFragment extends Fragment {
     private RatingBar mRating, mRatingIndicator;
     private TextView mOverallRating,mTotalNoRating;
     private RoundCornerProgressBar mProgressOne,mProgressTwo,mProgressThree,mProgressFour,mProgressFive;
+    private ConstraintLayout ratingLayout;
     List<User> user_list;
     List<Review> review_list;
     private Boolean filledR = false;
@@ -77,8 +80,8 @@ public class RatingReviewFragment extends Fragment {
 
         FutsalIndivisualDetails activity = (FutsalIndivisualDetails) getActivity();
         String futsal_id = activity.getMyData();
-        user_id = mAuth.getCurrentUser().getUid();
 
+        ratingLayout = view.findViewById(R.id.rating_input_layout);
         mRating = view.findViewById(R.id.futsal_rating_input);
         mReview = view.findViewById(R.id.review_of_futsal);
         mPost = view.findViewById(R.id.review_post_btn);
@@ -90,38 +93,53 @@ public class RatingReviewFragment extends Fragment {
         mProgressFour = view.findViewById(R.id.progress_for_4);
         mProgressFive = view.findViewById(R.id.progress_for_5);
         mRatingIndicator = view.findViewById(R.id.rating_indicater);
+
         loadRating(futsal_id);
         validateRatingInput();
-        mPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int rating = (int) mRating.getRating();
-                String review = mReview.getText().toString();
-                number_of_rating(rating);
-                total_rated_by = total_rated_by +1;
-                float overalRatings =calculateOveralRating();
-                Map<String, Object> ratingInfo = new HashMap<>();
-                ratingInfo.put("overall_rating",overalRatings);
-                Map<String, Number> starMap = new HashMap<>();
-                starMap.put("one_star_rating",one_star_rating);
-                starMap.put("two_star_rating",two_star_rating);
-                starMap.put("three_star_rating",three_star_rating);
-                starMap.put("four_star_rating",four_star_rating);
-                starMap.put("five_star_rating",five_star_rating);
-                starMap.put("total_rated_by", total_rated_by);
-                ratingInfo.put("rating_brief_info", starMap);
-                mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
+        if(mAuth.getCurrentUser() != null) {
+            user_id = mAuth.getCurrentUser().getUid();
+            mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        ratingLayout.setVisibility(View.INVISIBLE);
+                        ratingLayout.setMaxHeight(0);
+                    }
+                }
+            });
 
-                Map<String ,Object> rating_by = new HashMap<>();
-                rating_by.put("rating", rating);
-                rating_by.put("review",review);
-                rating_by.put("timeStamp",FieldValue.serverTimestamp());
-                mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by);
-                mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
-                loadRating(futsal_id);
-            }
-        });
 
+            mPost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int rating = (int) mRating.getRating();
+                    String review = mReview.getText().toString();
+                    number_of_rating(rating);
+                    total_rated_by = total_rated_by + 1;
+                    float overalRatings = calculateOveralRating();
+                    Log.d("TTE", "onClick: " + overalRatings);
+                    Map<String, Object> ratingInfo = new HashMap<>();
+                    ratingInfo.put("overall_rating", overalRatings);
+                    Map<String, Number> starMap = new HashMap<>();
+                    starMap.put("one_star_rating", one_star_rating);
+                    starMap.put("two_star_rating", two_star_rating);
+                    starMap.put("three_star_rating", three_star_rating);
+                    starMap.put("four_star_rating", four_star_rating);
+                    starMap.put("five_star_rating", five_star_rating);
+                    starMap.put("total_rated_by", total_rated_by);
+                    ratingInfo.put("rating_brief_info", starMap);
+                    mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
+
+                    Map<String, Object> rating_by = new HashMap<>();
+                    rating_by.put("rating", rating);
+                    rating_by.put("review", review);
+                    rating_by.put("timeStamp", FieldValue.serverTimestamp());
+                    mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by);
+                    mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
+                    loadRating(futsal_id);
+                }
+            });
+        }
 
         user_list = new ArrayList<>();
         review_list = new ArrayList<>();
@@ -130,35 +148,33 @@ public class RatingReviewFragment extends Fragment {
         ReviewRecyclerView adapter = new ReviewRecyclerView(user_list,review_list,getContext());
         recyclerView.setAdapter(adapter);
 
-        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
+        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").addSnapshotListener( new EventListener<QuerySnapshot >() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            public void onEvent(QuerySnapshot  snapshots, FirebaseFirestoreException e) {
 
-                if(!documentSnapshots.isEmpty()) {
-                    for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
+                for (QueryDocumentSnapshot  doc : snapshots) {
+                    if (doc.get("timeStamp") != null) {
+                        review_list.clear();
+                        user_list.clear();
+                        String userId = doc.getId();
+                        Review review = doc.toObject(Review.class);
 
-                        if (doc.getType() == DocumentChange.Type.ADDED) {
-
-                            String userId = doc.getDocument().getId();
-                            Review review = doc.getDocument().toObject(Review.class);
-                            mDatabase.collection("user_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        User user = task.getResult().toObject(User.class);
-                                        review_list.add(review);
-                                        user_list.add(user);
-                                        adapter.notifyDataSetChanged();
-                                    }
+                        mDatabase.collection("user_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    User user = task.getResult().toObject(User.class);
+                                    review_list.add(review);
+                                    user_list.add(user);
+                                    adapter.notifyDataSetChanged();
                                 }
-                            });
-
-
-                        }
+                            }
+                        });
                     }
                 }
             }
         });
+
 
         return view;
     }

@@ -208,10 +208,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (task.isSuccessful()) {
 
                         if (task.getResult().exists()) {
-                            String name = task.getResult().getString("user_name");
-                            String image = task.getResult().getString("user_logo");
+                            String name = task.getResult().getString("user_full_name");
+                            String image = task.getResult().getString("user_profile_image");
                             String address = task.getResult().getString("user_address");
-                            String phone = task.getResult().getString("user_phone");
+                            String phone = task.getResult().getString("user_phone_number");
 
                             //mainImageURI = Uri.parse(image);
 
