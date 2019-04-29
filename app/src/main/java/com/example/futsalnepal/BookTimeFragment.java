@@ -12,11 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.futsalnepal.Model.BookTime;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -27,7 +32,7 @@ public class BookTimeFragment extends Fragment {
     DatePickerDialog dpd;
     private RecyclerView bookTime;
     private TextView fDatePicker;
-    List<BookTime> data = fill_with_data();
+    List<BookTime> timeArray;
 
     public BookTimeFragment() {
         // Required empty public constructor
@@ -43,11 +48,7 @@ public class BookTimeFragment extends Fragment {
         FutsalIndivisualDetails activity = (FutsalIndivisualDetails) getActivity();
         String futsal_id = activity.getMyData();
 
-        RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
-        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(data,getContext(),getActivity());
-        recyclerView.setAdapter(adapter);
 
         fDatePicker = view.findViewById(R.id.date_picker_futsal);
 
@@ -62,33 +63,70 @@ public class BookTimeFragment extends Fragment {
                 dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDayOfMonth) {
-                        fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
+                        Log.d("DATEPICKER", "onDateSet: "+datePicker);
+                        now.set(Calendar.YEAR, mYear);
+                        now.set(Calendar.MONTH, mMonth);
+                        now.set(Calendar.DAY_OF_MONTH, mDayOfMonth);
+                        String myFormat = DateFormat.getDateInstance().format(now.getTime());
+
+                        fDatePicker.setText(myFormat);
+                        //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
                     }
                 },day,month,year);
                 dpd.show();
+
             }
         });
+
+        makeTimeArray("6AM","5PM");
+        Log.d("ARRAY",""+timeArray);
+        RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+
+        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeArray,getContext(),getActivity());
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
 
-    public List<BookTime> fill_with_data() {
+    public List<BookTime> makeTimeArray(String open,String close) {
 
-        List<BookTime> data = new ArrayList<>();
+        List<BookTime> timeArray = new ArrayList<>();
+        timeArray.add(new BookTime("12AM"));
+        timeArray.add(new BookTime("1AM"));
+        timeArray.add(new BookTime("2AM"));
+        timeArray.add(new BookTime("3AM"));
+        timeArray.add(new BookTime("4AM"));
+        timeArray.add(new BookTime("5AM"));
+        timeArray.add(new BookTime("6AM"));
+        timeArray.add(new BookTime("7AM"));
+        timeArray.add(new BookTime("8AM"));
+        timeArray.add(new BookTime("9AM"));
+        timeArray.add(new BookTime("10AM"));
+        timeArray.add(new BookTime("11AM"));
+        timeArray.add(new BookTime("12PM"));
+        timeArray.add(new BookTime("1PM"));
+        timeArray.add(new BookTime("2PM"));
+        timeArray.add(new BookTime("3PM"));
+        timeArray.add(new BookTime("4PM"));
+        timeArray.add(new BookTime("5PM"));
+        timeArray.add(new BookTime("6PM"));
+        timeArray.add(new BookTime("7PM"));
+        timeArray.add(new BookTime("8PM"));
+        timeArray.add(new BookTime("9PM"));
+        timeArray.add(new BookTime("10PM"));
+        timeArray.add(new BookTime("11PM"));
+        List<BookTime> timeArray1;
+        int openIdx = timeArray.indexOf(new BookTime(open));
+        int closeIdx = timeArray.indexOf(new BookTime(close));
+        Log.d("ARRAY1", "makeTimeArray: "+openIdx+" "+ closeIdx);
+        if (openIdx <= closeIdx) {
+            // straightforward case
+            timeArray1 = new ArrayList<>(timeArray.subList(openIdx, closeIdx));
+            return timeArray1;
+        }
+        return timeArray;
 
-        data.add(new BookTime("6am", "Kapan-3"));
-        data.add(new BookTime("7am", "Chabahil"));
-        data.add(new BookTime("8am", "Chabahil"));
-        data.add(new BookTime("9am", "Chabahil"));
-        data.add(new BookTime("10am", "Chabahil"));
-        data.add(new BookTime("11am", "Chabahil"));
-        data.add(new BookTime("12am", "Chabahil"));
-        data.add(new BookTime("1pm", "Chabahil"));
-        data.add(new BookTime("2pm", "Chabahil"));
-        data.add(new BookTime("3pm", "Chabahil"));
-        data.add(new BookTime("4pm", "Chabahil"));
-
-        return data;
     }
 
 
