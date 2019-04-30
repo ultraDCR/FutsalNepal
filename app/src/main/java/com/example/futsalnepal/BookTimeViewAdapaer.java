@@ -13,13 +13,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookTime;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +33,7 @@ import java.util.Map;
 
 public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder> {
 
-    List<String> list ;
+    List<BookTime> list ;
     Context context;
     FirebaseAuth mauth;
     FirebaseFirestore mDatabase;
@@ -36,7 +41,7 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
     String date;
     String futsal_id;
 
-    public BookTimeViewAdapaer(List<String> list,String date,String futsal_id, Context context,Activity activity) {
+    public BookTimeViewAdapaer(List<BookTime> list,String date,String futsal_id, Context context,Activity activity) {
         this.list = list;
         this.date = date;
         this.futsal_id = futsal_id;
@@ -48,24 +53,23 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
     }
 
     @Override
-    public com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BookTimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //Inflate the layout, initialize the View Holder
         context=parent.getContext();
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_time_single_layout, parent, false);
-        com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder holder = new com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder(v);
+        BookTimeViewHolder holder = new BookTimeViewHolder(v);
         return holder;
 
     }
 
     @Override
-    public void onBindViewHolder(com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder holder, int position) {
+    public void onBindViewHolder(BookTimeViewHolder holder, int position) {
         mauth = FirebaseAuth.getInstance();
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        holder.book_time.setText(list.get(position));
-//        holder.bookBtn.setBackgroundResource(R.drawable.input_field);
-//        holder.bookBtn.setText("Booking");
-//        holder.bookBtn.setTextColor(Color.parseColor("#000000"));
+        holder.book_time.setText(list.get(position).book_time);
         Log.d("ARRAY4", "onBindViewHolder: "+futsal_id+"  "+date);
+
+        holder.firstLoadBookData(list.get(position).book_time);
 
 
 
@@ -81,14 +85,14 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
                     Map<String, Object> bookFutsalMap = new HashMap<>();
                         Map<String, Object> userBookMap = new HashMap<>();
                             Map<String, Object> timeuBookMap = new HashMap<>();
-                            timeuBookMap.put(list.get(position), FieldValue.serverTimestamp());
+                            timeuBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
                         userBookMap.put(user_id,timeuBookMap);
                     bookFutsalMap.put(date, userBookMap);
 
                     Map<String, Object> bookUserMap = new HashMap<>();
                         Map<String, Object> futsalBookMap = new HashMap<>();
                             Map<String, Object> timefBookMap = new HashMap<>();
-                            timefBookMap.put(list.get(position), FieldValue.serverTimestamp());
+                            timefBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
                         futsalBookMap.put(futsal_id,timefBookMap);
                     bookUserMap.put(date, futsalBookMap);
 
@@ -98,7 +102,7 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("SUCCESS", "onSuccess: "+holder);
-                            holder.bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                            holder.setPending();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -120,18 +124,29 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
         return list.size();
     }
 
+    //this two method fix multiple holder with same item id.
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, String data) {
+    public void insert(int position, BookTime data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(String data) {
+    public void remove(BookTime data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);
@@ -152,6 +167,44 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
 
 
         }
+
+        public void setPending() {
+            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+            bookBtn.setBackgroundResource(R.drawable.pending_button);
+            bookBtn.setText("Pending");
+            bookBtn.setClickable(false);
+        }
+        public void firstLoadBookData(String bookdate){
+            mDatabase.collection("futsal_list").document(futsal_id)
+                    .collection("book_info").document("newrequest").get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        if(task.getResult().exists()){
+                            if(task.getResult().get(date) != null){
+                                Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
+                                if(mauth.getCurrentUser() != null) {
+                                    String user_id = mauth.getUid();
+                                    if (dateRequested.get(user_id) != null) {
+                                        Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
+                                        if (userId.get(bookdate) != null) {
+                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                            bookBtn.setBackgroundResource(R.drawable.pending_button);
+                                            bookBtn.setText("Pending");
+                                            bookBtn.setClickable(false);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            });
+
+        }
+
     }
 
 }

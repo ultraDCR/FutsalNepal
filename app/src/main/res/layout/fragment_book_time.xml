@@ -78,8 +78,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView"
-            tools:itemCount="24"
-            tools:listitem="@layout/book_time_single_layout" />
+            tools:itemCount="24" />
     </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>
