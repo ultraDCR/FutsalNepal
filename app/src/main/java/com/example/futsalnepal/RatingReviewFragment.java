@@ -102,8 +102,10 @@ public class RatingReviewFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
-                        ratingLayout.setVisibility(View.INVISIBLE);
-                        ratingLayout.setMaxHeight(0);
+                        if(task.getResult().exists()) {
+                            ratingLayout.setVisibility(View.INVISIBLE);
+                            ratingLayout.setMaxHeight(0);
+                        }
                     }
                 }
             });
@@ -231,51 +233,53 @@ public class RatingReviewFragment extends Fragment {
         mDatabase.collection("futsal_list").document(futsal_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    Map<String, Number> week_price = (Map<String, Number>) task.getResult().get("rating_brief_info");
-                    Log.d("TRating", "onComplete: "+week_price.get("one_star_rating"));
-                    if(week_price.get("one_star_rating") != null){
-                        one_star_rating = week_price.get("one_star_rating").floatValue();
-                    }
-                    if(week_price.get("two_star_rating") != null){
-                        two_star_rating = week_price.get("two_star_rating").floatValue();
-                    }
-                    if(week_price.get("three_star_rating") != null){
-                        three_star_rating = week_price.get("three_star_rating").floatValue();
-                    }
-                    if(week_price.get("four_star_rating") != null){
-                        four_star_rating = week_price.get("four_star_rating").floatValue();
-                    }
-                    if(week_price.get("five_star_rating") != null){
-                        five_star_rating = week_price.get("five_star_rating").floatValue();
-                    }
-                    if(week_price.get("total_rated_by") != null){
-                        total_rated_by = week_price.get("total_rated_by").floatValue();
-                    }
-                    if(task.getResult().get("overall_rating") != null) {
-                        Number dumy=  (Number)task.getResult().get("overall_rating");
-                        overall_rating = dumy.floatValue();
-                    }
+                if(task.isSuccessful()) {
+                    if (task.getResult().get("rating_brief_info") != null) {
+                        Map<String, Number> week_price = (Map<String, Number>) task.getResult().get("rating_brief_info");
+                        Log.d("TRating", "onComplete: " + week_price.get("one_star_rating"));
+                        if (week_price.get("one_star_rating") != null) {
+                            one_star_rating = week_price.get("one_star_rating").floatValue();
+                        }
+                        if (week_price.get("two_star_rating") != null) {
+                            two_star_rating = week_price.get("two_star_rating").floatValue();
+                        }
+                        if (week_price.get("three_star_rating") != null) {
+                            three_star_rating = week_price.get("three_star_rating").floatValue();
+                        }
+                        if (week_price.get("four_star_rating") != null) {
+                            four_star_rating = week_price.get("four_star_rating").floatValue();
+                        }
+                        if (week_price.get("five_star_rating") != null) {
+                            five_star_rating = week_price.get("five_star_rating").floatValue();
+                        }
+                        if (week_price.get("total_rated_by") != null) {
+                            total_rated_by = week_price.get("total_rated_by").floatValue();
+                        }
+                        if (task.getResult().get("overall_rating") != null) {
+                            Number dumy = (Number) task.getResult().get("overall_rating");
+                            overall_rating = dumy.floatValue();
+                        }
 
 
-                    mRatingIndicator.setRating((float) overall_rating);
-                    String totalRatings = String.valueOf((int)total_rated_by);
-                    String ff = String.valueOf(overall_rating);
-                    mOverallRating.setText(ff);
-                    mTotalNoRating.setText(totalRatings);
-                    mProgressOne.setMax(total_rated_by);
-                    mProgressTwo.setMax(total_rated_by);
-                    mProgressThree.setMax(total_rated_by);
-                    mProgressFour.setMax(total_rated_by);
-                    mProgressFive.setMax(total_rated_by);
+                        mRatingIndicator.setRating((float) overall_rating);
+                        String totalRatings = String.valueOf((int) total_rated_by);
+                        String ff = String.valueOf(overall_rating);
+                        mOverallRating.setText(ff);
+                        mTotalNoRating.setText(totalRatings);
+                        mProgressOne.setMax(total_rated_by);
+                        mProgressTwo.setMax(total_rated_by);
+                        mProgressThree.setMax(total_rated_by);
+                        mProgressFour.setMax(total_rated_by);
+                        mProgressFive.setMax(total_rated_by);
 
-                    mProgressOne.setProgress(one_star_rating);
-                    mProgressTwo.setProgress(two_star_rating);
-                    mProgressThree.setProgress(three_star_rating);
-                    mProgressFour.setProgress(four_star_rating);
-                    mProgressFive.setProgress(five_star_rating);
+                        mProgressOne.setProgress(one_star_rating);
+                        mProgressTwo.setProgress(two_star_rating);
+                        mProgressThree.setProgress(three_star_rating);
+                        mProgressFour.setProgress(four_star_rating);
+                        mProgressFive.setProgress(five_star_rating);
 
 
+                    }
                 }
             }
         });

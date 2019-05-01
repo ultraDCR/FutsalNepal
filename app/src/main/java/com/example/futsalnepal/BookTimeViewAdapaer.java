@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -259,11 +260,19 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
 
         public Boolean pastTimeDisable(String book_time, String date) {
             String Time[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
-            SimpleDateFormat sdf = new SimpleDateFormat("hha");
+            SimpleDateFormat sdf = new SimpleDateFormat("ha", Locale.US);
             String currentTime = sdf.format(new Date());
-            String currentDate = DateFormat.getDateInstance().format(new Date());
+
+            SimpleDateFormat sdf1 = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+            String currentDate = sdf1.format(new Date());
+            //String currentDate = DateFormat.getDateInstance().format(new Date());
+
             int timeIndex = Arrays.asList(Time).indexOf(currentTime);
             int bookIndex = Arrays.asList(Time).indexOf(book_time);
+            Log.d("TIME_TEST3", "pastTimeDisable: "+currentTime+"  "+currentDate);
+            Log.d("TIME_TEST3", "pastTimeDisable: "+timeIndex+"  "+bookIndex);
+            Log.d("TIME_TEST1", "pastTimeDisable: "+currentDate+"  "+date);
+            Log.d("TIME_TEST2", "pastTimeDisable: "+(bookIndex <= timeIndex )+"  -"+(currentDate.equals(date)));
 
             if(bookIndex <= timeIndex && currentDate.equals(date)){
                 bookBtn.setTextColor(Color.parseColor("#BFF5AE"));

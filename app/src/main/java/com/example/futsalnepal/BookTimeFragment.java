@@ -1,8 +1,10 @@
 package com.example.futsalnepal;
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +16,11 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookTime;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.collect.Lists;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,7 +40,11 @@ public class BookTimeFragment extends Fragment {
     DatePickerDialog dpd;
     private RecyclerView bookTime;
     private TextView fDatePicker;
+    private FirebaseFirestore mDatabase;
     String date;
+    String futsal_id;
+    List<BookTime> timeInHr;
+
     public BookTimeFragment() {
         // Required empty public constructor
     }
@@ -46,18 +56,37 @@ public class BookTimeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_book_time, container, false);
 
-        FutsalIndivisualDetails activity = (FutsalIndivisualDetails) getActivity();
-        String futsal_id = activity.getMyData();
+        mDatabase = FirebaseFirestore.getInstance();
 
-        date = DateFormat.getDateInstance().format(new Date());
+        FutsalIndivisualDetails activity = (FutsalIndivisualDetails) getActivity();
+        futsal_id = activity.getMyData();
+
+        //date = DateFormat.getDateInstance().format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+        date = sdf.format(new Date());
+        Activity a= this.getActivity();
+
         fDatePicker = view.findViewById(R.id.date_picker_futsal);
         fDatePicker.setText(date);
-        List<BookTime> timeArray =makeTimeArray("3AM","5PM");
-        Log.d("ARRAY",""+futsal_id +" - "+date);
-        RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeArray,date,futsal_id,getContext(),getActivity());
-        recyclerView.setAdapter(adapter);
+
+        mDatabase.collection("futsal_list").document(futsal_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    if(task.getResult().exists()){
+                        String openH = task.getResult().getString("opening_hour");
+                        String closeH = task.getResult().getString("closing_hour");
+                        Log.d("ARRAY13-", "onComplete: "+openH+"---"+closeH);
+                        timeInHr =makeTimeArray(openH,closeH);
+                        Log.d("ARRAY13-", "onComplete: "+timeInHr);
+                        loadRecycler(view,date);
+//                       -
+                    }
+                }
+
+            }
+        });
+
 
         fDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,23 +103,35 @@ public class BookTimeFragment extends Fragment {
                         now.set(Calendar.YEAR, mYear);
                         now.set(Calendar.MONTH, mMonth);
                         now.set(Calendar.DAY_OF_MONTH, mDayOfMonth);
-                        date = DateFormat.getDateInstance().format(now.getTime());
+
+                        //date = DateFormat.getDateInstance().format(now.getTime());
+                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+                        date = sdf.format(now.getTime());
                         fDatePicker.setText(date);
-                        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeArray,date,futsal_id,getContext(),getActivity());
-                        recyclerView.setAdapter(adapter);
+                        loadRecycler(view,date);
+
                         //adapter.notifyDataSetChanged();
-                        //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
+                        //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +", "+mYear);
                     }
+
+
                 },day,month,year);
                 dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 dpd.show();
 
             }
+
+
         });
 
-
-
         return view;
+    }
+
+    private void loadRecycler(View view, String date1) {
+        RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeInHr,date,futsal_id,getContext(),getActivity());
+        recyclerView.setAdapter(adapter);
     }
 
     public  List<BookTime> makeTimeArray(String open,String close) {
@@ -150,14 +191,14 @@ public class BookTimeFragment extends Fragment {
         int openIdx=-1;
         int closeIdx=-1;
         for(int i = 0;i < timeArray.size();i++){
-            if(timeArray.get(i).book_time == open){
+            if(timeArray.get(i).book_time.equals(open)){
                 openIdx = i;
-            }else if(timeArray.get(i).book_time == close){
+            }else if(timeArray.get(i).book_time.equals(close)){
                 closeIdx =i;
             }
 
         }
-        Log.d("ARRAY2",""+timeArray );
+        Log.d("ARRAY2",""+open+"  "+close );
 
         Log.d("ARRAY3", "makeTimeArray: "+openIdx+" "+closeIdx);
         if (openIdx <= closeIdx) {

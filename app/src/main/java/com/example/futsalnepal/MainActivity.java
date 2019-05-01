@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (doc.getType() == DocumentChange.Type.ADDED) {
 
                             String futsalId = doc.getDocument().getId();
-
+                            Log.d("TESTING", "onEvent: "+doc);
                             Futsal futsals = doc.getDocument().toObject(Futsal.class).withId(futsalId);
                             futsalList.add(futsals);
                             adapter.notifyDataSetChanged();

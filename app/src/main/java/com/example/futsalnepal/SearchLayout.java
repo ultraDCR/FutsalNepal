@@ -79,6 +79,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         dateSearch.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
                     }
                 },day,month,year);
+                dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 dpd.show();
             }
         });
