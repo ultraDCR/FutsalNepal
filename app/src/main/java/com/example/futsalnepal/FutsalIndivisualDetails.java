@@ -2,6 +2,7 @@ package com.example.futsalnepal;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -23,8 +25,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -32,7 +39,9 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
 
     private TextView fPhone, fAddress;
     private CircleImageView fLogo;
+    private ImageView favBtn;
     private String futsal_id;
+    private String user_id;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
 
@@ -52,6 +61,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
         fPhone = findViewById(R.id.tab_phone_no);
         fAddress = findViewById(R.id.tab_address);
         fLogo = findViewById(R.id.futsal_logo);
+        favBtn = findViewById(R.id.favourite_btn);
 
         futsal_id = getIntent().getStringExtra("futsal_id");
 
@@ -76,14 +86,59 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
             }
         });
 
+        if(mAuth.getCurrentUser() != null) {
+            user_id = mAuth.getCurrentUser().getUid();
 
-        ImageView fFavourite = findViewById(R.id.favourite_btn);
-        fFavourite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fFavourite.setImageResource(R.drawable.ic_favorite_selected);
-            }
-        });
+            mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w("ERROR", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        if(snapshot.get("favourite_futsal") != null) {
+                            Log.d("FAVIOU", "onComplete: " +snapshot.get("favourite_futsal") );
+
+                            ArrayList<String> futsals = (ArrayList<String>) snapshot.get("favourite_futsal");
+                            Log.d("FAVIOU", "onComplete: " + futsals);
+                            for(int i=0;i<futsals.size();i++){
+                                if(futsals.get(i).equals(futsal_id)){
+                                    favBtn.setImageResource(R.drawable.ic_favorite_selected);
+                                    favBtn.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+                                            favBtn.setImageResource(R.drawable.ic_favourite_unselected_white);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    } else {
+                        Log.d("RETRIVE ERROR", "Current data: null");
+                    }
+                }
+            });
+
+            favBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                }
+            });
+        }else{
+            favBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LoginDialog dialog = new LoginDialog(FutsalIndivisualDetails.this, FutsalIndivisualDetails.this);
+                    dialog.startLoginDialog();
+                    Log.d("pressed", "alertdialog");
+                }
+            });
+        }
 
         //View Pager
         ViewPager viewPager =  findViewById(R.id.futsal_viewpager);

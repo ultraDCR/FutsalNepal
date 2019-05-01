@@ -24,11 +24,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsalnepal.BookTimeViewAdapaer.BookTimeViewHolder> {
@@ -68,53 +73,55 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.book_time.setText(list.get(position).book_time);
         Log.d("ARRAY4", "onBindViewHolder: "+futsal_id+"  "+date);
+        boolean pastTime = holder.pastTimeDisable(list.get(position).book_time, date);
+        if(pastTime) {
+            holder.firstLoadPendingData(list.get(position).book_time);
+            holder.firstLoadBookedData(list.get(position).book_time);
 
-        holder.firstLoadBookData(list.get(position).book_time);
 
-
-
-        holder.bookBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mauth.getCurrentUser() == null){
-                    LoginDialog dialog = new LoginDialog(context,activity);
-                    dialog.startLoginDialog();
-                    Log.d("pressed","alertdialog");
-                }else {
-                    String user_id = mauth.getCurrentUser().getUid();
-                    Map<String, Object> bookFutsalMap = new HashMap<>();
+            holder.bookBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mauth.getCurrentUser() == null) {
+                        LoginDialog dialog = new LoginDialog(context, activity);
+                        dialog.startLoginDialog();
+                        Log.d("pressed", "alertdialog");
+                    } else {
+                        String user_id = mauth.getCurrentUser().getUid();
+                        Map<String, Object> bookFutsalMap = new HashMap<>();
                         Map<String, Object> userBookMap = new HashMap<>();
-                            Map<String, Object> timeuBookMap = new HashMap<>();
-                            timeuBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-                        userBookMap.put(user_id,timeuBookMap);
-                    bookFutsalMap.put(date, userBookMap);
+                        Map<String, Object> timeuBookMap = new HashMap<>();
+                        timeuBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                        userBookMap.put(user_id, timeuBookMap);
+                        bookFutsalMap.put(date, userBookMap);
 
-                    Map<String, Object> bookUserMap = new HashMap<>();
+                        Map<String, Object> bookUserMap = new HashMap<>();
                         Map<String, Object> futsalBookMap = new HashMap<>();
-                            Map<String, Object> timefBookMap = new HashMap<>();
-                            timefBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-                        futsalBookMap.put(futsal_id,timefBookMap);
-                    bookUserMap.put(date, futsalBookMap);
+                        Map<String, Object> timefBookMap = new HashMap<>();
+                        timefBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                        futsalBookMap.put(futsal_id, timefBookMap);
+                        bookUserMap.put(date, futsalBookMap);
 
-                    mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                            .document("newrequest").set(bookFutsalMap, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("SUCCESS", "onSuccess: "+holder);
-                            holder.setPending();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("FAILER", "onFailure: "+e);
-                        }
-                    });
-                    mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending").set(bookUserMap, SetOptions.merge());
+                        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
+                                .document("newrequest").set(bookFutsalMap, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("SUCCESS", "onSuccess: " + holder);
+                                        holder.setPending();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("FAILER", "onFailure: " + e);
+                            }
+                        });
+                        mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending").set(bookUserMap, SetOptions.merge());
 
+                    }
                 }
-            }
-        });
+            });
+        }
 
     }
 
@@ -174,7 +181,7 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
             bookBtn.setText("Pending");
             bookBtn.setClickable(false);
         }
-        public void firstLoadBookData(String bookdate){
+        public void firstLoadPendingData(String bookdate){
             mDatabase.collection("futsal_list").document(futsal_id)
                     .collection("book_info").document("newrequest").get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -184,18 +191,20 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
                         if(task.getResult().exists()){
                             if(task.getResult().get(date) != null){
                                 Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
-                                if(mauth.getCurrentUser() != null) {
-                                    String user_id = mauth.getUid();
-                                    if (dateRequested.get(user_id) != null) {
-                                        Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
-                                        if (userId.get(bookdate) != null) {
-                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                            bookBtn.setBackgroundResource(R.drawable.pending_button);
-                                            bookBtn.setText("Pending");
-                                            bookBtn.setClickable(false);
+//                                if(mauth.getCurrentUser() != null) {
+//                                    String uid = mauth.getCurrentUser().getUid();
+                                    for (String user_id: dateRequested.keySet() ) {
+                                        if (dateRequested.get(user_id) != null) {
+                                            Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
+                                            if (userId.get(bookdate) != null) {
+                                                bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                                bookBtn.setBackgroundResource(R.drawable.pending_button);
+                                                bookBtn.setText("Pending");
+                                                bookBtn.setClickable(false);
+                                            }
                                         }
                                     }
-                                }
+                                //}
                             }
                         }
 
@@ -205,6 +214,67 @@ public class BookTimeViewAdapaer extends RecyclerView.Adapter<com.example.futsal
 
         }
 
+        public void firstLoadBookedData(String book_time) {
+            mDatabase.collection("futsal_list").document(futsal_id)
+                    .collection("book_info").document("booked").get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()){
+                                if(task.getResult().exists()){
+                                    Log.d("MAP_TEST", "onComplete: "+task.getResult());
+                                    if(task.getResult().get(date) != null){
+                                        Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
+                                            for (String user_id: dateRequested.keySet() ){
+                                                if (dateRequested.get(user_id) != null) {
+                                                    Log.d("MAP_TEST", "onComplete: " + dateRequested.get(user_id));
+                                                    Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
+                                                    if (userId.get(book_time) != null) {
+                                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                                        bookBtn.setBackgroundResource(R.drawable.already_booked_button);
+                                                        bookBtn.setText("Already Booked");
+                                                        bookBtn.setClickable(false);
+                                                        String uid = mauth.getCurrentUser().getUid();
+                                                        Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
+                                                        if (user_id.equals(uid)) {
+                                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                                            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
+                                                            bookBtn.setText("Booked");
+                                                            bookBtn.setClickable(false);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+
+                                       // }
+                                    }
+                                }
+
+                            }
+                        }
+                    });
+
+        }
+
+        public Boolean pastTimeDisable(String book_time, String date) {
+            String Time[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
+            SimpleDateFormat sdf = new SimpleDateFormat("hha");
+            String currentTime = sdf.format(new Date());
+            String currentDate = DateFormat.getDateInstance().format(new Date());
+            int timeIndex = Arrays.asList(Time).indexOf(currentTime);
+            int bookIndex = Arrays.asList(Time).indexOf(book_time);
+
+            if(bookIndex <= timeIndex && currentDate.equals(date)){
+                bookBtn.setTextColor(Color.parseColor("#BFF5AE"));
+                bookBtn.setBackgroundResource(R.drawable.past_time_button);
+                bookBtn.setClickable(false);
+                boolean f = bookBtn.isClickable();
+                Log.d("TIME_TEST", "pastTimeDisable: "+f);
+                return false;
+            }
+            return true;
+        }
     }
 
 }
