@@ -46,6 +46,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             holder.setFutsalAddress(list.get(position).getFutsal_address());
             holder.setFutsalTime(list.get(position).getOpening_hour(),list.get(position).getClosing_hour());
             holder.setFutsalLogo(list.get(position).getFutsal_logo());
+            holder.setFutsalRating(list.get(position).getOverall_rating());
            // holder.setFutsalRating(list.get(position).getRating());
 
             //animate(holder);
@@ -130,10 +131,10 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
 
             Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(profile);
         }
-//        public void setFutsalRating(float rating){
-//            ratingBar =  itemView.findViewById(R.id.futsal_rating);
-//            ratingBar.setRating(rating);
-//        }
+        public void setFutsalRating(float rating){
+            ratingBar =  itemView.findViewById(R.id.futsal_rating);
+            ratingBar.setRating(rating);
+        }
 
     }
 

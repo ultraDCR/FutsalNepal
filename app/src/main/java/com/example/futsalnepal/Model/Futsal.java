@@ -8,10 +8,10 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
     public String closing_hour;
     public String futsal_phone;
     public String futsal_logo;
-    public float rating;
+    public float overall_rating;
 
     public  Futsal(){}
-    public Futsal( String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, String futsal_logo) {
+    public Futsal(String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, float overall_rating) {
 
         this.futsal_name = futsal_name;
         this.futsal_address = futsal_address;
@@ -19,6 +19,7 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
         this.closing_hour = closing_hour;
         this.futsal_phone = futsal_phone;
         this.futsal_logo = futsal_logo;
+        this.overall_rating = overall_rating;
 
     }
 
@@ -71,4 +72,11 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
     }
 
 
+    public float getOverall_rating() {
+        return overall_rating;
+    }
+
+    public void setOverall_rating(float overall_rating) {
+        this.overall_rating = overall_rating;
+    }
 }
