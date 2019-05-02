@@ -9,16 +9,19 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Data;
+import com.example.futsalnepal.Model.Futsal;
 
 import java.util.Collections;
 import java.util.List;
 
 public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.BookedRecyclerView.FutsalViewHolder>{
-    List<Data> list = Collections.emptyList();
+    List<Futsal> list = Collections.emptyList();
     Context context;
 
-    public BookedRecyclerView(List<Data> list, Context context) {
+    public BookedRecyclerView(List<Futsal> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -37,11 +40,15 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
     public void onBindViewHolder(BookedRecyclerView.FutsalViewHolder holder, int position) {
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        holder.name.setText(list.get(position).name);
-        holder.address.setText(list.get(position).address);
-        holder.time.setText(list.get(position).time);
-        holder.profile.setImageResource(list.get(position).imageId);
-        holder.ratingBar.setRating(list.get(position).rating);
+        holder.name.setText(list.get(position).futsal_name);
+        holder.address.setText(list.get(position).futsal_address);
+        holder.time.setText(list.get(position).futsal_phone);
+
+        RequestOptions placeholderRequest = new RequestOptions();
+        placeholderRequest.placeholder(R.drawable.logo);
+        Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).futsal_logo).into(holder.profile);
+
+        holder.ratingBar.setRating(list.get(position).overall_rating);
 
         //animate(holder);
 
@@ -60,13 +67,13 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
     }
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, Data data) {
+    public void insert(int position, Futsal data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(Data data) {
+    public void remove(Futsal data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);

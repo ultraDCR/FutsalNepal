@@ -88,7 +88,13 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
 
         if(mAuth.getCurrentUser() != null) {
             user_id = mAuth.getCurrentUser().getUid();
-
+            favBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                    favBtn.setImageResource(R.drawable.ic_favorite_selected);
+                }
+            });
             mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot snapshot,
@@ -115,18 +121,21 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                                         }
                                     });
                                 }
+                                else{
+                                    favBtn.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                                            favBtn.setImageResource(R.drawable.ic_favorite_selected);
+                                        }
+                                    });
+                                }
                             }
                         }
                     } else {
                         Log.d("RETRIVE ERROR", "Current data: null");
-                    }
-                }
-            });
 
-            favBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                    }
                 }
             });
         }else{
