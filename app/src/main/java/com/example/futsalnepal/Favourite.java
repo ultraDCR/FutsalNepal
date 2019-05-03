@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 
 import com.example.futsalnepal.Model.Futsal;
@@ -42,8 +43,22 @@ public class Favourite extends AppCompatActivity {
         futsalList = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.favourite_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(Favourite.this));
-        FutsalRecycleView adapter = new FutsalRecycleView(futsalList, getApplication());
+        FavouriteRecyclerView adapter = new FavouriteRecyclerView(futsalList, getApplication());
         recyclerView.setAdapter(adapter);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT ) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                    adapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+
         if(mAuth.getCurrentUser() != null) {
             user_id =mAuth.getCurrentUser().getUid();
             mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -56,6 +71,7 @@ public class Favourite extends AppCompatActivity {
                     }
                     if (snapshot != null && snapshot.exists()) {
                         ArrayList<String> futsalId = (ArrayList<String>) snapshot.get("favourite_futsal");
+                        futsalList.clear();
                         for(int i=0; i< futsalId.size();i++) {
                             String futsal_id = futsalId.get(i);
                             Log.d("TESTING", "onEvent: "+futsal_id +"   ---"+futsalId);
