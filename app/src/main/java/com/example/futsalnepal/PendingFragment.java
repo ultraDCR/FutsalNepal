@@ -21,8 +21,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -94,6 +98,26 @@ public class PendingFragment extends Fragment {
         return view;
     }
 
+    public void futureEvents(datefutsal) {
+        ArrayList<Futsal> futureEvents = new ArrayList<>();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+        String currentDate = formatter.format(new Date());
 
+        for(Futsal events : futsal_list) {
+
+            Date date = null;
+            try {
+                date = formatter.parse(dateFutsal);
+            } catch (ParseException e) {
+
+            }
+
+            if(currentDate.before(date)) {
+                futureEvents.add(events);
+            }
+        }
+
+        adapter.filter(futureEvents);
+    }
 
 }

@@ -74,6 +74,7 @@ public class HistoryFragment extends Fragment {
                             for(String user:dd.keySet()){
                                 Log.d("TESTING@",""+user);
                                 Boolean cmp = compareDate(user);
+                                Log.d("DATETEST1",""+cmp);
                                 if (cmp) {
                                     Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(user);
                                     for (String futsalid : dd1.keySet()) {

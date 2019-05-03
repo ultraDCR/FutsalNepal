@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -14,15 +16,18 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Data;
 import com.example.futsalnepal.Model.Futsal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder> {
+public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder> implements Filterable {
     List<Futsal> list = Collections.emptyList();
+    List<Futsal> filter;
     Context context;
 
     public PendingRequestRecyclerView(List<Futsal> list, Context context) {
         this.list = list;
+        filter = new ArrayList<>(list);
         this.context = context;
     }
 
@@ -79,6 +84,32 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
         notifyItemRemoved(position);
     }
 
+    @Override
+    public Filter getFilter() {
+        return dateFilter;
+    }
+
+    private Filter dateFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Futsal> filterList = new ArrayList<>();
+            if(constraint == null || constraint.length() == 0){
+                filterList.addAll(filter);
+            }else{
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for(Futsal item : filter){
+                    if(   )
+                }
+            }
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+        }
+    };
+
     public class FutsalViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView address;
@@ -96,4 +127,6 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
 
         }
     }
+
+
 }
