@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.example.futsalnepal.Model.Booking;
 import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.Model.SectionModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,8 +44,8 @@ import javax.annotation.Nullable;
 public class BookedFragment extends Fragment {
 
     List<SectionModel> sectionModelArrayList;
-    List<Futsal> futsal_list;
-    List<Futsal> b_list;
+    List<Booking> futsal_list;
+    List<Booking> b_list;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String user_id;
@@ -151,10 +152,23 @@ public class BookedFragment extends Fragment {
                                     if (futsalid != null) {
                                         Log.d("NEWTEST1", "" + futsalid);
                                         for(int i = 0;i < futsal_list.size();i++) {
-                                            Log.d("NEWTEST2.0", "onComplete: " +futsal_list.size()+" -- " + futsal_list.get(1).FutsalId + " -- " + futsalid);
-                                            if(futsal_list.get(i).FutsalId.equals(futsalid)){
-                                                b_list.add(futsal_list.get(i));
-                                                Log.d("NEWTEST2.1", "onComplete: "  + b_list);
+                                            Log.d("NEWTEST2.0", "onComplete: " +futsal_list.size()+" -- " + futsal_list.get(1).futsal_id + " -- " + futsalid);
+                                            if(futsal_list.get(i).futsal_id.equals(futsalid)){
+                                                Map<String, String> dd2 = (Map<String, String>) dd1.get(futsalid);
+                                                for(String time: dd2.keySet()) {
+
+                                                    Booking futsal1 = new Booking();
+                                                    Log.d("NEWTEST2.3", "onComplete: " + time);
+                                                    futsal1.setTime(time);
+                                                    futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
+                                                    futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
+                                                    futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
+                                                    futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
+                                                    futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
+                                                    futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());
+                                                    Log.d("NEWTEST2.3", "onComplete1: " + futsal1.getTime());
+                                                    b_list.add(futsal1);
+                                                }
                                             }
 
                                         }
@@ -163,7 +177,7 @@ public class BookedFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTEST3", "onComplete: " + pdate + "  " + b_list);
-                                //sectionModelArrayList.add(new SectionModel(pdate, b_list));
+                                sectionModelArrayList.add(new SectionModel(pdate, b_list));
                                 sadapter.notifyDataSetChanged();
                                 //b_list.clear();
                                 Log.d("NEWTEST4", "onComplete: " + pdate + "  " + b_list);
@@ -187,7 +201,8 @@ public class BookedFragment extends Fragment {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 
                     String futsalid = documentSnapshot.getId();
-                    Futsal futsal = documentSnapshot.toObject(Futsal.class).withId(futsalid);
+                    Booking futsal = documentSnapshot.toObject(Booking.class);
+                    futsal.setFutsal_id(futsalid);
                     Log.d("DATETEST4", "" + futsal);
                     futsal_list.add(futsal);
                     Log.d("NEWTEST2", "onComplete: "  + futsal_list.size());

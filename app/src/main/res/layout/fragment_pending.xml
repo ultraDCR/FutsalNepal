@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".PendingFragment">
 
     <TextView
@@ -71,21 +72,19 @@
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/pending_rview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="fill_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="120dp"
+        android:isScrollContainer="true"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/pending_rview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:isScrollContainer="true"
-            app:layout_constrainedHeight="true"
-            tools:layout_editor_absoluteY="50dp" />
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        tools:itemCount="25" />
 
 </android.support.constraint.ConstraintLayout>

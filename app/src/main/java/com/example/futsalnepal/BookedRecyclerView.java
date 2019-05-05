@@ -2,6 +2,7 @@ package com.example.futsalnepal;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,21 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.Model.Booking;
 import com.example.futsalnepal.Model.Data;
 import com.example.futsalnepal.Model.Futsal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.BookedRecyclerView.FutsalViewHolder>{
-    List<Futsal> list = Collections.emptyList();
+    List<Booking> list = Collections.emptyList();
     Context context;
+    String bookTime[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
 
-    public BookedRecyclerView(List<Futsal> list, Context context) {
+
+    public BookedRecyclerView(List<Booking> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -43,6 +48,13 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
         holder.name.setText(list.get(position).futsal_name);
         holder.address.setText(list.get(position).futsal_address);
         holder.time.setText(list.get(position).futsal_phone);
+
+        String from_time = list.get(position).time;
+        //setting from and to time in time
+        int i = Arrays.asList(bookTime).indexOf(from_time);
+        String to_time  = bookTime[i+1];
+        Log.e("APPTEST4", "testing dates  "+from_time+"  "+i+"  "+to_time);
+        holder.time.setText(from_time+" - "+to_time);
 
         RequestOptions placeholderRequest = new RequestOptions();
         placeholderRequest.placeholder(R.drawable.logo);
@@ -67,13 +79,13 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
     }
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, Futsal data) {
+    public void insert(int position, Booking data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(Futsal data) {
+    public void remove(Booking data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);
