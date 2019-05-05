@@ -55,8 +55,8 @@ public class DateSectionRecyclerViewAdapter extends RecyclerView.Adapter<DateSec
         holder.sectionLabel.setText(sectionModel.getSectionLabel());
 
         //recycler view for items
-        holder.itemRecyclerView.setHasFixedSize(true);
-        holder.itemRecyclerView.setNestedScrollingEnabled(false);
+        //holder.itemRecyclerView.setHasFixedSize(true);
+        holder.itemRecyclerView.setNestedScrollingEnabled(true);
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
@@ -65,12 +65,12 @@ public class DateSectionRecyclerViewAdapter extends RecyclerView.Adapter<DateSec
         if(recyclertype.equals("pending")) {
             PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getFutsals(), context);
             holder.itemRecyclerView.setAdapter(adapter);
-        }else if(recyclertype.equals("booked")){
-            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getFutsals(), context);
-            holder.itemRecyclerView.setAdapter(adapter);
-        }else{
-            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getFutsals(), context);
-            holder.itemRecyclerView.setAdapter(adapter);
+//        }else if(recyclertype.equals("booked")){
+//            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getFutsals(), context);
+//            holder.itemRecyclerView.setAdapter(adapter);
+//        }else{
+//            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getFutsals(), context);
+//            holder.itemRecyclerView.setAdapter(adapter);
         }
 
 

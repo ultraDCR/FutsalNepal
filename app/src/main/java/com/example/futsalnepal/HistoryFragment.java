@@ -70,7 +70,7 @@ public class HistoryFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
 
-        loadFutsalcalss();
+
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         Calendar current = Calendar.getInstance();
         current.add(Calendar.DATE,-1);
@@ -90,7 +90,7 @@ public class HistoryFragment extends Fragment {
         //PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(futsal_list, getContext());
         if(mAuth.getCurrentUser() != null) {
             user_id = mAuth.getCurrentUser().getUid();
-            loadDataToRecyclerView(sadapter);
+            loadFutsalcalss();
         }
 
 
@@ -169,7 +169,7 @@ public class HistoryFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTESTH3", "onComplete: " + pdate + "  " + h_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, h_list));
+                               // sectionModelArrayList.add(new SectionModel(pdate, h_list));
                                 sadapter.notifyDataSetChanged();
                                 //h_list.clear();
                                 Log.d("NEWTESTH4", "onComplete: " + pdate + "  " + h_list);
@@ -197,7 +197,9 @@ public class HistoryFragment extends Fragment {
                     Log.d("DATETESTH0.1", "" + futsal);
                     futsal_list.add(futsal);
                     Log.d("NEWTESTH0.12", "onComplete: "  + futsal_list.size());
+
                 }
+                loadDataToRecyclerView(sadapter);
             }
         });
     }

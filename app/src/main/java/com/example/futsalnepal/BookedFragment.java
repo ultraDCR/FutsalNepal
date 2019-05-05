@@ -84,10 +84,10 @@ public class BookedFragment extends Fragment {
         //PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(futsal_list, getContext());
         if(mAuth.getCurrentUser() != null) {
             user_id = mAuth.getCurrentUser().getUid();
-            loadDataToRecyclerView(sadapter);
+            loadFutsalcalss();
         }
 
-        loadFutsalcalss();
+
 
         fDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +143,7 @@ public class BookedFragment extends Fragment {
                         for(String pdate:dd.keySet()){
                             Log.d("TESTING@", "" + pdate);
                             if (compareDate(pdate, date)) {
-                                Log.d("DATETEST2", "" + futsal_list.get(1));
+                                //Log.d("DATETEST2", "" + futsal_list.get(1));
                                 Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(pdate);
 
                                 b_list = new ArrayList<>();
@@ -163,7 +163,7 @@ public class BookedFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTEST3", "onComplete: " + pdate + "  " + b_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, b_list));
+                                //sectionModelArrayList.add(new SectionModel(pdate, b_list));
                                 sadapter.notifyDataSetChanged();
                                 //b_list.clear();
                                 Log.d("NEWTEST4", "onComplete: " + pdate + "  " + b_list);
@@ -192,6 +192,7 @@ public class BookedFragment extends Fragment {
                     futsal_list.add(futsal);
                     Log.d("NEWTEST2", "onComplete: "  + futsal_list.size());
                 }
+                loadDataToRecyclerView(sadapter);
             }
 
         });

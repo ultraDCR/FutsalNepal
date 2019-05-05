@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.Model.Booking;
 import com.example.futsalnepal.Model.Data;
 import com.example.futsalnepal.Model.Futsal;
 
@@ -22,10 +23,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder>  {
-    List<Futsal> list;
+    List<Booking> list;
     Context context;
 
-    public PendingRequestRecyclerView(List<Futsal> list, Context context) {
+    public PendingRequestRecyclerView(List<Booking> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -46,10 +47,9 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).futsal_name);
         holder.address.setText(list.get(position).futsal_address);
-        holder.time.setText(list.get(position).futsal_phone);
+        holder.time.setText(list.get(position).time);
 
         RequestOptions placeholderRequest = new RequestOptions();
-        placeholderRequest.placeholder(R.drawable.logo);
         Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).futsal_logo).into(holder.profile);
 
         holder.ratingBar.setRating(list.get(position).overall_rating);
@@ -72,13 +72,13 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
     }
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, Futsal data) {
+    public void insert(int position, Booking data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(Futsal data) {
+    public void remove(Booking data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);

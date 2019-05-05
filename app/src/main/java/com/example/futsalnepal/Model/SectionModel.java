@@ -5,9 +5,9 @@ import java.util.List;
 public class SectionModel {
 
     private String sectionLabel;
-    private List<Futsal> futsals;
+    private List<Booking> futsals;
 
-    public SectionModel(String sectionLabel, List<Futsal> futsals) {
+    public SectionModel(String sectionLabel, List<Booking> futsals) {
         this.sectionLabel = sectionLabel;
         this.futsals = futsals;
     }
@@ -16,7 +16,7 @@ public class SectionModel {
         return sectionLabel;
     }
 
-    public List<Futsal> getFutsals() {
+    public List<Booking> getFutsals() {
         return futsals;
     }
 
