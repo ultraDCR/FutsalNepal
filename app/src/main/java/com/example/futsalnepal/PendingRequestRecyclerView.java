@@ -2,6 +2,7 @@ package com.example.futsalnepal;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder> implements Filterable {
-    List<Futsal> list = Collections.emptyList();
-    List<Futsal> filter;
+public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder>  {
+    List<Futsal> list;
     Context context;
 
     public PendingRequestRecyclerView(List<Futsal> list, Context context) {
         this.list = list;
-        filter = new ArrayList<>(list);
         this.context = context;
     }
 
@@ -63,6 +62,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
     @Override
     public int getItemCount() {
         //returns the number of elements the RecyclerView will display
+        Log.d("DATETEST8", "getItemCount: "+list);
         return list.size();
     }
 
@@ -84,31 +84,31 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
         notifyItemRemoved(position);
     }
 
-    @Override
-    public Filter getFilter() {
-        return dateFilter;
-    }
-
-    private Filter dateFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            List<Futsal> filterList = new ArrayList<>();
-            if(constraint == null || constraint.length() == 0){
-                filterList.addAll(filter);
-            }else{
-                String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for(Futsal item : filter){
-                    if(   )
-                }
-            }
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-
-        }
-    };
+//    @Override
+//    public Filter getFilter() {
+//        return dateFilter;
+//    }
+//
+//    private Filter dateFilter = new Filter() {
+//        @Override
+//        protected FilterResults performFiltering(CharSequence constraint) {
+//            List<Futsal> filterList = new ArrayList<>();
+//            if(constraint == null || constraint.length() == 0){
+//                filterList.addAll(filter);
+//            }else{
+//                String filterPattern = constraint.toString().toLowerCase().trim();
+//
+//                for(Futsal item : filter){
+//                    if(   )
+//                }
+//            }
+//        }
+//
+//        @Override
+//        protected void publishResults(CharSequence constraint, FilterResults results) {
+//
+//        }
+//    };
 
     public class FutsalViewHolder extends RecyclerView.ViewHolder {
         TextView name;
