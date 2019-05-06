@@ -15,4 +15,9 @@
     <string name="pending_time">Pending</string>
     <string name="booked">Booked</string>
     <string name="history">History</string>
+    <string name="nav_book_info">Book Information</string>
+    <string name="nav_book_now">Book Now</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_rating_review">Rating and Review</string>
+    <string name="new_request" />
 </resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_book_info"
+        android:icon="@drawable/ic_futsal_book_info"
+        android:title="@string/nav_book_info" />
+    <item
+        android:id="@+id/nav_book_now"
+        android:icon="@drawable/ic_futsal_book_now"
+        android:title="@string/nav_book_now" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_futsal_profile"
+        android:title="@string/nav_profile" />
+    <item
+        android:id="@+id/nav_rating_review"
+        android:icon="@drawable/ic_futsal_rating"
+        android:title="@string/nav_rating_review" />
+</menu>
