@@ -11,25 +11,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-import com.example.futsalnepal.Model.Booking;
-import com.example.futsalnepal.Model.Data;
-import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.Model.BookingFutsal;
 import com.example.futsalnepal.Model.SectionModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,8 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,8 +39,8 @@ import javax.annotation.Nullable;
 public class PendingFragment extends Fragment {
 
     List<SectionModel> sectionModelArrayList;
-    List<Booking> futsal_list;
-    List<Booking> p_list;
+    List<BookingFutsal> futsal_list;
+    List<BookingFutsal> p_list;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String user_id;
@@ -56,7 +48,7 @@ public class PendingFragment extends Fragment {
     DatePickerDialog dpd;
     private TextView fDatePicker;
     private RecyclerView recyclerView;
-    private DateSectionRecyclerViewAdapter sadapter;
+    private DateSectionUserRecyclerViewAdapter sadapter;
     public PendingFragment() {
         // Required empty public constructor
     }
@@ -82,7 +74,7 @@ public class PendingFragment extends Fragment {
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
-         sadapter = new DateSectionRecyclerViewAdapter("pending",this.getContext(), sectionModelArrayList);
+         sadapter = new DateSectionUserRecyclerViewAdapter("pending",this.getContext(), sectionModelArrayList);
         Log.d("DATETEST9",""+sadapter);
         recyclerView.setAdapter(sadapter);
         //PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(futsal_list, getContext());
@@ -136,7 +128,7 @@ public class PendingFragment extends Fragment {
         return view;
     }
 
-    private void loadDataToRecyclerView(DateSectionRecyclerViewAdapter sadapter) {
+    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
         mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending")
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -161,7 +153,7 @@ public class PendingFragment extends Fragment {
                                                 Map<String, String> dd2 = (Map<String, String>) dd1.get(futsalid);
                                                 for(String time: dd2.keySet()){
 
-                                                    Booking futsal1 = new Booking();
+                                                    BookingFutsal futsal1 = new BookingFutsal();
                                                     Log.d("NEWTEST2.3", "onComplete: "  + time);
                                                     futsal1.setTime(time);
                                                     futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
@@ -186,7 +178,7 @@ public class PendingFragment extends Fragment {
                                 Log.d("NEWTEST3", "onComplete: " + pdate + "  " + p_list);
                                 sectionModelArrayList.add(new SectionModel(pdate, p_list));
                                 sadapter.notifyDataSetChanged();
-                                for(Booking book:p_list){
+                                for(BookingFutsal book:p_list){
                                     Log.d("NEWTEST4", "onComplete: " + book.getTime() + "  " + book.getFutsal_name());
                                 }
                                 //p_list.clear();
@@ -211,7 +203,7 @@ public class PendingFragment extends Fragment {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 
                     String futsalid = documentSnapshot.getId();
-                    Booking futsal = documentSnapshot.toObject(Booking.class);
+                    BookingFutsal futsal = documentSnapshot.toObject(BookingFutsal.class);
                     Log.d("DATETEST4", "" + futsal);
                     futsal.setFutsal_id(futsalid);
 

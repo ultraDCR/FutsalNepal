@@ -3,7 +3,6 @@ package com.example.futsalnepal;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -29,7 +27,7 @@ public class FutsalHistoryFragment extends Fragment {
     DatePickerDialog dpd;
     private TextView fDatePicker;
     private RecyclerView recyclerView;
-    private DateSectionRecyclerViewAdapter sadapter;
+    private DateSectionUserRecyclerViewAdapter sadapter;
 
 
     @Override

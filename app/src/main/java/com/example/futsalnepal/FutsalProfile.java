@@ -2,13 +2,28 @@ package com.example.futsalnepal;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -17,7 +32,12 @@ import android.widget.RelativeLayout;
 public class FutsalProfile extends Fragment {
 
 
-
+    private TextView fPhone, fAddress,fName, fclose, fopen, wPriceM,wPriceD, wPriceE, wePriceM,wePriceD, wePriceE;
+    private CircleImageView fLogo;
+    private ImageView favBtn;
+    private String futsal_id;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore mDatabase;
 
     public FutsalProfile() {
         // Required empty public constructor
@@ -32,6 +52,63 @@ public class FutsalProfile extends Fragment {
         ConstraintLayout placeHolder =  view.findViewById(R.id.include_futsal_info);
         getLayoutInflater().inflate(R.layout.fragment_futsal_info, placeHolder);
 
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
+
+        fPhone = view.findViewById(R.id.f_phone);
+        fAddress = view.findViewById(R.id.f_address);
+        fLogo = view.findViewById(R.id.f_logo);
+        fName  = view.findViewById(R.id.f_name);
+
+        fclose = view.findViewById(R.id.closing_time);
+        fopen = view.findViewById(R.id.opening_time);
+        wPriceM = view.findViewById(R.id.fwd_morning_price);
+        wPriceD = view.findViewById(R.id.fwd_day_price);
+        wPriceE = view.findViewById(R.id.fwd_evening_price);
+        wePriceM = view.findViewById(R.id.fwe_morning_price);
+        wePriceD = view.findViewById(R.id.fwe_day_price);
+        wePriceE = view.findViewById(R.id.fwe_evening_price);
+
+        if(mAuth.getCurrentUser() != null) {
+            futsal_id = mAuth.getCurrentUser().getUid();
+            mDatabase.collection("futsal_list").document(futsal_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if(task.getResult().exists()) {
+                            String futsal_name = task.getResult().getString("futsal_name");
+                            String futsal_address = task.getResult().getString("futsal_address");
+                            String futsal_phone = task.getResult().getString("futsal_phone");
+                            String futsal_logo = task.getResult().getString("futsal_logo");
+                            String open_time = task.getResult().getString("opening_hour");
+                            String close_time = task.getResult().getString("closing_hour");
+                            Map<String, String> week_price = (Map<String, String>) task.getResult().get("week_end_price");
+                            String w_morning = week_price.get("morning_price");
+                            String w_day = week_price.get("day_price");
+                            String w_evening = week_price.get("evening_price");
+                            String we_morning = week_price.get("morning_price");
+                            String we_day = week_price.get("day_price");
+                            String we_evening = week_price.get("evening_price");
+
+                            fPhone.setText(futsal_phone);
+                            fName.setText(futsal_name);
+                            fAddress.setText(futsal_address);
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            placeholderRequest.placeholder(R.drawable.logo_placeholder_circle);
+                            Glide.with(getContext()).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(fLogo);
+                            fopen.setText(open_time);
+                            fclose.setText(close_time);
+                            wPriceM.setText(w_morning);
+                            wPriceD.setText(w_day);
+                            wPriceE.setText(w_evening);
+                            wePriceM.setText(we_morning);
+                            wePriceD.setText(we_day);
+                            wePriceE.setText(we_evening);
+                        }
+                    }
+                }
+            });
+        }
         return view ;
     }
 

@@ -55,15 +55,13 @@ public class BookTimeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_book_time, container, false);
-
-        mDatabase = FirebaseFirestore.getInstance();
-
         FutsalIndivisualDetails activity = (FutsalIndivisualDetails) getActivity();
         futsal_id = activity.getMyData();
 
+        mDatabase = FirebaseFirestore.getInstance();
         //date = DateFormat.getDateInstance().format(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-        date = sdf.format(new Date());
+
         Activity a= this.getActivity();
 
         fDatePicker = view.findViewById(R.id.date_picker_futsal);
@@ -162,31 +160,6 @@ public class BookTimeFragment extends Fragment {
         timeArray.add(new BookTime("10PM"));
         timeArray.add(new BookTime("11PM"));
 
-
-//        timeArray.add("12AM");
-//        timeArray.add("1AM");
-//        timeArray.add("2AM");
-//        timeArray.add("3AM");
-//        timeArray.add("4AM");
-//        timeArray.add("5AM");
-//        timeArray.add("6AM");
-//        timeArray.add("7AM");
-//        timeArray.add("8AM");
-//        timeArray.add("9AM");
-//        timeArray.add("10AM");
-//        timeArray.add("11AM");
-//        timeArray.add("12PM");
-//        timeArray.add("1PM");
-//        timeArray.add("2PM");
-//        timeArray.add("3PM");
-//        timeArray.add("4PM");
-//        timeArray.add("5PM");
-//        timeArray.add("6PM");
-//        timeArray.add("7PM");
-//        timeArray.add("8PM");
-//        timeArray.add("9PM");
-//        timeArray.add("10PM");
-//        timeArray.add("11PM");
         List<BookTime> timeArray1;
         int openIdx=-1;
         int closeIdx=-1;

@@ -7,33 +7,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.futsalnepal.Model.Booking;
-import com.example.futsalnepal.Model.Data;
-import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.Model.BookingFutsal;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder>  {
-    List<Booking> list;
+    List<BookingFutsal> list;
     Context context;
     String date;
     String bookTime[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
 
-    public PendingRequestRecyclerView(String date,List<Booking> list, Context context) {
+    public PendingRequestRecyclerView(String date, List<BookingFutsal> list, Context context) {
         this.list = list;
         this.context = context;
         this.date = date;
@@ -112,13 +106,13 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
     }
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, Booking data) {
+    public void insert(int position, BookingFutsal data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(Booking data) {
+    public void remove(BookingFutsal data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);

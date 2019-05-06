@@ -7,5 +7,6 @@
     <color name="colorTransparent">#00000000</color>
     <color name="yellow">#FFD700</color>
     <color name="gray">#F0F0F0</color>
-    <color name="blue">#4A90E2</color>
+    <color name="blue">#00AAFF</color>
+    <color name="light_gray">#0C383839</color>
 </resources>

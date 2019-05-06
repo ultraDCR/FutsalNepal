@@ -1,6 +1,6 @@
 package com.example.futsalnepal.Model;
 
-public class Booking {
+public class BookingFutsal {
     public String futsal_id;
     public String futsal_name;
     public String futsal_address;
@@ -11,12 +11,12 @@ public class Booking {
     public float overall_rating;
     public String time;
 
-    public Booking() {
+    public BookingFutsal() {
     }
 
 
 
-    public Booking(String futsal_id, String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, float overall_rating, String time) {
+    public BookingFutsal(String futsal_id, String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, float overall_rating, String time) {
 
         this.futsal_name = futsal_name;
         this.futsal_address = futsal_address;

@@ -1,21 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FutsalProfile">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <ImageView
+        android:id="@+id/htab_header2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/nav_profile" />
+        android:layout_height="0dp"
+        android:background="@drawable/footsal_ground"
+        android:fitsSystemWindows="true"
+        android:scaleType="centerCrop"
+        app:layout_collapseMode="parallax"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/f_logo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/logo_placeholder_circle"
+        app:layout_collapseMode="parallax"
+        app:layout_constraintBottom_toBottomOf="@+id/htab_header2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/f_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Futsal Name"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/f_logo"
+        app:layout_constraintTop_toTopOf="@+id/f_logo" />
+
+    <TextView
+        android:id="@+id/f_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="2dp"
+        android:drawableLeft="@drawable/ic_location_white_12dp"
+        android:drawablePadding="5dp"
+        android:text="Address"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        app:layout_collapseMode="parallax"
+        app:layout_constraintStart_toEndOf="@+id/f_logo"
+        app:layout_constraintTop_toBottomOf="@+id/f_name"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <TextView
+        android:id="@+id/f_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:text="0000000000"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        app:layout_collapseMode="parallax"
+        app:layout_constraintStart_toEndOf="@+id/textView29"
+        app:layout_constraintTop_toTopOf="@+id/textView29"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="5dp"
+        android:drawableLeft="@drawable/ic_phone_white_12dp"
+        android:drawablePadding="5dp"
+        android:text="+977 - "
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        app:layout_collapseMode="parallax"
+        app:layout_constraintStart_toEndOf="@+id/f_logo"
+        app:layout_constraintTop_toBottomOf="@+id/f_address"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/include_futsal_info"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/htab_header2">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/include_futsal_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/htab_header2">
+
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

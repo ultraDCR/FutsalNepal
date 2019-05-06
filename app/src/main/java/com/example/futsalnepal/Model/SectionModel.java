@@ -5,19 +5,19 @@ import java.util.List;
 public class SectionModel {
 
     private String sectionLabel;
-    private List<Booking> futsals;
+    private List<BookingFutsal> array;
 
-    public SectionModel(String sectionLabel, List<Booking> futsals) {
+    public SectionModel(String sectionLabel, List<BookingFutsal> array) {
         this.sectionLabel = sectionLabel;
-        this.futsals = futsals;
+        this.array = array;
     }
 
     public String getSectionLabel() {
         return sectionLabel;
     }
 
-    public List<Booking> getFutsals() {
-        return futsals;
+    public List<BookingFutsal> getArray() {
+        return array;
     }
 
 }

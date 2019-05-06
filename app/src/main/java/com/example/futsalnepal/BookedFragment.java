@@ -14,17 +14,14 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-import com.example.futsalnepal.Model.Booking;
-import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.Model.BookingFutsal;
 import com.example.futsalnepal.Model.SectionModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -35,8 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,8 +39,8 @@ import javax.annotation.Nullable;
 public class BookedFragment extends Fragment {
 
     List<SectionModel> sectionModelArrayList;
-    List<Booking> futsal_list;
-    List<Booking> b_list;
+    List<BookingFutsal> futsal_list;
+    List<BookingFutsal> b_list;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String user_id;
@@ -53,7 +48,7 @@ public class BookedFragment extends Fragment {
     DatePickerDialog dpd;
     private TextView fDatePicker;
     private RecyclerView recyclerView;
-    private DateSectionRecyclerViewAdapter sadapter;
+    private DateSectionUserRecyclerViewAdapter sadapter;
 
     public BookedFragment() {
         // Required empty public constructor
@@ -78,7 +73,7 @@ public class BookedFragment extends Fragment {
         sectionModelArrayList = new ArrayList<>();
         recyclerView =  view.findViewById(R.id.booked_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        sadapter = new DateSectionRecyclerViewAdapter("booked",this.getContext(), sectionModelArrayList);
+        sadapter = new DateSectionUserRecyclerViewAdapter("booked",this.getContext(), sectionModelArrayList);
         Log.d("DATETEST9",""+sadapter);
         recyclerView.setAdapter(sadapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -133,7 +128,7 @@ public class BookedFragment extends Fragment {
         return view;
     }
 
-    private void loadDataToRecyclerView(DateSectionRecyclerViewAdapter sadapter) {
+    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
         mDatabase.collection("user_list").document(user_id).collection("book_info").document("booked")
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -157,7 +152,7 @@ public class BookedFragment extends Fragment {
                                                 Map<String, String> dd2 = (Map<String, String>) dd1.get(futsalid);
                                                 for(String time: dd2.keySet()) {
 
-                                                    Booking futsal1 = new Booking();
+                                                    BookingFutsal futsal1 = new BookingFutsal();
                                                     Log.d("NEWTEST2.3", "onComplete: " + time);
                                                     futsal1.setTime(time);
                                                     futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
@@ -201,7 +196,7 @@ public class BookedFragment extends Fragment {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 
                     String futsalid = documentSnapshot.getId();
-                    Booking futsal = documentSnapshot.toObject(Booking.class);
+                    BookingFutsal futsal = documentSnapshot.toObject(BookingFutsal.class);
                     futsal.setFutsal_id(futsalid);
                     Log.d("DATETEST4", "" + futsal);
                     futsal_list.add(futsal);

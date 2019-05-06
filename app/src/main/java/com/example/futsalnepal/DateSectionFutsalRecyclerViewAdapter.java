@@ -8,13 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.futsalnepal.Model.SectionModel;
 
 import java.util.List;
 
-public class DateSectionRecyclerViewAdapter extends RecyclerView.Adapter<DateSectionRecyclerViewAdapter.SectionViewHolder> {
+public class DateSectionFutsalRecyclerViewAdapter extends RecyclerView.Adapter<DateSectionFutsalRecyclerViewAdapter.SectionViewHolder> {
 
 
     class SectionViewHolder extends RecyclerView.ViewHolder {
@@ -33,7 +32,7 @@ public class DateSectionRecyclerViewAdapter extends RecyclerView.Adapter<DateSec
     private List<SectionModel> sectionModelArrayList;
     String recyclertype;
 
-    public DateSectionRecyclerViewAdapter(String recyclertype,Context context, List<SectionModel> sectionModelArrayList) {
+    public DateSectionFutsalRecyclerViewAdapter(String recyclertype, Context context, List<SectionModel> sectionModelArrayList) {
         this.context = context;
         this.sectionModelArrayList = sectionModelArrayList;
         this.recyclertype= recyclertype;
@@ -42,34 +41,34 @@ public class DateSectionRecyclerViewAdapter extends RecyclerView.Adapter<DateSec
     }
 
     @Override
-    public SectionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DateSectionFutsalRecyclerViewAdapter.SectionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.date_section_custom_row, parent, false);
-        return new DateSectionRecyclerViewAdapter.SectionViewHolder(view);
+        return new DateSectionFutsalRecyclerViewAdapter.SectionViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(SectionViewHolder holder, int position) {
+    public void onBindViewHolder(DateSectionFutsalRecyclerViewAdapter.SectionViewHolder holder, int position) {
         Log.d("DATETEST10",""+holder+""+position);
 
         final SectionModel sectionModel = sectionModelArrayList.get(position);
         holder.sectionLabel.setText(sectionModel.getSectionLabel());
 
         //recycler view for items
-         //holder.itemRecyclerView.setHasFixedSize(true);
+        //holder.itemRecyclerView.setHasFixedSize(true);
         //holder.itemRecyclerView.setNestedScrollingEnabled(true);
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         holder.itemRecyclerView.setLayoutManager(linearLayoutManager);
-        Log.d("DATETEST10",""+sectionModel.getFutsals());
+        Log.d("DATETEST10",""+sectionModel.getArray());
         if(recyclertype.equals("pending")) {
-            PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getFutsals(), context);
+            PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }else if(recyclertype.equals("booked")){
-            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getFutsals(), context);
+            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }else{
-            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getFutsals(), context);
+            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }
 
