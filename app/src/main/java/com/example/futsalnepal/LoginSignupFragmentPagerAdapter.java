@@ -202,6 +202,10 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                 Intent signin = new Intent(context, MainActivity.class);
                                                 context.startActivity(signin);
                                                 ((Activity) context).finish();
+                                            }else if(type.equals("futsal_list")){
+                                                Intent signin = new Intent(context, FutsalHome.class);
+                                                context.startActivity(signin);
+                                                ((Activity) context).finish();
                                             }
                                         }else{
                                             mAuth.signOut();

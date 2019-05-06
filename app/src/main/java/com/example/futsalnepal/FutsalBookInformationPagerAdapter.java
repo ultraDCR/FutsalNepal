@@ -20,9 +20,9 @@ public class FutsalBookInformationPagerAdapter extends FragmentPagerAdapter{
         if (i == 0) {
             return new FutsalNewRequest();
         } else if (i == 1){
-            return new BookedFragment();
+            return new FutsalBookedFragment();
         } else {
-            return new HistoryFragment();
+            return new FutsalHistoryFragment();
         }
     }
 

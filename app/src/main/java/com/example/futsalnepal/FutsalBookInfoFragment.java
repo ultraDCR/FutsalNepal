@@ -25,7 +25,7 @@ public class FutsalBookInfoFragment extends Fragment {
 
         //View Pager
         ViewPager viewPager =  view.findViewById(R.id.book_information_vpager);
-        FutsalBookInformationPagerAdapter fPagerAdapter = new FutsalBookInformationPagerAdapter(this.getActivity(), getSupportFragmentManager());
+        FutsalBookInformationPagerAdapter fPagerAdapter = new FutsalBookInformationPagerAdapter(this.getActivity(), getChildFragmentManager());
         viewPager.setAdapter(fPagerAdapter);
         TabLayout tablayout =  view.findViewById(R.id.book_information_tablayout);
         tablayout.setupWithViewPager(viewPager);
