@@ -172,7 +172,7 @@ public class BookedFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTEST3", "onComplete: " + pdate + "  " + b_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, b_list));
+                                sectionModelArrayList.add(new SectionModel(pdate, b_list,null));
                                 sadapter.notifyDataSetChanged();
                                 //b_list.clear();
                                 Log.d("NEWTEST4", "onComplete: " + pdate + "  " + b_list);

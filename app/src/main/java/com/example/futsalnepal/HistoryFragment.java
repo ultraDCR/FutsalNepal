@@ -175,7 +175,7 @@ public class HistoryFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTESTH3", "onComplete: " + pdate + "  " + h_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, h_list));
+                                sectionModelArrayList.add(new SectionModel(pdate, h_list,null));
                                 sadapter.notifyDataSetChanged();
                                 //h_list.clear();
                                 Log.d("NEWTESTH4", "onComplete: " + pdate + "  " + h_list);

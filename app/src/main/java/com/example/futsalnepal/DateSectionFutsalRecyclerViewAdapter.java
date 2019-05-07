@@ -60,15 +60,15 @@ public class DateSectionFutsalRecyclerViewAdapter extends RecyclerView.Adapter<D
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         holder.itemRecyclerView.setLayoutManager(linearLayoutManager);
-        Log.d("DATETEST10",""+sectionModel.getArray());
+        Log.d("DATETEST10",""+sectionModel.getFutsalArray());
         if(recyclertype.equals("pending")) {
-            PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getArray(), context);
+            PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getFutsalArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }else if(recyclertype.equals("booked")){
-            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getArray(), context);
+            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getFutsalArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }else{
-            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getArray(), context);
+            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getFutsalArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
         }
 

@@ -60,16 +60,16 @@ public class DateSectionUserRecyclerViewAdapter extends RecyclerView.Adapter<Dat
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         holder.itemRecyclerView.setLayoutManager(linearLayoutManager);
-        Log.d("DATETEST10",""+sectionModel.getArray());
+        Log.d("DATETEST10",""+sectionModel.getUserArray());
         if(recyclertype.equals("request")) {
-            PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getArray(), context);
+            FutsalNewRequestRecyclerView adapter = new FutsalNewRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getUserArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
-        }else if(recyclertype.equals("booked")){
-            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getArray(), context);
-            holder.itemRecyclerView.setAdapter(adapter);
-        }else{
-            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getArray(), context);
-            holder.itemRecyclerView.setAdapter(adapter);
+//        }else if(recyclertype.equals("booked")){
+//            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getUserArray(), context);
+//            holder.itemRecyclerView.setAdapter(adapter);
+//        }else{
+//            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getUserArray(), context);
+//            holder.itemRecyclerView.setAdapter(adapter);
         }
 
 

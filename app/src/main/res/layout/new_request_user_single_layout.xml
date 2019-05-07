@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/br_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/book_request_bg"

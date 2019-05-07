@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,7 +69,7 @@ public class FutsalBookNowFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         //date = DateFormat.getDateInstance().format(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-
+        date = sdf.format(new Date());
         Activity a= this.getActivity();
 
         futsal_id = mAuth.getCurrentUser().getUid();
@@ -136,7 +137,7 @@ public class FutsalBookNowFragment extends Fragment {
     private void loadRecycler(View view, String date1) {
         RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeInHr,date,futsal_id,getContext(),getActivity());
+        BookNowViewAdapter adapter = new BookNowViewAdapter(timeInHr,date,getContext(),getActivity());
         recyclerView.setAdapter(adapter);
     }
 

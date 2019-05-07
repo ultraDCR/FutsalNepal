@@ -19,7 +19,6 @@
         <activity android:name=".UserInfoEdit" />
         <activity android:name=".Favourite" />
         <activity android:name=".BookingRequest" />
-        <activity android:name=".BookingInfoFutsal" />
         <activity android:name=".BookingInformation" />
         <activity android:name=".SearchLayout">
 

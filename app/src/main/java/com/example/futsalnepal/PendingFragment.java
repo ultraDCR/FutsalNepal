@@ -176,7 +176,7 @@ public class PendingFragment extends Fragment {
 
                                 }
                                 Log.d("NEWTEST3", "onComplete: " + pdate + "  " + p_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, p_list));
+                                sectionModelArrayList.add(new SectionModel(pdate, p_list,null));
                                 sadapter.notifyDataSetChanged();
                                 for(BookingFutsal book:p_list){
                                     Log.d("NEWTEST4", "onComplete: " + book.getTime() + "  " + book.getFutsal_name());

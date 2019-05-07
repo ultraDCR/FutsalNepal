@@ -18,14 +18,11 @@ import android.widget.TextView;
 import com.example.futsalnepal.Model.BookTime;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.collect.Lists;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +58,7 @@ public class BookTimeFragment extends Fragment {
         mDatabase = FirebaseFirestore.getInstance();
         //date = DateFormat.getDateInstance().format(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-
+        date = sdf.format(new Date());
         Activity a= this.getActivity();
 
         fDatePicker = view.findViewById(R.id.date_picker_futsal);
@@ -128,7 +125,7 @@ public class BookTimeFragment extends Fragment {
     private void loadRecycler(View view, String date1) {
         RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        BookTimeViewAdapaer adapter = new BookTimeViewAdapaer(timeInHr,date,futsal_id,getContext(),getActivity());
+        BookTimeViewAdapter adapter = new BookTimeViewAdapter(timeInHr,date,futsal_id,getContext(),getActivity());
         recyclerView.setAdapter(adapter);
     }
 
