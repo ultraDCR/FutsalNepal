@@ -1,4 +1,117 @@
 package com.example.futsalnepal;
 
-public class FutsalHistoryRecyclerView {
+import android.content.Context;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.Model.BookingUser;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+public class FutsalHistoryRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.FutsalHistoryRecyclerView.FutsalViewHolder>  {
+    List<BookingUser> list;
+    Context context;
+    String date;
+    String bookTime[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
+
+    public FutsalHistoryRecyclerView(String date, List<BookingUser> list, Context context) {
+        this.list = list;
+        this.context = context;
+        this.date = date;
+    }
+
+    @Override
+    public FutsalHistoryRecyclerView.FutsalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //Inflate the layout, initialize the View Holder
+        context = parent.getContext();
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_user_single_layout, parent, false);
+        FutsalHistoryRecyclerView.FutsalViewHolder holder = new FutsalHistoryRecyclerView.FutsalViewHolder(v);
+        return holder;
+
+    }
+
+    @Override
+    public void onBindViewHolder(FutsalHistoryRecyclerView.FutsalViewHolder holder, int position) {
+
+        //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
+        holder.name.setText(list.get(position).user_full_name);
+        holder.date.setText(date);
+        holder.phone.setText(list.get(position).user_phone_number);
+        String from_time = list.get(position).time;
+
+        //setting from and to time in time
+        int i = Arrays.asList(bookTime).indexOf(from_time);
+        String to_time  = bookTime[i+1];
+        Log.e("APPTEST4", "testing dates  "+from_time+"  "+i+"  "+to_time);
+        holder.time.setText(from_time+" - "+to_time);
+
+
+        RequestOptions placeholderRequest = new RequestOptions();
+        Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).user_profile_image).into(holder.profile);
+
+        //animate(holder);
+
+
+    }
+
+    @Override
+    public int getItemCount() {
+        //returns the number of elements the RecyclerView will display
+        Log.d("DATETEST8", "getItemCount: "+list);
+        return list.size();
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    // Insert a new item to the RecyclerView on a predefined position
+    public void insert(int position, BookingUser data) {
+        list.add(position, data);
+        notifyItemInserted(position);
+    }
+
+    // Remove a RecyclerView item containing a specified Data object
+    public void remove(BookingUser data) {
+        int position = list.indexOf(data);
+        list.remove(position);
+        notifyItemRemoved(position);
+    }
+
+
+    public class FutsalViewHolder extends RecyclerView.ViewHolder {
+        TextView name;
+        TextView date;
+        TextView time;
+        TextView phone;
+        ImageView profile;
+        //RatingBar ratingBar;
+        ConstraintLayout layout;
+
+        FutsalViewHolder(View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.h_person_name_);
+            date = itemView.findViewById(R.id.h_book_date);
+            time = itemView.findViewById(R.id.h_book_time);
+            profile = itemView.findViewById(R.id.h_circleView);
+            phone = itemView.findViewById(R.id.h_book_phone);
+            layout = itemView.findViewById(R.id.h_background);
+
+        }
+    }
+
+
 }

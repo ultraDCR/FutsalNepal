@@ -73,8 +73,7 @@ public class PendingFragment extends Fragment {
         recyclerView =  view.findViewById(R.id.pending_rview);
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-
-         sadapter = new DateSectionUserRecyclerViewAdapter("pending",this.getContext(), sectionModelArrayList);
+        sadapter = new DateSectionUserRecyclerViewAdapter("pending",this.getContext(), sectionModelArrayList);
         Log.d("DATETEST9",""+sadapter);
         recyclerView.setAdapter(sadapter);
         //PendingRequestRecyclerView adapter = new PendingRequestRecyclerView(futsal_list, getContext());

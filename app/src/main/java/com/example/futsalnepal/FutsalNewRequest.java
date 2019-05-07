@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,13 +58,22 @@ public class FutsalNewRequest extends Fragment {
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-        Calendar current = Calendar.getInstance();
-        current.add(Calendar.DATE, -1);
-        date = sdf.format(current.getTime());
+//        Calendar current = Calendar.getInstance();
+//        current.add(Calendar.DATE, -1);
+//        date = sdf.format(current.getTime());
+        date = sdf.format(new Date());
         Log.d("TIMETEST", "onCreateView: " + date);
 
         fDatePicker = view.findViewById(R.id.date_picker_new_request);
         fDatePicker.setText(date);
+
+        sectionModelArrayList = new ArrayList<>();
+        recyclerView =  view.findViewById(R.id.new_request_rview);
+        //recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        sadapter = new DateSectionUserRecyclerViewAdapter("request",this.getContext(), sectionModelArrayList);
+        Log.d("DATETEST9",""+sadapter);
+        recyclerView.setAdapter(sadapter);
 
         if (mAuth.getCurrentUser() != null) {
 
@@ -93,7 +103,8 @@ public class FutsalNewRequest extends Fragment {
                         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
                         date = sdf.format(now.getTime());
                         fDatePicker.setText(date);
-
+                        sectionModelArrayList.clear();
+                        loadDataToRecyclerView(sadapter);
 
                         //adapter.notifyDataSetChanged();
                         //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +", "+mYear);
@@ -101,7 +112,7 @@ public class FutsalNewRequest extends Fragment {
 
 
                 }, day, month, year);
-                dpd.getDatePicker().setMaxDate(current.getTimeInMillis());
+                //dpd.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
                 dpd.show();
 
             }

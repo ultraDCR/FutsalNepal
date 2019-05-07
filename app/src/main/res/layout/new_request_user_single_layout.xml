@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/br_cardview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="1dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/br_background"
@@ -19,8 +22,6 @@
             android:layout_height="80dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
             android:src="@drawable/profile_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,43 +29,16 @@
 
         <TextView
             android:id="@+id/br_person_name_"
-            android:layout_width="136dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Ranjan Parajuli"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="@+id/ic_date"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/ic_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_date_white"
-            android:drawablePadding="5dp"
-            android:gravity="center"
-            android:text="Date -"
+            android:text="Ranjan Parajuli"
             android:textColor="@color/white"
+            android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/br_circleView"
-            app:layout_constraintTop_toBottomOf="@+id/br_person_name_" />
-
-        <TextView
-            android:id="@+id/ic_time"
-            android:layout_width="wrap_content"
-            android:layout_height="23dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:drawableLeft="@drawable/ic_time"
-            android:drawablePadding="5dp"
-            android:gravity="center"
-            android:text="Time:"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/br_circleView"
-            app:layout_constraintTop_toBottomOf="@+id/ic_date" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/ic_phone"
@@ -72,16 +46,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginBottom="8dp"
-            android:drawableLeft="@drawable/ic_phone_white"
+            android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_phone_white_15dp"
             android:drawablePadding="5dp"
             android:gravity="center"
-            android:text="+977 -"
+            android:text=" +977 - "
             android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/br_circleView"
-            app:layout_constraintTop_toBottomOf="@+id/ic_time"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/br_book_date" />
 
         <TextView
             android:id="@+id/br_book_date"
@@ -90,52 +63,59 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_date_white"
+            android:drawablePadding="8dp"
             android:text="Jan 4, 2019"
             android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/ic_date"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/br_circleView"
             app:layout_constraintTop_toBottomOf="@+id/br_person_name_" />
 
         <TextView
             android:id="@+id/br_book_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="6dp"
-            android:text="6AM -7AM"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:drawableLeft="@drawable/ic_time_white_15dp"
+            android:drawablePadding="8dp"
+            android:text="6AM -10AM"
             android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/ic_time"
-            app:layout_constraintTop_toBottomOf="@+id/br_book_date" />
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/br_book_date"
+            app:layout_constraintTop_toTopOf="@+id/br_book_date" />
 
         <TextView
             android:id="@+id/br_book_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
             android:text="9813309999"
             android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/ic_phone"
-            app:layout_constraintTop_toBottomOf="@+id/br_book_time" />
+            app:layout_constraintTop_toTopOf="@+id/ic_phone" />
 
         <Button
             android:id="@+id/accept_btn"
             android:layout_width="70dp"
-            android:layout_height="30dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/book_btn"
             android:text="Accept"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/br_book_phone"
+            app:layout_constraintEnd_toStartOf="@+id/reject_btn"
             app:layout_constraintTop_toBottomOf="@+id/br_book_phone"
             app:layout_constraintVertical_bias="1.0" />
 
         <Button
             android:id="@+id/reject_btn"
             android:layout_width="70dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginLeft="3dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/reject_custom_btn"
             android:gravity="center"
@@ -143,7 +123,7 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/accept_btn" />
+            app:layout_constraintTop_toTopOf="@+id/accept_btn" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

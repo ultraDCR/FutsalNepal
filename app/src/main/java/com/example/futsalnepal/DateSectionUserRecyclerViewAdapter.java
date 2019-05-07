@@ -64,12 +64,12 @@ public class DateSectionUserRecyclerViewAdapter extends RecyclerView.Adapter<Dat
         if(recyclertype.equals("request")) {
             FutsalNewRequestRecyclerView adapter = new FutsalNewRequestRecyclerView(sectionModel.getSectionLabel(),sectionModel.getUserArray(), context);
             holder.itemRecyclerView.setAdapter(adapter);
-//        }else if(recyclertype.equals("booked")){
-//            BookedRecyclerView adapter = new BookedRecyclerView(sectionModel.getUserArray(), context);
-//            holder.itemRecyclerView.setAdapter(adapter);
-//        }else{
-//            HistoryRecyclerView adapter = new HistoryRecyclerView(sectionModel.getUserArray(), context);
-//            holder.itemRecyclerView.setAdapter(adapter);
+        }else if(recyclertype.equals("booked")){
+            FutsalBookedRecyclerView adapter = new FutsalBookedRecyclerView(sectionModel.getSectionLabel(),sectionModel.getUserArray(), context);
+            holder.itemRecyclerView.setAdapter(adapter);
+        }else{
+            FutsalHistoryRecyclerView adapter = new FutsalHistoryRecyclerView(sectionModel.getSectionLabel(),sectionModel.getUserArray(), context);
+            holder.itemRecyclerView.setAdapter(adapter);
         }
 
 
