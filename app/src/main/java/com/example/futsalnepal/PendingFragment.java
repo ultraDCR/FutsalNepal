@@ -219,7 +219,7 @@ public class PendingFragment extends Fragment {
                                                 Log.d("FIREBASETEST2.0", "onComplete: " + futsal_list.size() + " -- " + futsal_list.get(1).futsal_id + " -- " + futsalid);
                                                 if (futsal_list.get(i).futsal_id.equals(futsalid)) {
                                                     Map<String, Object> dd2 = (Map<String, Object>) document1.get("time");
-                                                    Log.d("FIREBASETEST2.2", "onComplete: " +  document1.getData());
+                                                    Log.d("FIREBASETEST2.2", "onComplete: " + document1.getData());
                                                     for (String time : dd2.keySet()) {
 
                                                         BookingFutsal futsal1 = new BookingFutsal();
@@ -241,8 +241,10 @@ public class PendingFragment extends Fragment {
 
                                             }
                                         }
-                                        sectionModelArrayList.add(new SectionModel(pdate, p_list,null));
-                                        sadapter.notifyDataSetChanged();
+                                        if(p_list.size() != 0) {
+                                            sectionModelArrayList.add(new SectionModel(pdate, p_list, null));
+                                            sadapter.notifyDataSetChanged();
+                                        }
                                     }else{
                                         Log.d("FIREBASEERROR", "ERROR ON RETERIVAL: ");
                                     }
