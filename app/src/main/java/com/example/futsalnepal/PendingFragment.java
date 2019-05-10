@@ -208,7 +208,7 @@ public class PendingFragment extends Fragment {
                         String pdate = document.getId();
                         Log.d("FIREBASETEST", "onComplete: "+pdate+"-"+document.getDocumentReference(pdate)+"-"+document.getReference());
                         if (compareDate(pdate, date)) {
-                            document.getReference().collection("newrequest").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            document.getReference().collection("pending").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {

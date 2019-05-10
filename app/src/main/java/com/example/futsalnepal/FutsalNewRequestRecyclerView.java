@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.FutsalNewRequestRecyclerView.FutsalViewHolder>  {
     List<BookingUser> list;
@@ -113,7 +114,8 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
 
                 addToDatabase(list, position);
                 removeFromDatabase(list, position);
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
+
             }
         });
 
@@ -121,8 +123,10 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
             @Override
             public void onClick(View v) {
                 removeFromDatabase(list, position);
-                notifyDataSetChanged();
-            }
+                notifyItemRemoved(position);
+//                notifyDataSetChanged();
+
+        }
         });
 
         //animate(holder);
@@ -185,62 +189,96 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
 
     private void addToDatabase(List<BookingUser> list, int position){
         String user_id = list.get(position).user_id;
-        Map<String, Object> bookFutsalMap = new HashMap<>();
-        Map<String, Object> userBookMap = new HashMap<>();
-        Map<String, Object> timeuBookMap = new HashMap<>();
-        timeuBookMap.put(list.get(position).time, FieldValue.serverTimestamp());
-        userBookMap.put(user_id, timeuBookMap);
-        bookFutsalMap.put(date, userBookMap);
-
-        Map<String, Object> bookUserMap = new HashMap<>();
-        Map<String, Object> futsalBookMap = new HashMap<>();
-        Map<String, Object> timefBookMap = new HashMap<>();
-        timefBookMap.put(list.get(position).time, FieldValue.serverTimestamp());
-        futsalBookMap.put(futsal_id, timefBookMap);
-        bookUserMap.put(date, futsalBookMap);
-
-
+        Map<String,Object> bookMap = new HashMap<>();
+        Map<String,Object> booktime = new HashMap<>();
+        booktime.put(list.get(position).time,FieldValue.serverTimestamp());
+        bookMap.put("time",booktime);
 
         mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                .document("booked").set(bookFutsalMap, SetOptions.merge())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Log.d("SUCCESS", "onSuccess: " + holder);
-                        //holder.setPending();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
+                        .document(date).collection("booked").document(user_id).set(bookMap, SetOptions.merge());
+
+        mDatabase.collection("user_list").document(user_id).collection("book_info")
+                        .document(date).collection("booked").document(futsal_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("FAILER", "onFailure: " + e);
+            public void onSuccess(Void aVoid) {
+                notifyDataSetChanged();
             }
         });
 
-        mDatabase.collection("user_list").document(user_id).collection("book_info").document("booked").set(bookUserMap, SetOptions.merge());
+//        Map<String, Object> bookFutsalMap = new HashMap<>();
+//        Map<String, Object> userBookMap = new HashMap<>();
+//        Map<String, Object> timeuBookMap = new HashMap<>();
+//        timeuBookMap.put(list.get(position).time, FieldValue.serverTimestamp());
+//        userBookMap.put(user_id, timeuBookMap);
+//        bookFutsalMap.put(date, userBookMap);
+//
+//        Map<String, Object> bookUserMap = new HashMap<>();
+//        Map<String, Object> futsalBookMap = new HashMap<>();
+//        Map<String, Object> timefBookMap = new HashMap<>();
+//        timefBookMap.put(list.get(position).time, FieldValue.serverTimestamp());
+//        futsalBookMap.put(futsal_id, timefBookMap);
+//        bookUserMap.put(date, futsalBookMap);
+//
+//
+//
+//        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
+//                .document("booked").set(bookFutsalMap, SetOptions.merge())
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        //Log.d("SUCCESS", "onSuccess: " + holder);
+//                        //holder.setPending();
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.d("FAILER", "onFailure: " + e);
+//            }
+//        });
+//
+//        mDatabase.collection("user_list").document(user_id).collection("book_info").document("booked").set(bookUserMap, SetOptions.merge());
 
 
     }
 
     private void removeFromDatabase(List<BookingUser> list, int position) {
         String user_id = list.get(position).user_id;
-        Map<String, Object> removeFutsalMap = new HashMap<>();
-        Map<String, Object> user = new HashMap<>();
-        Map<String, Object> time = new HashMap<>();
-        time.put(list.get(position).time, FieldValue.delete());
-        user.put(user_id, time);
-        removeFutsalMap.put(date, user);
-        String data = date+"."+user_id+"."+time;
 
-        Map<String, Object> removeUserMap = new HashMap<>();
-        Map<String, Object> user1 = new HashMap<>();
-        Map<String, Object> time1 = new HashMap<>();
-        time1.put(list.get(position).time, FieldValue.delete());
-        user1.put(futsal_id, time1);
-        removeUserMap.put(date, user1);
-        String data1 = date+"."+futsal_id+"."+time;
+        Map<String,Object> bookMap = new HashMap<>();
+        Map<String,Object> booktime = new HashMap<>();
+        booktime.put(list.get(position).time,FieldValue.delete());
+        bookMap.put("time",booktime);
+
         mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                .document("newrequest").update(data , FieldValue.delete());
-        mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending").update(data1 , FieldValue.delete());
+                .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        });
+        mDatabase.collection("user_list").document(user_id).collection("book_info")
+                .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge());
+
+//        mDatabase.collection("user_list").document(user_id).collection("book_info")
+//                .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge());
+//        Map<String, Object> removeFutsalMap = new HashMap<>();
+//        Map<String, Object> user = new HashMap<>();
+//        Map<String, Object> time = new HashMap<>();
+//        time.put(list.get(position).time, FieldValue.delete());
+//        user.put(user_id, time);
+//        removeFutsalMap.put(date, user);
+//        String data = date+"."+user_id+"."+time;
+//
+//        Map<String, Object> removeUserMap = new HashMap<>();
+//        Map<String, Object> user1 = new HashMap<>();
+//        Map<String, Object> time1 = new HashMap<>();
+//        time1.put(list.get(position).time, FieldValue.delete());
+//        user1.put(futsal_id, time1);
+//        removeUserMap.put(date, user1);
+//        String data1 = date+"."+futsal_id+"."+time;
+//        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
+//                .document("newrequest").update(data , FieldValue.delete());
+//        mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending").update(data1 , FieldValue.delete());
 
     }
 }

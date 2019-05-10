@@ -92,23 +92,40 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                         holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+
+                                Map<String,Object> map = new HashMap<>();
+                                //map.put("timeStamp",FieldValue.serverTimestamp());
                                 Log.d("CLICKABLE1", "onBindViewHolder: "+own_pending);
                                 String user_id = mauth.getCurrentUser().getUid();
                                 Map<String,Object> bookMap = new HashMap<>();
                                 Map<String,Object> booktime = new HashMap<>();
                                 booktime.put(list.get(position).book_time,FieldValue.delete());
                                 bookMap.put("time",booktime);
-
-                                mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                                        .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                mDatabase.collection("futsal_list").document(futsal_id)
+                                        .collection("book_info").document(date).set(map)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        holder.cancelbooking();
+                                        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
+                                                .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                holder.cancelbooking();
+                                            }
+                                        });
                                     }
                                 });
-                                mDatabase.collection("user_list").document(user_id).collection("book_info")
-                                        .document(date).collection("newrequest").document(futsal_id).set(bookMap, SetOptions.merge());
-                            }
+                                mDatabase.collection("user_list").document(user_id)
+                                        .collection("book_info").document(date).set(map,SetOptions.merge())
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                mDatabase.collection("user_list").document(user_id).collection("book_info")
+                                                        .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge());
+
+                                            }
+                                        });
+                               }
                         });
                     }
                     else {
@@ -137,7 +154,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                 .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge());
 
                         mDatabase.collection("user_list").document(user_id).collection("book_info")
-                                .document(date).collection("newrequest").document(futsal_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 holder.setPending();

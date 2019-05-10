@@ -21,7 +21,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -48,6 +51,7 @@ public class FutsalNewRequest extends Fragment {
     private TextView fDatePicker;
     private RecyclerView recyclerView;
     private DateSectionUserRecyclerViewAdapter sadapter;
+    Boolean firstload = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,9 +75,11 @@ public class FutsalNewRequest extends Fragment {
         recyclerView =  view.findViewById(R.id.new_request_rview);
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        sadapter = new DateSectionUserRecyclerViewAdapter("request",this.getContext(), sectionModelArrayList);
         Log.d("DATETEST9",""+sadapter);
+        sadapter = new DateSectionUserRecyclerViewAdapter("request",getContext(), sectionModelArrayList);
         recyclerView.setAdapter(sadapter);
+
+
 
         if (mAuth.getCurrentUser() != null) {
 
@@ -104,7 +110,8 @@ public class FutsalNewRequest extends Fragment {
                         date = sdf.format(now.getTime());
                         fDatePicker.setText(date);
                         sectionModelArrayList.clear();
-                        loadDataToRecyclerView(sadapter);
+//                        loadDataToRecyclerView(sadapter);
+                        loadToRecyclerView(sadapter);
 
                         //adapter.notifyDataSetChanged();
                         //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +", "+mYear);
@@ -124,68 +131,187 @@ public class FutsalNewRequest extends Fragment {
         return view;
     }
 
-    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
-        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info").document("newrequest")
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (task.getResult().exists()) {
-                        Map<String, Object> dd = task.getResult().getData();
-                        for (String pdate : dd.keySet()) {
-                            Log.d("TESTING@", "" + pdate);
-                            if (compareDate(pdate, date)) {
-                                Log.d("DATETEST2", "" + user_list);
-                                Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(pdate);
+//    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
+//        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info").document("newrequest")
+//                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    if (task.getResult().exists()) {
+//                        Map<String, Object> dd = task.getResult().getData();
+//                        for (String pdate : dd.keySet()) {
+//                            Log.d("TESTING@", "" + pdate);
+//                            if (compareDate(pdate, date)) {
+//                                Log.d("DATETEST2", "" + user_list);
+//                                Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(pdate);
+//
+//                                r_list = new ArrayList<>();
+//                                for (String userid : dd1.keySet()) {
+//                                    if (userid != null) {
+//                                        Log.d("NEWTEST1", "" + userid);
+//                                        for (int i = 0; i < user_list.size(); i++) {
+//                                            Log.d("NEWTEST2.0", "onComplete: " + user_list.size() + " -- " + user_list.get(1).user_id + " -- " + userid);
+//                                            if (user_list.get(i).user_id.equals(userid)) {
+//                                                Log.d("NEWTEST2.2", "onComplete: " + dd1.get(userid));
+//                                                Map<String, String> dd2 = (Map<String, String>) dd1.get(userid);
+//                                                for (String time : dd2.keySet()) {
+//
+//                                                    BookingUser user = new BookingUser();
+//                                                    Log.d("NEWTEST2.3", "onComplete: " + time);
+//                                                    user.setTime(time);
+//                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
+//                                                    user.setUser_id(user_list.get(i).getUser_id());
+//                                                    user.setUser_address(user_list.get(i).getUser_address());
+//                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+//                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+//                                                    Log.d("NEWTEST2.3", "onComplete1: " + user.getTime());
+//                                                    r_list.add(user);
+//
+//                                                }
+//
+//                                                Log.d("NEWTEST2.1", "onComplete: " + r_list);
+//                                            }
+//
+//                                        }
+//
+//                                    }
+//
+//                                }
+//                                Log.d("NEWTEST3", "onComplete: " + pdate + "  " + r_list);
+//                                sectionModelArrayList.add(new SectionModel(pdate, null, r_list));
+//                                sadapter.notifyDataSetChanged();
+//                                //r_list.clear();
+//                                Log.d("NEWTEST4", "onComplete: " + pdate + "  " + r_list);
+//                                Log.d("DATETEST7", "onComplete: " + sectionModelArrayList);
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//
+//
+//    }
 
-                                r_list = new ArrayList<>();
-                                for (String userid : dd1.keySet()) {
-                                    if (userid != null) {
-                                        Log.d("NEWTEST1", "" + userid);
+    private void loadToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter){
+        Log.d("NEWREQTEST2", "loadToRecyclerView: "+futsal_id);
+//        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+//                        if (snapshot != null ) {
+//                            sectionModelArrayList.clear();
+//                            for (QueryDocumentSnapshot document : snapshot){
+//
+//                                String pdate = document.getId();
+//                                Log.d("NEWREQTEST2.0.0", "onComplete: "+pdate+"-"+document.getDocumentReference(pdate)+"-"+document.getReference());
+//                                if (compareDate(pdate, date)) {
+//                                    firstload=true;
+//                                    document.getReference().collection("newrequest").addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                        @Override
+//                                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                                            if (queryDocumentSnapshots != null) {
+//                                                r_list = new ArrayList<>();
+//                                                r_list.clear();
+//                                                Log.d("SPECIALT", "onEvent: "+firstload+"__"+queryDocumentSnapshots.getDocumentChanges());
+//                                                for (QueryDocumentSnapshot document1 : queryDocumentSnapshots) {
+//                                                    Log.d("NEWREQTEST2.1", "onComplete: " + queryDocumentSnapshots.getDocuments());
+//
+//                                                    String userid = document1.getId();
+//                                                    for (int i = 0; i < user_list.size(); i++) {
+//                                                        Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + userid);
+//                                                        if (user_list.get(i).user_id.equals(userid)) {
+//                                                            Log.d("NEWREQTEST2.3", "onComplete: " + document1.getData());
+//                                                            Map<String, Object> dd2 = (Map<String, Object>) document1.get("time");
+//                                                            for (String time : dd2.keySet()) {
+//                                                                    BookingUser user = new BookingUser();
+//                                                                    Log.d("NEWREQTEST2.4", "onComplete: " + time);
+//                                                                    user.setTime(time);
+//                                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
+//                                                                    user.setUser_id(user_list.get(i).getUser_id());
+//                                                                    user.setUser_address(user_list.get(i).getUser_address());
+//                                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+//                                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+//                                                                    Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+//                                                                    r_list.add(user);
+//                                                            }
+//
+//                                                            Log.d("NEWTEST2.1", "onComplete: " + r_list);
+//                                                        }
+//                                                    }
+//                                                }
+//                                                if(r_list.size() != 0) {
+//                                                        sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+//                                                        sadapter.notifyDataSetChanged();
+//                                                        //firstload = false;
+////
+//                                                }
+//                                            }
+//                                        }
+//
+//                                    });
+//
+//                                }
+//
+//                            }
+//
+//                        }
+//                    }
+//                });
+
+        mDatabase.collection("futsal_list").document(futsal_id).collection("pending")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                        if (snapshot != null) {
+                            sectionModelArrayList.clear();
+                            for (QueryDocumentSnapshot document : snapshot) {
+                                String pdate = document.getId();
+                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate)+"_"+compareDate(pdate,date));
+                                if (compareDate(pdate, date)) {
+                                    Map<String, Object> dd1 = (Map<String, Object>) document.getData();
+                                    r_list = new ArrayList<>();
+                                    r_list.clear();
+                                    for(String uid: dd1.keySet()){
                                         for (int i = 0; i < user_list.size(); i++) {
-                                            Log.d("NEWTEST2.0", "onComplete: " + user_list.size() + " -- " + user_list.get(1).user_id + " -- " + userid);
-                                            if (user_list.get(i).user_id.equals(userid)) {
-                                                Log.d("NEWTEST2.2", "onComplete: " + dd1.get(userid));
-                                                Map<String, String> dd2 = (Map<String, String>) dd1.get(userid);
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
+                                            if (user_list.get(i).user_id.equals(uid)) {
+                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
+                                                Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
                                                 for (String time : dd2.keySet()) {
-
-                                                    BookingUser user = new BookingUser();
-                                                    Log.d("NEWTEST2.3", "onComplete: " + time);
-                                                    user.setTime(time);
-                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
-                                                    user.setUser_id(user_list.get(i).getUser_id());
-                                                    user.setUser_address(user_list.get(i).getUser_address());
-                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
-                                                    Log.d("NEWTEST2.3", "onComplete1: " + user.getTime());
-                                                    r_list.add(user);
-
+                                                        BookingUser user = new BookingUser();
+                                                        Log.d("NEWREQTEST2.4", "onComplete: " + time);
+                                                        user.setTime(time);
+                                                        user.setUser_full_name(user_list.get(i).getUser_full_name());
+                                                        user.setUser_id(user_list.get(i).getUser_id());
+                                                        user.setUser_address(user_list.get(i).getUser_address());
+                                                        user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+                                                        user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                        Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+                                                        r_list.add(user);
                                                 }
 
                                                 Log.d("NEWTEST2.1", "onComplete: " + r_list);
                                             }
-
                                         }
-
+                                    }
+                                    if(r_list.size() != 0) {
+                                            sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+                                            sadapter.notifyDataSetChanged();
+                                            //firstload = false;
+//
                                     }
 
                                 }
-                                Log.d("NEWTEST3", "onComplete: " + pdate + "  " + r_list);
-                                sectionModelArrayList.add(new SectionModel(pdate, null, r_list));
-                                sadapter.notifyDataSetChanged();
-                                //r_list.clear();
-                                Log.d("NEWTEST4", "onComplete: " + pdate + "  " + r_list);
-                                Log.d("DATETEST7", "onComplete: " + sectionModelArrayList);
                             }
-
                         }
                     }
-                }
-            }
-        });
+                });
 
 
     }
+
 
     private void loadUsercalss() {
         user_list = new ArrayList<>();
@@ -203,7 +329,9 @@ public class FutsalNewRequest extends Fragment {
                     Log.d("NEWTEST2", "onComplete: " + user_list.size());
 
                 }
-                loadDataToRecyclerView(sadapter);
+//                loadDataToRecyclerView(sadapter);
+                loadToRecyclerView(sadapter);
+
             }
 
 
