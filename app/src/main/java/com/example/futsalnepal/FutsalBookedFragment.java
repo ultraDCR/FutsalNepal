@@ -21,7 +21,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -32,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class FutsalBookedFragment extends Fragment {
 
@@ -184,71 +188,56 @@ public class FutsalBookedFragment extends Fragment {
 
 
     private void loadToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter){
-        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        mDatabase.collection("futsal_list").document(futsal_id).collection("booked")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("FIREBASETEST5", "onComplete: "+task.getResult().getDocuments());
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
+                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                        if (snapshot != null) {
+                            sectionModelArrayList.clear();
+                            for (QueryDocumentSnapshot document : snapshot) {
                                 String pdate = document.getId();
-                                Log.d("FIREBASETEST4", "onComplete: "+pdate+"-"+document.getDocumentReference(pdate)+"-"+document.getReference());
-                                Log.d("BOOKEDTEST2.00", "onComplete: "+compareDate(pdate,date)+"__"+date+"___"+pdate);
+                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate)+"_"+compareDate(pdate,date));
                                 if (compareDate(pdate, date)) {
-                                    Log.d("BOOKEDTEST2.10", "onComplete: "+compareDate(pdate,date));
-                                    document.getReference().collection("booked").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                r_list = new ArrayList<>();
-                                                Log.d("BOOKEDTEST2.0", "onComplete: " + task.getResult().getDocuments());
-                                                for (QueryDocumentSnapshot document1 : task.getResult()) {
-                                                    String userid = document1.getId();
-                                                    for (int i = 0; i < user_list.size(); i++) {
-                                                        Log.d("BOOKEDTEST2.0", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + userid);
-                                                        if (user_list.get(i).user_id.equals(userid)) {
-                                                            //Log.d("NEWTEST2.2", "onComplete: " + dd1.get(userid));
-                                                            Map<String, Object> dd2 = (Map<String, Object>) document1.get("time");
-                                                            for (String time : dd2.keySet()) {
-                                                                Log.d("BOOKEDTEST2.2", "onComplete: " + time+"__"+compareTimee(pdate,time));
-                                                                if (compareTimee(pdate, time)) {
-                                                                    BookingUser user = new BookingUser();
-                                                                    Log.d("BOOKEDTEST2.3", "onComplete: " + time);
-                                                                    user.setTime(time);
-                                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
-                                                                    user.setUser_id(user_list.get(i).getUser_id());
-                                                                    user.setUser_address(user_list.get(i).getUser_address());
-                                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-                                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
-                                                                    Log.d("BOOKEDTEST2.4", "onComplete1: " + user.getTime());
-                                                                    r_list.add(user);
-                                                                }
-                                                            }
-
-                                                            Log.d("BOOKEDTEST2.1", "onComplete: " + r_list);
-                                                        }
+                                    Map<String, Object> dd1 = (Map<String, Object>) document.getData();
+                                    r_list = new ArrayList<>();
+                                    r_list.clear();
+                                    for(String uid: dd1.keySet()){
+                                        for (int i = 0; i < user_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
+                                            if (user_list.get(i).user_id.equals(uid)) {
+                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
+                                                Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
+                                                for (String time : dd2.keySet()) {
+                                                    if (compareTimee(pdate, time)) {
+                                                        BookingUser user = new BookingUser();
+                                                        Log.d("NEWREQTEST2.4", "onComplete: " + time);
+                                                        user.setTime(time);
+                                                        user.setUser_full_name(user_list.get(i).getUser_full_name());
+                                                        user.setUser_id(user_list.get(i).getUser_id());
+                                                        user.setUser_address(user_list.get(i).getUser_address());
+                                                        user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+                                                        user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                        Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+                                                        r_list.add(user);
                                                     }
                                                 }
-                                                if(r_list.size() != 0) {
-                                                    sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
-                                                    sadapter.notifyDataSetChanged();
-                                                }
-                                            }else{
-                                                Log.d("FIREBASEERROR", "ERROR ON RETERIVAL: ");
+
+                                                Log.d("NEWTEST2.1", "onComplete: " + r_list);
                                             }
                                         }
-                                    });
+                                    }
+                                    if(r_list.size() != 0) {
+                                        sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+                                        sadapter.notifyDataSetChanged();
+                                        //firstload = false;
+//
+                                    }
 
                                 }
                             }
-                        } else {
-                            Log.d("ERROR IN RETRIVAL", "Error getting documents: ", task.getException());
                         }
                     }
                 });
-
     }
 
     private void loadUsercalss() {

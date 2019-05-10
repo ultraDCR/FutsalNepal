@@ -110,26 +110,23 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
 
                             ArrayList<String> futsals = (ArrayList<String>) snapshot.get("favourite_futsal");
                             Log.d("FAVIOU", "onComplete: " + futsals);
-                            for(int i=0;i<futsals.size();i++){
-                                if(futsals.get(i).equals(futsal_id)){
-                                    favBtn.setImageResource(R.drawable.ic_favorite_selected);
-                                    favBtn.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
-                                            favBtn.setImageResource(R.drawable.ic_favourite_unselected_white);
-                                        }
-                                    });
-                                }
-                                else{
-                                    favBtn.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
-                                            favBtn.setImageResource(R.drawable.ic_favorite_selected);
-                                        }
-                                    });
-                                }
+                            if(futsals.contains(futsal_id)){
+                                favBtn.setImageResource(R.drawable.ic_favorite_selected);
+                                favBtn.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+                                    }
+                                });
+                            }
+                            else{
+                                favBtn.setImageResource(R.drawable.ic_favourite_unselected_white);
+                                favBtn.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                                    }
+                                });
                             }
                         }
                     } else {

@@ -20,8 +20,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -34,6 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 
 public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapter.BookTimeViewHolder> {
 
@@ -44,7 +48,6 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
     Activity activity;
     String date;
     String futsal_id;
-    Boolean own_pending = false;
 
     public BookTimeViewAdapter(List<BookTime> list, String date, String futsal_id, Context context, Activity activity) {
         this.list = list;
@@ -77,107 +80,73 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
         if(pastTime) {
             holder.firstLoadPendingData(list.get(position).book_time);
             holder.firstLoadBookedData(list.get(position).book_time);
-            Log.d("CLICKABLE", "onBindViewHolder: "+own_pending);
+
 
             holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.d("CLICKABLE", "onBindViewHolder: "+holder.own_pending);
                     if (mauth.getCurrentUser() == null) {
                         LoginDialog dialog = new LoginDialog(context, activity);
                         dialog.startLoginDialog();
                         Log.d("pressed", "alertdialog");
-                    }else if(own_pending){
-                        holder.bookBtn.setClickable(true);
-                        Log.d("CLICKABLE", "onBindViewHolder: "+holder.bookBtn.isClickable());
-                        holder.bookBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                    }else {
+                        if (holder.own_pending) {
+//                            Log.d("CLICKABLE", "onBindViewHolder: " + holder.bookBtn.isClickable());
+//                            holder.bookBtn.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+                                    Log.d("CLICKABLE1", "onBindViewHolder: " + holder.own_pending);
+                                    String user_id = mauth.getCurrentUser().getUid();
 
-                                Map<String,Object> map = new HashMap<>();
-                                //map.put("timeStamp",FieldValue.serverTimestamp());
-                                Log.d("CLICKABLE1", "onBindViewHolder: "+own_pending);
-                                String user_id = mauth.getCurrentUser().getUid();
-                                Map<String,Object> bookMap = new HashMap<>();
-                                Map<String,Object> booktime = new HashMap<>();
-                                booktime.put(list.get(position).book_time,FieldValue.delete());
-                                bookMap.put("time",booktime);
-                                mDatabase.collection("futsal_list").document(futsal_id)
-                                        .collection("book_info").document(date).set(map)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                                                .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                holder.cancelbooking();
-                                            }
-                                        });
-                                    }
-                                });
-                                mDatabase.collection("user_list").document(user_id)
-                                        .collection("book_info").document(date).set(map,SetOptions.merge())
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                mDatabase.collection("user_list").document(user_id).collection("book_info")
-                                                        .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge());
+                                    Map<String, Object> userMap = new HashMap<>();
+                                    Map<String, Object> timeMap = new HashMap<>();
+                                    timeMap.put(list.get(position).book_time, FieldValue.delete());
+                                    userMap.put(futsal_id, timeMap);
 
-                                            }
-                                        });
-                               }
-                        });
+
+                                    Map<String, Object> futsalMap = new HashMap<>();
+                                    Map<String, Object> timeMap1 = new HashMap<>();
+                                    timeMap1.put(list.get(position).book_time, FieldValue.delete());
+                                    futsalMap.put(user_id, timeMap1);
+
+
+                                    mDatabase.collection("user_list").document(user_id)
+                                            .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                    mDatabase.collection("futsal_list").document(futsal_id)
+                                        .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    holder.cancelbooking();
+                                                }
+                                            });
+
+//                                }
+
+//                            });
+                        } else {
+                            String user_id = mauth.getCurrentUser().getUid();
+                            Log.d("CLICKABLE1", "onBindViewHolder: " + user_id);
+                            Map<String, Object> userMap = new HashMap<>();
+                            Map<String, Object> timeMap = new HashMap<>();
+                            timeMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                            userMap.put(futsal_id, timeMap);
+
+
+                            Map<String, Object> futsalMap = new HashMap<>();
+                            Map<String, Object> timeMap1 = new HashMap<>();
+                            timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                            futsalMap.put(user_id, timeMap1);
+
+
+                            mDatabase.collection("futsal_list").document(futsal_id)
+                                    .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
+                            mDatabase.collection("user_list").document(user_id)
+                                    .collection("pending").document(date).set(userMap, SetOptions.merge());
+                        }
                     }
-                    else {
-                        String user_id = mauth.getCurrentUser().getUid();
 
-//                        Map<String, Object> bookFutsalMap = new HashMap<>();
-//                        Map<String, Object> userBookMap = new HashMap<>();
-//                        Map<String, Object> timeuBookMap = new HashMap<>();
-//                        timeuBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-//                        userBookMap.put(user_id, timeuBookMap);
-//                        bookFutsalMap.put(date, userBookMap);
-
-//                        Map<String, Object> bookUserMap = new HashMap<>();
-//                        Map<String, Object> futsalBookMap = new HashMap<>();
-//                        Map<String, Object> timefBookMap = new HashMap<>();
-//                        timefBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-//                        futsalBookMap.put(futsal_id, timefBookMap);
-//                        bookUserMap.put(date, futsalBookMap);
-
-                        Map<String,Object> bookMap = new HashMap<>();
-                        Map<String,Object> booktime = new HashMap<>();
-                        booktime.put(list.get(position).book_time,FieldValue.serverTimestamp());
-                        bookMap.put("time",booktime);
-
-                        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                                .document(date).collection("newrequest").document(user_id).set(bookMap, SetOptions.merge());
-
-                        mDatabase.collection("user_list").document(user_id).collection("book_info")
-                                .document(date).collection("pending").document(futsal_id).set(bookMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                holder.setPending();
-                            }
-                        });
-
-//                        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-//                                .document("newrequest").set(bookFutsalMap, SetOptions.merge())
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        Log.d("SUCCESS", "onSuccess: " + holder);
-//                                        holder.setPending();
-//                                    }
-//                                }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.d("FAILER", "onFailure: " + e);
-//                            }
-//                        });
-//                        mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending").set(bookUserMap, SetOptions.merge());
-
-                    }
                 }
             });
         }
@@ -223,6 +192,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         TextView book_time;
         Button bookBtn;
+        boolean own_pending = false;
 
 
 
@@ -234,12 +204,6 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         }
 
-        public void setPending() {
-            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-            bookBtn.setBackgroundResource(R.drawable.own_pending_btn);
-            bookBtn.setText("Pending");
-            own_pending=true;
-        }
         public void cancelbooking(){
             bookBtn.setTextColor(Color.parseColor("#5FBA3A"));
             bookBtn.setBackgroundResource(R.drawable.input_field);
@@ -249,61 +213,35 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         }
         public void firstLoadPendingData(String bookdate){
-//            mDatabase.collection("futsal_list").document(futsal_id)
-//                    .collection("book_info").document("newrequest").get()
-//                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if(task.isSuccessful()){
-//                        if(task.getResult().exists()){
-//                            if(task.getResult().get(date) != null){
-//                                Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
-////                                if(mauth.getCurrentUser() != null) {
-////                                    String uid = mauth.getCurrentUser().getUid();
-//                                    for (String user_id: dateRequested.keySet() ) {
-//                                        if (dateRequested.get(user_id) != null) {
-//                                            Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
-//                                            if (userId.get(bookdate) != null) {
-//                                                bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                bookBtn.setBackgroundResource(R.drawable.pending_button);
-//                                                bookBtn.setText("Pending");
-//                                                bookBtn.setClickable(false);
-//                                            }
-//                                        }
-//                                    }
-//                                //}
-//                            }
-//                        }
-//
-//                    }
-//                }
-//            });
-
             mDatabase.collection("futsal_list").document(futsal_id)
-                    .collection("book_info").document(date).collection("newrequest").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .collection("newrequest").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            String user_id = document.getId();
-                            if(document.get("time") != null) {
-                                Map<String, Object> timeMap = (Map<String, Object>) document.get("time");
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if(documentSnapshot != null){
+                        Log.d("CLICKABLE", "onEvent: "+documentSnapshot.getData());
+                        Map<String, Object> userIdMap = documentSnapshot.getData();
+                        if(userIdMap != null) {
+                            for (String user_id : userIdMap.keySet()) {
+                                Log.d("CLICKABLE", "onEvent: " + user_id);
+                                Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                                Log.d("CLICKABLE", "map: " + timeMap + "__" + timeMap.get(bookdate) + "__" + bookdate);
                                 if (timeMap.get(bookdate) != null) {
                                     bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
                                     bookBtn.setBackgroundResource(R.drawable.pending_button);
                                     bookBtn.setText("Pending");
                                     bookBtn.setClickable(false);
-                                    if(mauth.getCurrentUser() != null) {
+                                    Log.d("CLICKABLE", "Book: " + user_id);
+                                    if (mauth.getCurrentUser() != null) {
                                         String uid = mauth.getCurrentUser().getUid();
                                         if (user_id.equals(uid)) {
-                                            Log.d("CLICKABLE", "onComplete: "+uid);
-                                            own_pending = true;
+                                            Log.d("CLICKABLE", "onComplete: " + uid);
                                             bookBtn.setClickable(true);
                                             bookBtn.setBackgroundResource(R.drawable.own_pending_btn);
+                                            own_pending = true;
                                         }
                                     }
                                 }
+
                             }
                         }
                     }
@@ -315,29 +253,27 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
         public void firstLoadBookedData(String book_time) {
 
             mDatabase.collection("futsal_list").document(futsal_id)
-                    .collection("book_info").document(date).collection("booked").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .collection("booked").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            if(document.get("time") != null) {
-                                String user_id = document.getId();
-                                Map<String, Object> timeMap = (Map<String, Object>) document.get("time");
-                                if (timeMap.get(book_time) != null) {
-                                    bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                    bookBtn.setBackgroundResource(R.drawable.already_booked_button);
-                                    bookBtn.setText("Already Booked");
-                                    bookBtn.setClickable(false);
-                                    if(mauth.getCurrentUser() != null) {
-                                        String uid = mauth.getCurrentUser().getUid();
-                                        Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
-                                        if (user_id.equals(uid)) {
-                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
-                                            bookBtn.setText("Booked");
-                                            bookBtn.setClickable(false);
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if(documentSnapshot != null){
+                        String user_id = documentSnapshot.getId();
+                        if(documentSnapshot.get(user_id) != null) {
+                            Map<String, Object> timeMap = (Map<String, Object>) documentSnapshot.get(user_id);
+                            if (timeMap.get(book_time) != null) {
+                                bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                bookBtn.setBackgroundResource(R.drawable.already_booked_button);
+                                bookBtn.setText("Already Booked");
+                                bookBtn.setClickable(false);
+                                if(mauth.getCurrentUser() != null) {
+                                    String uid = mauth.getCurrentUser().getUid();
+                                    Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
+                                    if (user_id.equals(uid)) {
+                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                        bookBtn.setBackgroundResource(R.drawable.your_booking_button);
+                                        bookBtn.setText("Booked");
+                                        bookBtn.setClickable(false);
 
-                                        }
                                     }
                                 }
                             }
@@ -345,49 +281,6 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                     }
                 }
             });
-
-
-
-//            mDatabase.collection("futsal_list").document(futsal_id)
-//                    .collection("book_info").document("booked").get()
-//                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                            if(task.isSuccessful()){
-//                                if(task.getResult().exists()){
-//                                    Log.d("MAP_TEST", "onComplete: "+task.getResult());
-//                                    if(task.getResult().get(date) != null){
-//                                        Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
-//                                            for (String user_id: dateRequested.keySet() ){
-//                                                if (dateRequested.get(user_id) != null) {
-//                                                    Log.d("MAP_TEST", "onComplete: " + dateRequested.get(user_id));
-//                                                    Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
-//                                                    if (userId.get(book_time) != null) {
-//                                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                        bookBtn.setBackgroundResource(R.drawable.already_booked_button);
-//                                                        bookBtn.setText("Already Booked");
-//                                                        bookBtn.setClickable(false);
-//                                                        String uid = mauth.getCurrentUser().getUid();
-//                                                        Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
-//                                                        if (user_id.equals(uid)) {
-//                                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
-//                                                            bookBtn.setText("Booked");
-//                                                            bookBtn.setClickable(false);
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//
-//
-//                                       // }
-//                                    }
-//                                }
-//
-//                            }
-//                        }
-//                    });
-
         }
 
         public Boolean pastTimeDisable(String book_time, String date) {

@@ -19,8 +19,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -32,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.BookTimeViewHolder> {
 
@@ -80,52 +84,15 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
             holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Map<String,Object> map = new HashMap<>();
-
-                    Map<String,Object> bookMap = new HashMap<>();
-                    Map<String,Object> booktime = new HashMap<>();
-                    booktime.put(list.get(position).book_time,FieldValue.serverTimestamp());
-                    bookMap.put("time",booktime);
-
-                    mDatabase.collection("futsal_list").document(futsal_id).collection("book_info").document(date)
-                            .set(map,SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-                                        .document(date).collection("booked").document(futsal_id).set(bookMap, SetOptions.merge())
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                holder.setBooked();
-                                            }
-                                        });
-                            }
-                    });
+                    Map<String, Object> futsalMap = new HashMap<>();
+                    Map<String, Object> timeMap1 = new HashMap<>();
+                    timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                    futsalMap.put(futsal_id, timeMap1);
 
 
+                    mDatabase.collection("futsal_list").document(futsal_id)
+                            .collection("booked").document(date).set(futsalMap, SetOptions.merge());
 
-//                    Map<String, Object> bookFutsalMap = new HashMap<>();
-//                    Map<String, Object> userBookMap = new HashMap<>();
-//                    Map<String, Object> timeuBookMap = new HashMap<>();
-//                    timeuBookMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-//                    userBookMap.put(futsal_id, timeuBookMap);
-//                    bookFutsalMap.put(date, userBookMap);
-//
-//
-//                    mDatabase.collection("futsal_list").document(futsal_id).collection("book_info")
-//                            .document("booked").set(bookFutsalMap, SetOptions.merge())
-//                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                @Override
-//                                public void onSuccess(Void aVoid) {
-//                                    Log.d("SUCCESS", "onSuccess: " + holder);
-//                                    holder.setPending();
-//                                }
-//                            }).addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.d("FAILER", "onFailure: " + e);
-//                        }
-//                    });
                     }
 
             });
@@ -193,84 +160,56 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
         }
         public void firstLoadPendingData(String bookdate){
             mDatabase.collection("futsal_list").document(futsal_id)
-                    .collection("book_info").document(date).collection("newrequest").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .collection("newrequest").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            if(document.get("time") != null) {
-                                Map<String, Object> timeMap = (Map<String, Object>) document.get("time");
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if(documentSnapshot != null){
+                        Log.d("CLICKABLE", "onEvent: "+documentSnapshot.getData());
+                        Map<String, Object> userIdMap = documentSnapshot.getData();
+                        if(userIdMap != null) {
+                            for (String user_id : userIdMap.keySet()) {
+                                Log.d("CLICKABLE", "onEvent: " + user_id);
+                                Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                                Log.d("CLICKABLE", "map: " + timeMap + "__" + timeMap.get(bookdate) + "__" + bookdate);
                                 if (timeMap.get(bookdate) != null) {
                                     bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
                                     bookBtn.setBackgroundResource(R.drawable.pending_button);
                                     bookBtn.setText("Pending");
                                     bookBtn.setClickable(false);
                                 }
+
                             }
                         }
                     }
                 }
             });
-//            mDatabase.collection("futsal_list").document(futsal_id)
-//                    .collection("book_info").document("newrequest").get()
-//                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                            if(task.isSuccessful()){
-//                                if(task.getResult().exists()){
-//                                    if(task.getResult().get(date) != null){
-//                                        Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
-////                                if(mauth.getCurrentUser() != null) {
-////                                    String uid = mauth.getCurrentUser().getUid();
-//                                        for (String user_id: dateRequested.keySet() ) {
-//                                            if (dateRequested.get(user_id) != null) {
-//                                                Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
-//                                                if (userId.get(bookdate) != null) {
-//                                                    bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                    bookBtn.setBackgroundResource(R.drawable.pending_button);
-//                                                    bookBtn.setText("Pending");
-//                                                    bookBtn.setClickable(false);
-//                                                }
-//                                            }
-//                                        }
-//                                        //}
-//                                    }
-//                                }
-//
-//                            }
-//                        }
-//                    });
-//
 
         }
 
         public void firstLoadBookedData(String book_time) {
 
             mDatabase.collection("futsal_list").document(futsal_id)
-                    .collection("book_info").document(date).collection("booked").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .collection("booked").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            if(document.get("time") != null) {
-                                String user_id = document.getId();
-                                Map<String, Object> timeMap = (Map<String, Object>) document.get("time");
-                                if (timeMap.get(book_time) != null) {
-                                    bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                    bookBtn.setBackgroundResource(R.drawable.already_booked_button);
-                                    bookBtn.setText("Already Booked");
-                                    bookBtn.setClickable(false);
-                                    if(mauth.getCurrentUser() != null) {
-                                        String uid = mauth.getCurrentUser().getUid();
-                                        Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
-                                        if (user_id.equals(uid)) {
-                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
-                                            bookBtn.setText("Booked");
-                                            bookBtn.setClickable(false);
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if(documentSnapshot != null){
+                        String user_id = documentSnapshot.getId();
+                        if(documentSnapshot.get(user_id) != null) {
+                            Map<String, Object> timeMap = (Map<String, Object>) documentSnapshot.get(user_id);
+                            if (timeMap.get(book_time) != null) {
+                                bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                bookBtn.setBackgroundResource(R.drawable.already_booked_button);
+                                bookBtn.setText("Already Booked");
+                                bookBtn.setClickable(false);
+                                if(mauth.getCurrentUser() != null) {
+                                    String uid = mauth.getCurrentUser().getUid();
+                                    Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
+                                    if (user_id.equals(uid)) {
+                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                        bookBtn.setBackgroundResource(R.drawable.your_booking_button);
+                                        bookBtn.setText("Booked");
+                                        bookBtn.setClickable(false);
 
-                                        }
                                     }
                                 }
                             }
@@ -278,47 +217,6 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                     }
                 }
             });
-
-//            mDatabase.collection("futsal_list").document(futsal_id)
-//                    .collection("book_info").document("booked").get()
-//                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                            if(task.isSuccessful()){
-//                                if(task.getResult().exists()){
-//                                    Log.d("MAP_TEST", "onComplete: "+task.getResult());
-//                                    if(task.getResult().get(date) != null){
-//                                        Map<String, Object> dateRequested = (Map<String, Object>) task.getResult().get(date);
-//                                        for (String user_id: dateRequested.keySet() ){
-//                                            if (dateRequested.get(user_id) != null) {
-//                                                Log.d("MAP_TEST", "onComplete: " + dateRequested.get(user_id));
-//                                                Map<String, Object> userId = (Map<String, Object>) dateRequested.get(user_id);
-//                                                if (userId.get(book_time) != null) {
-//                                                    bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                    bookBtn.setBackgroundResource(R.drawable.already_booked_button);
-//                                                    bookBtn.setText("Already Booked");
-//                                                    bookBtn.setClickable(false);
-//                                                    String uid = mauth.getCurrentUser().getUid();
-//                                                    Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
-//                                                    if (futsal_id.equals(uid)) {
-//                                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-//                                                        bookBtn.setBackgroundResource(R.drawable.your_booking_button);
-//                                                        bookBtn.setText("Booked");
-//                                                        bookBtn.setClickable(false);
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//
-//
-//                                        // }
-//                                    }
-//                                }
-//
-//                            }
-//                        }
-//                    });
-
         }
 
         public Boolean pastTimeDisable(String book_time, String date) {

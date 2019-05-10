@@ -22,6 +22,8 @@ import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.Model.Review;
 import com.example.futsalnepal.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
@@ -114,6 +116,8 @@ public class RatingReviewFragment extends Fragment {
             mPost.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ratingLayout.setVisibility(View.INVISIBLE);
+                    ratingLayout.setMaxHeight(0);
                     int rating = (int) mRating.getRating();
                     String review = mReview.getText().toString();
                     number_of_rating(rating);
@@ -136,9 +140,22 @@ public class RatingReviewFragment extends Fragment {
                     rating_by.put("rating", rating);
                     rating_by.put("review", review);
                     rating_by.put("timeStamp", FieldValue.serverTimestamp());
-                    mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by);
+                    mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    loadRating(futsal_id);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    ratingLayout.setVisibility(View.VISIBLE);
+                                    ratingLayout.setMaxHeight(200);
+                                }
+                            });
+
                     mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
-                    loadRating(futsal_id);
                 }
             });
         }
@@ -156,15 +173,17 @@ public class RatingReviewFragment extends Fragment {
 
                 for (QueryDocumentSnapshot  doc : snapshots) {
                     if (doc.get("timeStamp") != null) {
-                        review_list.clear();
-                        user_list.clear();
+
                         String userId = doc.getId();
-                        Review review = doc.toObject(Review.class);
+
 
                         mDatabase.collection("user_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if (task.isSuccessful()) {
+                                    review_list.clear();
+                                    user_list.clear();
+                                    Review review = doc.toObject(Review.class);
                                     User user = task.getResult().toObject(User.class);
                                     review_list.add(review);
                                     user_list.add(user);

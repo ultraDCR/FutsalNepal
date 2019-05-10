@@ -75,17 +75,15 @@ public class Favourite extends AppCompatActivity {
                         for(int i=0; i< futsalId.size();i++) {
                             String futsal_id = futsalId.get(i);
                             Log.d("TESTING", "onEvent: "+futsal_id +"   ---"+futsalId);
-                            mDatabase.collection("futsal_list").document(futsal_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            mDatabase.collection("futsal_list").document(futsal_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if(task.isSuccessful()) {
-                                        if (task.getResult().exists()) {
-                                            Log.d("TESTING", "onEvent: " + task);
-                                            Futsal futsals = task.getResult().toObject(Futsal.class).withId(futsal_id);
-                                            Log.d("TESTING1", "onComplete: "+futsals);
-                                            futsalList.add(futsals);
-                                            adapter.notifyDataSetChanged();
-                                        }
+                                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                    if(documentSnapshot != null) {
+                                        Log.d("TESTING", "onEvent: " + documentSnapshot);
+                                        Futsal futsals = documentSnapshot.toObject(Futsal.class).withId(futsal_id);
+                                        Log.d("TESTING1", "onComplete: "+futsals);
+                                        futsalList.add(futsals);
+                                        adapter.notifyDataSetChanged();
                                     }
                                 }
                             });

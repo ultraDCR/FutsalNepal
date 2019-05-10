@@ -21,7 +21,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -32,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 
 /**
@@ -129,134 +133,60 @@ public class PendingFragment extends Fragment {
         return view;
     }
 
-//    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
-//        mDatabase.collection("user_list").document(user_id).collection("book_info").document("pending")
-//                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if(task.isSuccessful()) {
-//                    if(task.getResult().exists()) {
-//                        Map<String, Object> dd = task.getResult().getData();
-//                        for(String pdate:dd.keySet()){
-//                            Log.d("TESTING@", "" + pdate);
-//                            if (compareDate(pdate, date)) {
-//                                Log.d("DATETEST2", "" + futsal_list);
-//                                Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(pdate);
-//
-//                                p_list = new ArrayList<>();
-//                                for (String futsalid : dd1.keySet()) {
-//                                    if (futsalid != null) {
-//                                        Log.d("NEWTEST1", "" + futsalid);
-//                                        for(int i = 0;i < futsal_list.size();i++) {
-//                                            Log.d("NEWTEST2.0", "onComplete: " +futsal_list.size()+" -- " + futsal_list.get(1).futsal_id + " -- " + futsalid);
-//                                            if(futsal_list.get(i).futsal_id.equals(futsalid)){
-//                                                Log.d("NEWTEST2.2", "onComplete: "  + dd1.get(futsalid));
-//                                                Map<String, String> dd2 = (Map<String, String>) dd1.get(futsalid);
-//                                                for(String time: dd2.keySet()){
-//
-//                                                    BookingFutsal futsal1 = new BookingFutsal();
-//                                                    Log.d("NEWTEST2.3", "onComplete: "  + time);
-//                                                    futsal1.setTime(time);
-//                                                    futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
-//                                                    futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
-//                                                    futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
-//                                                    futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
-//                                                    futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
-//                                                    futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());
-//                                                    Log.d("NEWTEST2.3", "onComplete1: "  + futsal1.getTime());
-//                                                    p_list.add(futsal1);
-//
-//                                                }
-//
-//                                                Log.d("NEWTEST2.1", "onComplete: "  + p_list);
-//                                            }
-//
-//                                        }
-//
-//                                    }
-//
-//                                }
-//                                Log.d("NEWTEST3", "onComplete: " + pdate + "  " + p_list);
-//                                sectionModelArrayList.add(new SectionModel(pdate, p_list,null));
-//                                sadapter.notifyDataSetChanged();
-//                                for(BookingFutsal book:p_list){
-//                                    Log.d("NEWTEST4", "onComplete: " + book.getTime() + "  " + book.getFutsal_name());
-//                                }
-//                                //p_list.clear();
-//                                Log.d("NEWTEST4", "onComplete: " + pdate + "  " + p_list);
-//                                Log.d("DATETEST7", "onComplete: " + sectionModelArrayList);
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//
-//    }
-
 
     private void loadToRecyclerView(DateSectionFutsalRecyclerViewAdapter sadapter){
-        mDatabase.collection("user_list").document(user_id).collection("book_info")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String pdate = document.getId();
-                        Log.d("FIREBASETEST", "onComplete: "+pdate+"-"+document.getDocumentReference(pdate)+"-"+document.getReference());
-                        if (compareDate(pdate, date)) {
-                            document.getReference().collection("pending").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        p_list = new ArrayList<>();
-                                        for (QueryDocumentSnapshot document1 : task.getResult()) {
-                                            String futsalid = document1.getId();
-                                            for (int i = 0; i < futsal_list.size(); i++) {
-                                                Log.d("FIREBASETEST2.0", "onComplete: " + futsal_list.size() + " -- " + futsal_list.get(1).futsal_id + " -- " + futsalid);
-                                                if (futsal_list.get(i).futsal_id.equals(futsalid)) {
-                                                    Map<String, Object> dd2 = (Map<String, Object>) document1.get("time");
-                                                    Log.d("FIREBASETEST2.2", "onComplete: " + document1.getData());
-                                                    for (String time : dd2.keySet()) {
+        mDatabase.collection("user_list").document(user_id).collection("pending")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                        if (snapshot != null) {
+                            sectionModelArrayList.clear();
+                            for (QueryDocumentSnapshot document : snapshot) {
+                                String pdate = document.getId();
+                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate) + "_" + compareDate(pdate, date));
+                                if (compareDate(pdate, date)) {
+                                    Map<String, Object> dd1 = (Map<String, Object>) document.getData();
+                                    p_list = new ArrayList<>();
+                                    p_list.clear();
+                                    for (String uid : dd1.keySet()) {
+                                        for (int i = 0; i < futsal_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + futsal_list.size() + " -- " + futsal_list.get(i).futsal_id + " -- " + uid);
+                                            if (futsal_list.get(i).futsal_id.equals(uid)) {
+                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
+                                                Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
+                                                for (String time : dd2.keySet()) {
 
-                                                        BookingFutsal futsal1 = new BookingFutsal();
-                                                        Log.d("FIREBASETEST2.3", "onComplete: " + time);
-                                                        futsal1.setTime(time);
-                                                        futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
-                                                        futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
-                                                        futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
-                                                        futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
-                                                        futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
-                                                        futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());
-                                                        Log.d("FIREBASETEST2.4", "onComplete1: " + futsal1.getTime());
-                                                        p_list.add(futsal1);
+                                                    BookingFutsal futsal1 = new BookingFutsal();
+                                                    Log.d("FIREBASETEST2.3", "onComplete: " + time);
+                                                    futsal1.setTime(time);
+                                                    futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
+                                                    futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
+                                                    futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
+                                                    futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
+                                                    futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
+                                                    futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());
+                                                    Log.d("FIREBASETEST2.4", "onComplete1: " + futsal1.getTime());
+                                                    p_list.add(futsal1);
 
-                                                    }
-
-                                                    Log.d("FIREBASETEST2.1", "onComplete: " + p_list);
                                                 }
 
+                                                Log.d("FIREBASETEST2.1", "onComplete: " + p_list);
                                             }
-                                        }
-                                        if(p_list.size() != 0) {
-                                            sectionModelArrayList.add(new SectionModel(pdate, p_list, null));
-                                            sadapter.notifyDataSetChanged();
-                                        }
-                                    }else{
-                                        Log.d("FIREBASEERROR", "ERROR ON RETERIVAL: ");
-                                    }
-                                }
-                            });
 
+                                        }
+                                    }
+                                    if (p_list.size() != 0) {
+                                        sectionModelArrayList.add(new SectionModel(pdate, p_list, null));
+                                        sadapter.notifyDataSetChanged();
+                                    }
+
+                                } else {
+                                    Log.d("ERROR IN RETRIVAL", "Error getting documents: ", e);
+                                }
+                            }
                         }
                     }
-                } else {
-                    Log.d("ERROR IN RETRIVAL", "Error getting documents: ", task.getException());
-                }
-            }
+
         });
 
     }

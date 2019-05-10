@@ -60,6 +60,7 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
 
         holder.ratingBar.setRating(list.get(position).overall_rating);
 
+
         //animate(holder);
 
 
@@ -95,6 +96,7 @@ public class BookedRecyclerView extends RecyclerView.Adapter<com.example.futsaln
         TextView time;
         ImageView profile;
         RatingBar ratingBar;
+
 
         FutsalViewHolder(View itemView) {
             super(itemView);

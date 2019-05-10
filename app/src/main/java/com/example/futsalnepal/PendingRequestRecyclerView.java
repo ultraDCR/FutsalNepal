@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -14,23 +15,35 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingFutsal;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.PendingRequestRecyclerView.FutsalViewHolder>  {
     List<BookingFutsal> list;
     Context context;
     String date;
+    FirebaseAuth mauth;
+    FirebaseFirestore mDatabase;
+    String futsal_id;
     String bookTime[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
 
     public PendingRequestRecyclerView(String date, List<BookingFutsal> list, Context context) {
         this.list = list;
         this.context = context;
         this.date = date;
+        mauth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -87,7 +100,31 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
         Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).futsal_logo).into(holder.profile);
 
         holder.ratingBar.setRating(list.get(position).overall_rating);
+        holder.cancleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String user_id = mauth.getCurrentUser().getUid();
+                String futsal_id= list.get(position).futsal_id;
 
+                Map<String, Object> userMap = new HashMap<>();
+                Map<String, Object> timeMap = new HashMap<>();
+                timeMap.put(list.get(position).time, FieldValue.delete());
+                userMap.put(futsal_id, timeMap);
+
+
+                Map<String, Object> futsalMap = new HashMap<>();
+                Map<String, Object> timeMap1 = new HashMap<>();
+                timeMap1.put(list.get(position).time, FieldValue.delete());
+                futsalMap.put(user_id, timeMap1);
+
+
+                mDatabase.collection("user_list").document(user_id)
+                        .collection("pending").document(date).set(userMap, SetOptions.merge());
+                mDatabase.collection("futsal_list").document(futsal_id)
+                        .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
+
+            }
+        });
         //animate(holder);
 
 
@@ -151,6 +188,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
         ImageView profile;
         RatingBar ratingBar;
         ConstraintLayout layout;
+        Button cancleBtn;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -160,6 +198,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
             profile = itemView.findViewById(R.id.p_futsal_profile);
             ratingBar = itemView.findViewById(R.id.p_futsal_rating);
             layout = itemView.findViewById(R.id.background_pending);
+            cancleBtn =itemView.findViewById(R.id.cancle_btn);
 
         }
     }
