@@ -1,7 +1,10 @@
 package com.example.futsalnepal;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,8 +18,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingFutsal;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -117,12 +123,56 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                 timeMap1.put(list.get(position).time, FieldValue.delete());
                 futsalMap.put(user_id, timeMap1);
 
-
-                mDatabase.collection("user_list").document(user_id)
-                        .collection("pending").document(date).set(userMap, SetOptions.merge());
-                mDatabase.collection("futsal_list").document(futsal_id)
-                        .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
-
+                new AlertDialog.Builder(context)
+                        .setMessage("Are you sure you want to cancle booking request of "+date +" "+list.get(position).time +" ?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                mDatabase.collection("user_list").document(user_id)
+                                        .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                mDatabase.collection("futsal_list").document(futsal_id)
+                                        .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                mDatabase.collection("user_list").document(user_id)
+                                                        .collection("pending").document(date).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                        if(task.isSuccessful()){
+                                                            if(task.getResult().exists()){
+                                                                Map<String,Object> useMap = (Map<String, Object>) task.getResult().get(futsal_id);
+                                                                if(useMap.size() <= 1){
+                                                                    mDatabase.collection("user_list").document(user_id)
+                                                                            .collection("pending").document(date).delete();
+                                                                    mDatabase.collection("futsal_list").document(futsal_id)
+                                                                            .collection("newrequest").document(date).delete();
+                                                                }else{
+                                                                    mDatabase.collection("user_list").document(user_id)
+                                                                            .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                                                    mDatabase.collection("futsal_list").document(futsal_id)
+                                                                            .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
+                                                                }
+                                                                notifyDataSetChanged();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
             }
         });
         //animate(holder);

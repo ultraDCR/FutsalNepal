@@ -38,12 +38,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -69,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Uri mainImageURI = null;
     private String[] images = {
             "https://5.imimg.com/data5/JJ/PX/MY-5974440/futsal-ground-artificial-grass-500x500.jpg",
-            "https://ranknepal.com/wp-content/uploads/2014/06/footsal-ground-inside-kathmandu-valley.jpg",
             "https://5.imimg.com/data5/OE/GB/MY-2392315/futsal-artificial-grass-ground-500x500.jpg"
 
     };
@@ -87,8 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //toolbar
         mainToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
-        mainToolbar.setTitle("Futsal Nepal");
+
         ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent settingIntent = new Intent(MainActivity.this, FutsalInfoEdit.class);
+                Intent settingIntent = new Intent(MainActivity.this, UserInfoEdit.class);
                 startActivity(settingIntent);
             }
         });
@@ -173,24 +177,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
         FutsalRecycleView adapter = new FutsalRecycleView(futsalList, getApplication());
         recyclerView.setAdapter(adapter);
+        //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
-        mDatabase.collection("futsal_list").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        mDatabase.collection("futsal_list").orderBy("overall_rating", Query.Direction.DESCENDING).limit(3).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(!queryDocumentSnapshots.isEmpty()) {
+                    futsalList.clear();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String futsalId = doc.getId();
+                        Log.d("TESTING", "onEvent: " + doc);
+                        Futsal futsals = doc.toObject(Futsal.class).withId(futsalId);
+                        futsalList.add(futsals);
+                        adapter.notifyDataSetChanged();
 
-                if(!documentSnapshots.isEmpty()) {
-                    for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
-
-                        if (doc.getType() == DocumentChange.Type.ADDED) {
-
-                            String futsalId = doc.getDocument().getId();
-                            Log.d("TESTING", "onEvent: "+doc);
-                            Futsal futsals = doc.getDocument().toObject(Futsal.class).withId(futsalId);
-                            futsalList.add(futsals);
-                            adapter.notifyDataSetChanged();
-
-                        }
                     }
                 }
             }
@@ -214,7 +215,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             String phone = task.getResult().getString("user_phone_number");
 
                             //mainImageURI = Uri.parse(image);
-
+                            dUserName.setVisibility(View.VISIBLE);
+                            dUserAddress.setVisibility(View.VISIBLE);
+                            dUserPhone.setVisibility(View.VISIBLE);
                             dUserName.setText(name);
                             dUserAddress.setText(address);
                             dUserPhone.setText(phone);
@@ -263,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             //redirect to futsal page
                             Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
                             startActivity(futsalhome);
-                            //finish();
+                            finish();
                         } else {
                             Log.d("TestingInfo3", "onComplete: "+ mDatabase.collection("user_list").document(user_id).get());
                             mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

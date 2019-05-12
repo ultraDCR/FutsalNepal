@@ -1,24 +1,29 @@
 package com.example.futsalnepal;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class FutsalHome extends AppCompatActivity {
 
 
     private BottomNavigationView bNav;
     private FrameLayout bNavFrame;
-
+    private FirebaseAuth mAuth;
     private FutsalBookInfoFragment bookInformation;
     private FutsalBookNowFragment bookNow;
     private FutsalProfile fProfile;
@@ -31,7 +36,7 @@ public class FutsalHome extends AppCompatActivity {
         bNav = findViewById(R.id.futsal_nav);
         removePaddingFromNavigationItem();
 
-
+        mAuth = FirebaseAuth.getInstance();
         bNavFrame = findViewById(R.id.futsal_frame);
 
         bookInformation = new FutsalBookInfoFragment();
@@ -72,6 +77,30 @@ public class FutsalHome extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.futsal_user_menu, menu);
+        return true;
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.logout_btn:
+                mAuth.signOut();
+                Intent signOutIntent = new Intent(FutsalHome.this, MainActivity.class);
+                startActivity(signOutIntent);
+                finish();
+                return true;
+            case R.id.setting_btn:
+                Intent settingIntent = new Intent(FutsalHome.this, FutsalInfoEdit.class);
+                startActivity(settingIntent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void setFragment(Fragment fragment) {
 

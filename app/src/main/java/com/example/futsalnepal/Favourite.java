@@ -1,7 +1,13 @@
 package com.example.futsalnepal;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.View;
 
 import com.example.futsalnepal.Model.Futsal;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,10 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Favourite extends AppCompatActivity {
-    List<Futsal> futsalList ;
+    List<Futsal> futsalList;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     String user_id;
+    EmptyRecyclerView recyclerView;
+    FavouriteRecyclerView adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,26 +51,18 @@ public class Favourite extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         futsalList = new ArrayList<>();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.favourite_rview);
+        recyclerView = findViewById(R.id.favourite_rview);
+        recyclerView.setEmptyView(findViewById(R.id.empty_view));
         recyclerView.setLayoutManager(new LinearLayoutManager(Favourite.this));
-        FavouriteRecyclerView adapter = new FavouriteRecyclerView(futsalList, getApplication());
+        adapter = new FavouriteRecyclerView(futsalList, getApplication());
         recyclerView.setAdapter(adapter);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT ) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                    adapter.deleteItem(viewHolder.getAdapterPosition());
-            }
-        }).attachToRecyclerView(recyclerView);
-
-        if(mAuth.getCurrentUser() != null) {
-            user_id =mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() != null) {
+            user_id = mAuth.getCurrentUser().getUid();
             mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot snapshot,
@@ -72,39 +74,28 @@ public class Favourite extends AppCompatActivity {
                     if (snapshot != null && snapshot.exists()) {
                         ArrayList<String> futsalId = (ArrayList<String>) snapshot.get("favourite_futsal");
                         futsalList.clear();
-                        for(int i=0; i< futsalId.size();i++) {
+                        for (int i = 0; i < futsalId.size(); i++) {
                             String futsal_id = futsalId.get(i);
-                            Log.d("TESTING", "onEvent: "+futsal_id +"   ---"+futsalId);
+                            Log.d("TESTING", "onEvent: " + futsal_id + "   ---" + futsalId);
                             mDatabase.collection("futsal_list").document(futsal_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                                    if(documentSnapshot != null) {
+                                    if (documentSnapshot != null) {
                                         Log.d("TESTING", "onEvent: " + documentSnapshot);
                                         Futsal futsals = documentSnapshot.toObject(Futsal.class).withId(futsal_id);
-                                        Log.d("TESTING1", "onComplete: "+futsals);
+                                        Log.d("TESTING1", "onComplete: " + futsals);
                                         futsalList.add(futsals);
                                         adapter.notifyDataSetChanged();
                                     }
                                 }
                             });
-// addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                @Override
-//                                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-//                                    if(!documentSnapshot.exists()) {
-//                                        Log.d("TESTING", "onEvent: "+documentSnapshot);
-//                                        Futsal futsals = documentSnapshot.toObject(Futsal.class).withId(futsal_id);
-//                                        futsalList.add(futsals);
-//                                        adapter.notifyDataSetChanged();
-//                                    }
-//                                }
-//                            });
-
                         }
                     }
                 }
             });
         }
     }
+
     // for toolbar
     @Override
     public boolean onSupportNavigateUp() {
@@ -112,12 +103,4 @@ public class Favourite extends AppCompatActivity {
         return true;
     }
 
-//    public List<Futsal> fill_with_data() {
-//
-//        List<Futsal> data = new ArrayList<>();
-//
-//        data.add(new Futsal("WhiteHouse", "Kapan-3","6AM","6PM", "9796875685",4));
-//
-//        return data;
-//    }
 }

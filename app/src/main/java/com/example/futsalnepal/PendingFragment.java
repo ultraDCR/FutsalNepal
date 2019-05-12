@@ -179,6 +179,9 @@ public class PendingFragment extends Fragment {
                                         sectionModelArrayList.add(new SectionModel(pdate, p_list, null));
                                         sadapter.notifyDataSetChanged();
                                     }
+                                    else{
+                                        sectionModelArrayList.clear();
+                                    }
 
                                 } else {
                                     Log.d("ERROR IN RETRIVAL", "Error getting documents: ", e);

@@ -105,8 +105,7 @@ public class RatingReviewFragment extends Fragment {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         if(task.getResult().exists()) {
-                            ratingLayout.setVisibility(View.INVISIBLE);
-                            ratingLayout.setMaxHeight(0);
+                            ratingLayout.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -116,46 +115,50 @@ public class RatingReviewFragment extends Fragment {
             mPost.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ratingLayout.setVisibility(View.INVISIBLE);
-                    ratingLayout.setMaxHeight(0);
-                    int rating = (int) mRating.getRating();
-                    String review = mReview.getText().toString();
-                    number_of_rating(rating);
-                    total_rated_by = total_rated_by + 1;
-                    float overalRatings = calculateOveralRating();
-                    Log.d("TTE", "onClick: " + overalRatings);
-                    Map<String, Object> ratingInfo = new HashMap<>();
-                    ratingInfo.put("overall_rating", overalRatings);
-                    Map<String, Number> starMap = new HashMap<>();
-                    starMap.put("one_star_rating", one_star_rating);
-                    starMap.put("two_star_rating", two_star_rating);
-                    starMap.put("three_star_rating", three_star_rating);
-                    starMap.put("four_star_rating", four_star_rating);
-                    starMap.put("five_star_rating", five_star_rating);
-                    starMap.put("total_rated_by", total_rated_by);
-                    ratingInfo.put("rating_brief_info", starMap);
-                    mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
+                    if (mAuth.getCurrentUser() != null) {
+                        ratingLayout.setVisibility(View.GONE);
+                        int rating = (int) mRating.getRating();
+                        String review = mReview.getText().toString();
+                        number_of_rating(rating);
+                        total_rated_by = total_rated_by + 1;
+                        float overalRatings = calculateOveralRating();
+                        Log.d("TTE", "onClick: " + overalRatings);
+                        Map<String, Object> ratingInfo = new HashMap<>();
+                        ratingInfo.put("overall_rating", overalRatings);
+                        Map<String, Number> starMap = new HashMap<>();
+                        starMap.put("one_star_rating", one_star_rating);
+                        starMap.put("two_star_rating", two_star_rating);
+                        starMap.put("three_star_rating", three_star_rating);
+                        starMap.put("four_star_rating", four_star_rating);
+                        starMap.put("five_star_rating", five_star_rating);
+                        starMap.put("total_rated_by", total_rated_by);
+                        ratingInfo.put("rating_brief_info", starMap);
+                        mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
 
-                    Map<String, Object> rating_by = new HashMap<>();
-                    rating_by.put("rating", rating);
-                    rating_by.put("review", review);
-                    rating_by.put("timeStamp", FieldValue.serverTimestamp());
-                    mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    loadRating(futsal_id);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    ratingLayout.setVisibility(View.VISIBLE);
-                                    ratingLayout.setMaxHeight(200);
-                                }
-                            });
+                        Map<String, Object> rating_by = new HashMap<>();
+                        rating_by.put("rating", rating);
+                        rating_by.put("review", review);
+                        rating_by.put("timeStamp", FieldValue.serverTimestamp());
+                        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        loadRating(futsal_id);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        ratingLayout.setVisibility(View.VISIBLE);
+                                    }
+                                });
 
-                    mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
+                        mDatabase.collection("user_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
+
+                    }else{
+                        LoginDialog dialog = new LoginDialog(getContext(), activity);
+                        dialog.startLoginDialog();
+                    }
                 }
             });
         }

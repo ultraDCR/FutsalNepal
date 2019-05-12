@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -53,6 +54,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
     private FirebaseFirestore fDatabase;
     private StorageReference fStorage;
     private String user_id;
+    private ProgressBar pbar;
     private Uri mainImageURI = null;
     private Bitmap compressedImageFile;
     private boolean isChanged = false;
@@ -66,7 +68,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
         fDatabase = FirebaseFirestore.getInstance();
         fStorage = FirebaseStorage.getInstance().getReference();
-
+        pbar = findViewById(R.id.futsal_save_pbar);
         fName = findViewById(R.id.orgination_name);
         fAddress = findViewById(R.id.futsal_address);
         fPhone = findViewById(R.id.futsal_number);
@@ -145,6 +147,8 @@ public class FutsalInfoEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                saveBtn.setVisibility(View.GONE);
+                pbar.setVisibility(View.VISIBLE);
                 final String futsal_name = fName.getText().toString();
                 final String futsal_address = fAddress.getText().toString();
                 final String futsal_phone = fPhone.getText().toString();
@@ -213,6 +217,8 @@ public class FutsalInfoEdit extends AppCompatActivity {
                                     String error = task.getException().getMessage();
                                     Toast.makeText(FutsalInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
                                 }
+                                saveBtn.setVisibility(View.VISIBLE);
+                                pbar.setVisibility(View.GONE);
                             }
                         });
 //                        image_path.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -243,7 +249,10 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
                     }
 
+                }else{
+                    Toast.makeText(FutsalInfoEdit.this, "All the fields are required.", Toast.LENGTH_LONG).show();
                 }
+
 
             }
 
@@ -325,14 +334,16 @@ public class FutsalInfoEdit extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
 
                 if(task.isSuccessful()){
-
+                    saveBtn.setEnabled(true);
+                    pbar.setVisibility(View.GONE);
                     Toast.makeText(FutsalInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
                     Intent mainIntent = new Intent(FutsalInfoEdit.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();
 
                 } else {
-
+                    saveBtn.setEnabled(true);
+                    pbar.setVisibility(View.GONE);
                     String error = task.getException().getMessage();
                     Toast.makeText(FutsalInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 

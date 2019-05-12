@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Futsal;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -77,19 +78,25 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
     public void deleteItem(int position){
         String user_id = mAuth.getCurrentUser().getUid();
         DocumentReference docRef = db.collection("user_list").document(user_id);
-        docRef.update("favourite_futsal", FieldValue.arrayRemove(list.get(position).FutsalId));
-        Toast.makeText(context, "hello swipe", Toast.LENGTH_SHORT).show();
+        docRef.update("favourite_futsal", FieldValue.arrayRemove(list.get(position).FutsalId))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                notifyDataSetChanged();
+                //Toast.makeText(context, "hello swipe", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
             //returns the number of elements the RecyclerView will display
             if(list != null) {
-            return list.size();
+                return list.size();
             } else {
-            return 0;
+                return 0;
             }
-            }
+    }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {

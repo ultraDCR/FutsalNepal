@@ -28,7 +28,20 @@
                 android:background="@color/colorTransparent"
                 android:text="Save"
                 android:textColor="@color/colorPrimary"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/futsal_save_pbar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/f_save_btn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -107,7 +120,7 @@
                     android:background="@drawable/input_field"
                     android:ems="10"
                     android:hint="Organization Name"
-                    android:inputType="textPersonName"
+                    android:inputType="textPersonName|textCapSentences"
                     android:padding="5dp"
                     android:paddingLeft="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -239,7 +252,7 @@
                     android:ems="10"
                     android:gravity="center"
                     android:hint="6 AM"
-                    android:inputType="textPersonName"
+                    android:inputType="time"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -254,7 +267,7 @@
                     android:ems="10"
                     android:gravity="center"
                     android:hint="10 PM"
-                    android:inputType="textPersonName"
+                    android:inputType="time"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView13" />

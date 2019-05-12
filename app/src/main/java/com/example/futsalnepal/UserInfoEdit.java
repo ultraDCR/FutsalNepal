@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -52,6 +53,7 @@ public class UserInfoEdit extends AppCompatActivity {
     private FirebaseFirestore uDatabase;
     private StorageReference uStorage;
     private String user_id;
+    private ProgressBar pbar;
     private Uri mainImageURI = null;
     private Bitmap compressedImageFile;
     private boolean isChanged = false;
@@ -66,6 +68,7 @@ public class UserInfoEdit extends AppCompatActivity {
         uDatabase = FirebaseFirestore.getInstance();
         uStorage = FirebaseStorage.getInstance().getReference();
 
+        pbar  = findViewById(R.id.user_save_pbar);
         uName = findViewById(R.id.user_fullname);
         uAddress = findViewById(R.id.user_address);
         uPhone = findViewById(R.id.user_phone_number);
@@ -81,7 +84,6 @@ public class UserInfoEdit extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                 if(task.isSuccessful()){
-
                     if(task.getResult().exists()){
                         if (task.getResult().getString("user_full_name") != null) {
                             Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
@@ -120,6 +122,8 @@ public class UserInfoEdit extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveBtn.setVisibility(View.GONE);
+                pbar.setVisibility(View.VISIBLE);
 
                 final String user_name = uName.getText().toString();
                 final String user_address = uAddress.getText().toString();
@@ -167,6 +171,8 @@ public class UserInfoEdit extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     storeFirestore(task, user_name, user_address, user_phone, user_email);
                                 } else {
+                                    saveBtn.setVisibility(View.VISIBLE);
+                                    pbar.setVisibility(View.GONE);
                                     String error = task.getException().getMessage();
                                     Toast.makeText(UserInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
                                 }
@@ -196,6 +202,10 @@ public class UserInfoEdit extends AppCompatActivity {
 
                     }
 
+                }else{
+                    saveBtn.setVisibility(View.VISIBLE);
+                    pbar.setVisibility(View.GONE);
+                    Toast.makeText(UserInfoEdit.this, "All the fields are required.", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -260,14 +270,16 @@ public class UserInfoEdit extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
 
                 if(task.isSuccessful()){
-
+                    saveBtn.setVisibility(View.VISIBLE);
+                    pbar.setVisibility(View.GONE);
                     Toast.makeText(UserInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
                     Intent mainIntent = new Intent(UserInfoEdit.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();
 
                 } else {
-
+                    saveBtn.setVisibility(View.VISIBLE);
+                    pbar.setVisibility(View.GONE);
                     String error = task.getException().getMessage();
                     Toast.makeText(UserInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
@@ -303,7 +315,8 @@ public class UserInfoEdit extends AppCompatActivity {
                 isChanged = true;
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-
+                saveBtn.setVisibility(View.VISIBLE);
+                pbar.setVisibility(View.GONE);
                 Exception error = result.getError();
 
             }

@@ -1,11 +1,14 @@
 package com.example.futsalnepal;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -91,8 +95,9 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
             favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
-                    favBtn.setImageResource(R.drawable.ic_favorite_selected);
+
+                    alertBoxFavourite();
+                    //favBtn.setImageResource(R.drawable.ic_favorite_selected);
                 }
             });
             mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -115,7 +120,8 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                                 favBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+                                        alertBoxUnFavourite();
+//                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
                                     }
                                 });
                             }
@@ -124,7 +130,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                                 favBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                                        alertBoxFavourite();
                                     }
                                 });
                             }
@@ -154,6 +160,57 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
         tablayout.setupWithViewPager(viewPager);
 
 
+    }
+
+    private void alertBoxFavourite() {
+        new AlertDialog.Builder(FutsalIndivisualDetails.this)
+                .setMessage("Do you want to favourite this futsal? ")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("ALERTTEST", "onClick: YES" + dialog + "  " + which);
+                        Log.d("ALERTTEST", "onClick: YES" + user_id + "  " + futsal_id);
+                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+//                        Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
+//                        favBtn.setImageResource(R.drawable.ic_favorite_selected);
+
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .show();
+    }
+
+
+    private void alertBoxUnFavourite() {
+            new AlertDialog.Builder(FutsalIndivisualDetails.this)
+                    .setMessage("Are you sure you want to unfavourite this futsal?")
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Log.d("ALERTTEST", "onClick: YES"+dialog+"  "+which);
+                            Log.d("ALERTTEST", "onClick: YES"+user_id+"  "+futsal_id);
+                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+                            //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
+                            favBtn.setImageResource(R.drawable.ic_favorite_selected);
+
+                        }
+                    })
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
     }
 
     public String getMyData() {

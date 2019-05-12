@@ -2,8 +2,10 @@ package com.example.futsalnepal;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -89,9 +91,27 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                     timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
                     futsalMap.put(futsal_id, timeMap1);
 
+                    new AlertDialog.Builder(context)
+                            .setMessage("Do you want to booking your futsal at "+list.get(position).book_time +" ?")
+                            .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    mDatabase.collection("futsal_list").document(futsal_id)
+                                            .collection("booked").document(date).set(futsalMap, SetOptions.merge());
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .show();
 
-                    mDatabase.collection("futsal_list").document(futsal_id)
-                            .collection("booked").document(date).set(futsalMap, SetOptions.merge());
 
                     }
 
@@ -193,23 +213,25 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                     if(documentSnapshot != null){
-                        String user_id = documentSnapshot.getId();
-                        if(documentSnapshot.get(user_id) != null) {
-                            Map<String, Object> timeMap = (Map<String, Object>) documentSnapshot.get(user_id);
-                            if (timeMap.get(book_time) != null) {
-                                bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                bookBtn.setBackgroundResource(R.drawable.already_booked_button);
-                                bookBtn.setText("Already Booked");
-                                bookBtn.setClickable(false);
-                                if(mauth.getCurrentUser() != null) {
-                                    String uid = mauth.getCurrentUser().getUid();
-                                    Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
-                                    if (user_id.equals(uid)) {
-                                        bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
-                                        bookBtn.setBackgroundResource(R.drawable.your_booking_button);
-                                        bookBtn.setText("Booked");
-                                        bookBtn.setClickable(false);
+                        Map<String, Object> userIdMap = documentSnapshot.getData();
+                        if(userIdMap != null) {
+                            for (String user_id : userIdMap.keySet()) {
+                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                                if (timeMap.get(book_time) != null) {
+                                    bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                    bookBtn.setBackgroundResource(R.drawable.already_booked_button);
+                                    bookBtn.setText("Already Booked");
+                                    bookBtn.setClickable(false);
+                                    if (mauth.getCurrentUser() != null) {
+                                        String uid = mauth.getCurrentUser().getUid();
+                                        Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
+                                        if (user_id.equals(uid)) {
+                                            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+                                            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
+                                            bookBtn.setText("Booked");
+                                            bookBtn.setClickable(false);
 
+                                        }
                                     }
                                 }
                             }

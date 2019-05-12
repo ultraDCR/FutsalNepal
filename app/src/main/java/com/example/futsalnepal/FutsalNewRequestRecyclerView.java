@@ -1,8 +1,10 @@
 package com.example.futsalnepal;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -111,10 +113,26 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         holder.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                addToDatabase(list, position);
-                removeFromDatabase(list, position);
-//                notifyDataSetChanged();
+                new AlertDialog.Builder(context)
+                        .setMessage("Accept booking for "+date+" "+list.get(position).time +" ?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                addToDatabase(list, position);
+                                removeFromDatabase(list, position);
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
 
             }
         });
@@ -122,9 +140,27 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         holder.denyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeFromDatabase(list, position);
-                notifyItemRemoved(position);
-//                notifyDataSetChanged();
+                new AlertDialog.Builder(context)
+                        .setMessage("Reject booking for "+date+" "+list.get(position).time +" ?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                removeFromDatabase(list, position);
+//                              notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
+
 
         }
         });
@@ -204,7 +240,12 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         mDatabase.collection("futsal_list").document(futsal_id)
                 .collection("booked").document(date).set(futsalMap, SetOptions.merge());
         mDatabase.collection("user_list").document(user_id)
-                .collection("booked").document(date).set(userMap, SetOptions.merge());
+                .collection("booked").document(date).set(userMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                notifyItemRemoved(position);
+            }
+        });
 
     }
 
@@ -226,7 +267,12 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         mDatabase.collection("user_list").document(user_id)
                 .collection("pending").document(date).set(userMap, SetOptions.merge());
         mDatabase.collection("futsal_list").document(futsal_id)
-                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
+                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                notifyItemRemoved(position);
+            }
+        });
 
 
     }
