@@ -31,6 +31,8 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -258,9 +260,9 @@ public class UserInfoEdit extends AppCompatActivity {
 
         }
 
-        uAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onSuccess(GetTokenResult getTokenResult) {
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
 
                 Map<String, String> userMap = new HashMap<>();
                 userMap.put("user_full_name", user_name);
@@ -268,7 +270,7 @@ public class UserInfoEdit extends AppCompatActivity {
                 userMap.put("user_address",user_address);
                 userMap.put("user_phone_number",user_phone);
                 userMap.put("user_email",user_email);
-                userMap.put("token_id",getTokenResult.getToken());
+                userMap.put("token_id",task.getResult().getToken());
 
 
 

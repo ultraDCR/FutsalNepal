@@ -33,6 +33,8 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -225,10 +227,11 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
                                         if (task.getResult().exists()) {
                                             if(type.equals("user_list")) {
-                                                mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                                                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                                     @Override
-                                                    public void onSuccess(GetTokenResult getTokenResult) {
-                                                        String token_id = getTokenResult.getToken();
+                                                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+
+                                                        String token_id = task.getResult().getToken();
                                                         Map<String,Object> tokenMap = new HashMap<>();
                                                         tokenMap.put("token_id",token_id);
                                                         fDatabase.collection("user_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -244,13 +247,15 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                     }
                                                 });
                                             }else if(type.equals("futsal_list")){
-                                                mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+
+                                                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                                     @Override
-                                                    public void onSuccess(GetTokenResult getTokenResult) {
-                                                        String token_id = getTokenResult.getToken();
+                                                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+
+                                                        String token_id = task.getResult().getToken();
                                                         Map<String,Object> tokenMap = new HashMap<>();
                                                         tokenMap.put("token_id",token_id);
-                                                        fDatabase.collection("futsal_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        fDatabase.collection("user_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
                                                                 prg_layout.setVisibility(View.GONE);
@@ -259,10 +264,8 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                                 ((Activity) context).finish();
                                                             }
                                                         });
-
                                                     }
                                                 });
-
                                             }
                                         }else{
                                             prg_layout.setVisibility(View.GONE);

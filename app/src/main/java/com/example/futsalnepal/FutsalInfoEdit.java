@@ -30,6 +30,8 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -305,9 +307,10 @@ public class FutsalInfoEdit extends AppCompatActivity {
             download_uri = mainImageURI;
 
         }
-        fAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onSuccess(GetTokenResult getTokenResult) {
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+
                 Map<String, Object> futsalMap = new HashMap<>();
                 futsalMap.put("futsal_name", futsal_name);
                 futsalMap.put("futsal_logo", download_uri.toString());
@@ -316,7 +319,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
                 futsalMap.put("opening_hour", opening_hour);
                 futsalMap.put("closing_hour", closing_hour);
                 futsalMap.put("futsal_email",futsal_email);
-                futsalMap.put("token_id",getTokenResult.getToken());
+                futsalMap.put("token_id",task.getResult().getToken());
 
                 Map<String, Object> week_price = new HashMap<>();
                 week_price.put("morning_price", week_price_m);
