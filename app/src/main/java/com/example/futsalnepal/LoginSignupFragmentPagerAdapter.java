@@ -22,12 +22,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -223,13 +225,44 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
 
                                         if (task.getResult().exists()) {
                                             if(type.equals("user_list")) {
-                                                Intent signin = new Intent(context, MainActivity.class);
-                                                context.startActivity(signin);
-                                                ((Activity) context).finish();
+                                                mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                                                    @Override
+                                                    public void onSuccess(GetTokenResult getTokenResult) {
+                                                        String token_id = getTokenResult.getToken();
+                                                        Map<String,Object> tokenMap = new HashMap<>();
+                                                        tokenMap.put("token_id",token_id);
+                                                        fDatabase.collection("user_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                prg_layout.setVisibility(View.GONE);
+                                                                Intent signin = new Intent(context, MainActivity.class);
+                                                                context.startActivity(signin);
+                                                                ((Activity) context).finish();
+                                                            }
+                                                        });
+
+                                                    }
+                                                });
                                             }else if(type.equals("futsal_list")){
-                                                Intent signin = new Intent(context, FutsalHome.class);
-                                                context.startActivity(signin);
-                                                ((Activity) context).finish();
+                                                mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                                                    @Override
+                                                    public void onSuccess(GetTokenResult getTokenResult) {
+                                                        String token_id = getTokenResult.getToken();
+                                                        Map<String,Object> tokenMap = new HashMap<>();
+                                                        tokenMap.put("token_id",token_id);
+                                                        fDatabase.collection("futsal_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                prg_layout.setVisibility(View.GONE);
+                                                                Intent signin = new Intent(context, FutsalHome.class);
+                                                                context.startActivity(signin);
+                                                                ((Activity) context).finish();
+                                                            }
+                                                        });
+
+                                                    }
+                                                });
+
                                             }
                                         }else{
                                             prg_layout.setVisibility(View.GONE);

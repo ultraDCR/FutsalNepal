@@ -35,12 +35,14 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.example.futsalnepal.Model.Futsal;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -50,7 +52,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -142,10 +146,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         logOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAuth.signOut();
-                Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(signOutIntent);
-                finish();
+                String uid = mAuth.getCurrentUser().getUid();
+                Map<String,Object> tokenMap = new HashMap<>();
+                tokenMap.put("token_id", FieldValue.delete());
+                mDatabase.collection("user_list").document(uid).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        mAuth.signOut();
+                        Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(signOutIntent);
+                        finish();
+                    }
+                });
+
             }
         });
 

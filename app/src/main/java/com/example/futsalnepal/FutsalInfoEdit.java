@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -304,54 +305,61 @@ public class FutsalInfoEdit extends AppCompatActivity {
             download_uri = mainImageURI;
 
         }
-
-        Map<String, Object> futsalMap = new HashMap<>();
-        futsalMap.put("futsal_name", futsal_name);
-        futsalMap.put("futsal_logo", download_uri.toString());
-        futsalMap.put("futsal_address",futsal_address);
-        futsalMap.put("futsal_phone",futsal_phone);
-        futsalMap.put("opening_hour", opening_hour);
-        futsalMap.put("closing_hour", closing_hour);
-        futsalMap.put("futsal_email",futsal_email);
-
-        Map<String, Object> week_price = new HashMap<>();
-        week_price.put("morning_price", week_price_m);
-        week_price.put("day_price", week_price_d);
-        week_price.put("evening_price", week_price_e);
-
-        futsalMap.put("week_day_price", week_price);
-
-        Map<String, Object> week_end_price = new HashMap<>();
-        week_end_price.put("morning_price", week_end_price_m);
-        week_end_price.put("day_price", week_end_price_d);
-        week_end_price.put("evening_price", week_end_price_e);
-
-        futsalMap.put("week_end_price", week_end_price);
-
-
-        fDatabase.collection("futsal_list").document(user_id).set(futsalMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+        fAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onSuccess(GetTokenResult getTokenResult) {
+                Map<String, Object> futsalMap = new HashMap<>();
+                futsalMap.put("futsal_name", futsal_name);
+                futsalMap.put("futsal_logo", download_uri.toString());
+                futsalMap.put("futsal_address",futsal_address);
+                futsalMap.put("futsal_phone",futsal_phone);
+                futsalMap.put("opening_hour", opening_hour);
+                futsalMap.put("closing_hour", closing_hour);
+                futsalMap.put("futsal_email",futsal_email);
+                futsalMap.put("token_id",getTokenResult.getToken());
 
-                if(task.isSuccessful()){
-                    saveBtn.setEnabled(true);
-                    pbar.setVisibility(View.GONE);
-                    Toast.makeText(FutsalInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
-                    Intent mainIntent = new Intent(FutsalInfoEdit.this, MainActivity.class);
-                    startActivity(mainIntent);
-                    finish();
+                Map<String, Object> week_price = new HashMap<>();
+                week_price.put("morning_price", week_price_m);
+                week_price.put("day_price", week_price_d);
+                week_price.put("evening_price", week_price_e);
 
-                } else {
-                    saveBtn.setEnabled(true);
-                    pbar.setVisibility(View.GONE);
-                    String error = task.getException().getMessage();
-                    Toast.makeText(FutsalInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+                futsalMap.put("week_day_price", week_price);
 
-                }
+                Map<String, Object> week_end_price = new HashMap<>();
+                week_end_price.put("morning_price", week_end_price_m);
+                week_end_price.put("day_price", week_end_price_d);
+                week_end_price.put("evening_price", week_end_price_e);
+
+                futsalMap.put("week_end_price", week_end_price);
 
 
+                fDatabase.collection("futsal_list").document(user_id).set(futsalMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful()){
+                            saveBtn.setEnabled(true);
+                            pbar.setVisibility(View.GONE);
+                            Toast.makeText(FutsalInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
+                            Intent mainIntent = new Intent(FutsalInfoEdit.this, MainActivity.class);
+                            startActivity(mainIntent);
+                            finish();
+
+                        } else {
+                            saveBtn.setEnabled(true);
+                            pbar.setVisibility(View.GONE);
+                            String error = task.getException().getMessage();
+                            Toast.makeText(FutsalInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                    }
+                });
             }
         });
+
+
 
 
     }

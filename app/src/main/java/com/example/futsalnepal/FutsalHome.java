@@ -1,5 +1,6 @@
 package com.example.futsalnepal;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
@@ -16,7 +17,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FutsalHome extends AppCompatActivity {
 
@@ -24,10 +31,12 @@ public class FutsalHome extends AppCompatActivity {
     private BottomNavigationView bNav;
     private FrameLayout bNavFrame;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore fDatabase;
     private FutsalBookInfoFragment bookInformation;
     private FutsalBookNowFragment bookNow;
     private FutsalProfile fProfile;
     private FutsalRatingReview fRatingReview;
+    private String user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +46,10 @@ public class FutsalHome extends AppCompatActivity {
         removePaddingFromNavigationItem();
 
         mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseFirestore.getInstance();
         bNavFrame = findViewById(R.id.futsal_frame);
 
+        user_id = mAuth.getCurrentUser().getUid();
         bookInformation = new FutsalBookInfoFragment();
         bookNow = new FutsalBookNowFragment();
         fProfile = new FutsalProfile();
@@ -89,10 +100,17 @@ public class FutsalHome extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.logout_btn:
-                mAuth.signOut();
-                Intent signOutIntent = new Intent(FutsalHome.this, MainActivity.class);
-                startActivity(signOutIntent);
-                finish();
+                Map<String,Object> tokenMap = new HashMap<>();
+                tokenMap.put("token_id", FieldValue.delete());
+                fDatabase.collection("futsal_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        mAuth.signOut();
+                        Intent signOutIntent = new Intent(FutsalHome.this, MainActivity.class);
+                        startActivity(signOutIntent);
+                        finish();
+                    }
+                });
                 return true;
             case R.id.setting_btn:
                 Intent settingIntent = new Intent(FutsalHome.this, FutsalInfoEdit.class);

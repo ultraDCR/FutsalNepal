@@ -24,8 +24,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.MainActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -256,39 +258,47 @@ public class UserInfoEdit extends AppCompatActivity {
 
         }
 
-        Map<String, String> userMap = new HashMap<>();
-        userMap.put("user_full_name", user_name);
-        userMap.put("user_profile_image", download_uri.toString());
-        userMap.put("user_address",user_address);
-        userMap.put("user_phone_number",user_phone);
-        userMap.put("user_email",user_email);
-
-
-
-        uDatabase.collection("user_list").document(user_id).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+        uAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onSuccess(GetTokenResult getTokenResult) {
 
-                if(task.isSuccessful()){
-                    saveBtn.setVisibility(View.VISIBLE);
-                    pbar.setVisibility(View.GONE);
-                    Toast.makeText(UserInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
-                    Intent mainIntent = new Intent(UserInfoEdit.this, MainActivity.class);
-                    startActivity(mainIntent);
-                    finish();
+                Map<String, String> userMap = new HashMap<>();
+                userMap.put("user_full_name", user_name);
+                userMap.put("user_profile_image", download_uri.toString());
+                userMap.put("user_address",user_address);
+                userMap.put("user_phone_number",user_phone);
+                userMap.put("user_email",user_email);
+                userMap.put("token_id",getTokenResult.getToken());
 
-                } else {
-                    saveBtn.setVisibility(View.VISIBLE);
-                    pbar.setVisibility(View.GONE);
-                    String error = task.getException().getMessage();
-                    Toast.makeText(UserInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
-                }
+
+                uDatabase.collection("user_list").document(user_id).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful()){
+                            saveBtn.setVisibility(View.VISIBLE);
+                            pbar.setVisibility(View.GONE);
+                            Toast.makeText(UserInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
+                            Intent mainIntent = new Intent(UserInfoEdit.this, MainActivity.class);
+                            startActivity(mainIntent);
+                            finish();
+
+                        } else {
+                            saveBtn.setVisibility(View.VISIBLE);
+                            pbar.setVisibility(View.GONE);
+                            String error = task.getException().getMessage();
+                            Toast.makeText(UserInfoEdit.this, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                    }
+                });
 
 
             }
         });
-
 
     }
 
