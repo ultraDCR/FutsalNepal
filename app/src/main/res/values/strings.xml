@@ -20,4 +20,5 @@
     <string name="nav_profile">Profile</string>
     <string name="nav_rating_review">Rating and Review</string>
     <string name="new_request"> New Request</string>
+    <string name="default_notification_channel_id">FutsalTime_CH1</string>
 </resources>

@@ -14,17 +14,29 @@ public class MyMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         String title = remoteMessage.getNotification().getTitle();
         String message = remoteMessage.getNotification().getBody();
-        showNotification(title,message);
-    }
-    public void showNotification(String title, String message){
-        PendingIntent p1 = PendingIntent.getActivity(this,0,new Intent(this, MainActivity.class),0);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "FutsalTime")
+        String click_action = remoteMessage.getNotification().getClickAction();
+        String dataMessage = remoteMessage.getData().get("message");
+        String dataFrom = remoteMessage.getData().get("futsal_id");
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.logo)
                 .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentText(message);
+
+        Intent resultIntent = new Intent(click_action);
+        resultIntent.putExtra("message",dataMessage);
+        resultIntent.putExtra("futsal_id",dataFrom);
+        PendingIntent p1 = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        int sNotificationId = (int) System.currentTimeMillis();
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(999,builder.build());
+        manager.notify(sNotificationId,builder.build());
     }
 }
 

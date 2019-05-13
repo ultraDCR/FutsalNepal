@@ -122,6 +122,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
                             {
                                 addToDatabase(list, position);
                                 removeFromDatabase(list, position);
+                                addNotificatin(list,position,"accepted");
                             }
                         })
                         .setNegativeButton("NO", new DialogInterface.OnClickListener()
@@ -148,6 +149,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
                             public void onClick(DialogInterface dialog, int which)
                             {
                                 removeFromDatabase(list, position);
+                                addNotificatin(list,position,"rejected");
 //                              notifyDataSetChanged();
                             }
                         })
@@ -169,6 +171,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
 
 
     }
+
 
 
 
@@ -276,5 +279,19 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
 
 
     }
+
+    private void addNotificatin(List<BookingUser> list, int position, String type) {
+        String user_id = list.get(position).user_id;
+        String message = "Book request on "+date+" at "+list.get(position).time+" was "+type;
+        Map<String, Object> notificationMap = new HashMap<>();
+        notificationMap.put("from", futsal_id);
+        notificationMap.put("type", type);
+        notificationMap.put("message", message);
+
+        mDatabase.collection("user_list").document(user_id)
+                .collection("Notification").add(notificationMap);
+
+    }
+
 }
 

@@ -108,6 +108,12 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                             timeMap1.put(list.get(position).book_time, FieldValue.delete());
                             futsalMap.put(user_id, timeMap1);
 
+                            String message = "Booking request for "+date+" at "+list.get(position).book_time+"was cancled";
+                            Map<String, Object> notificationMap = new HashMap<>();
+                            notificationMap.put("from", user_id);
+                            notificationMap.put("type", "removed");
+                            notificationMap.put("message", message);
+
                             new AlertDialog.Builder(context)
                                     .setMessage("Are you sure you want to cancle booking request of"+list.get(position).book_time +" ?")
                                     .setPositiveButton("YES", new DialogInterface.OnClickListener()
@@ -125,6 +131,8 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                                             holder.cancelbooking();
                                                         }
                                                     });
+                                            mDatabase.collection("futsal_list").document(futsal_id)
+                                                    .collection("Notification").add(notificationMap);
 
                                         }
                                     })
@@ -152,6 +160,13 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                             timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
                             futsalMap.put(user_id, timeMap1);
 
+                            String message = "You have new booking request for "+date+" at "+list.get(position).book_time;
+                            Map<String, Object> notificationMap = new HashMap<>();
+                            notificationMap.put("from", user_id);
+                            notificationMap.put("type", "added");
+                            notificationMap.put("message", message);
+
+
                             new AlertDialog.Builder(context)
                                     .setMessage("Do you want to book the futsal at "+list.get(position).book_time +" ?")
                                     .setPositiveButton("YES", new DialogInterface.OnClickListener()
@@ -163,6 +178,8 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                                     .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
                                             mDatabase.collection("user_list").document(user_id)
                                                     .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                            mDatabase.collection("futsal_list").document(futsal_id)
+                                                    .collection("Notification").add(notificationMap);
                                         }
                                     })
                                     .setNegativeButton("NO", new DialogInterface.OnClickListener()

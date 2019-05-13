@@ -13,8 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FutsalHome"></activity>
-        <activity android:name=".FutsalIndivisualDetails" />
+        <activity android:name=".UserNotificationActivity"/>
+
+        <activity android:name=".FutsalHome">
+            <intent-filter>
+                <action android:name="com.example.futsalnepal.FUTSALTARGETNOTIFICATION"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
+        <activity android:name=".FutsalIndivisualDetails" >
+            <intent-filter>
+                <action android:name="com.example.futsalnepal.USERTARGETNOTIFICATION"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
         <activity android:name=".FutsalInfoEdit" />
         <activity android:name=".UserInfoEdit" />
         <activity android:name=".Favourite" />
@@ -37,6 +49,7 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
+
         <service
             android:name=".MyMessagingService"
             android:exported="false">
@@ -44,6 +57,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
     </application>
 
 </manifest>
