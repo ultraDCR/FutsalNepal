@@ -255,7 +255,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                         String token_id = task.getResult().getToken();
                                                         Map<String,Object> tokenMap = new HashMap<>();
                                                         tokenMap.put("token_id",token_id);
-                                                        fDatabase.collection("user_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        fDatabase.collection("futsal_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
                                                                 prg_layout.setVisibility(View.GONE);
