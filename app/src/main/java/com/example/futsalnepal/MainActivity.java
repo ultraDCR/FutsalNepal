@@ -34,6 +34,7 @@ import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.Model.Notifications;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -394,6 +395,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.find_arena_menu:
                 Intent findArenaIntent = new Intent(MainActivity.this, SearchLayout.class);
                 startActivity(findArenaIntent);
+                return true;
+
+            case R.id.notification_menu:
+                Intent notificationIntent = new Intent(MainActivity.this, UserNotificationActivity.class);
+                startActivity(notificationIntent);
                 return true;
 
             case R.id.favourite_menu:

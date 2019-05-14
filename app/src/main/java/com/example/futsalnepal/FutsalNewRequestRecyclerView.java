@@ -287,6 +287,8 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         notificationMap.put("from", futsal_id);
         notificationMap.put("type", type);
         notificationMap.put("message", message);
+        notificationMap.put("status","notseen");
+        notificationMap.put("timestamp",FieldValue.serverTimestamp());
 
         mDatabase.collection("user_list").document(user_id)
                 .collection("Notification").add(notificationMap);

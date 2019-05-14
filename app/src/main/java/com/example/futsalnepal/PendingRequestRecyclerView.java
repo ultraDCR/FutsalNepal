@@ -123,6 +123,14 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                 timeMap1.put(list.get(position).time, FieldValue.delete());
                 futsalMap.put(user_id, timeMap1);
 
+                String message = "Booking request for "+date+" at "+list.get(position).time+"was cancled";
+                Map<String, Object> notificationMap = new HashMap<>();
+                notificationMap.put("from", user_id);
+                notificationMap.put("type", "removed");
+                notificationMap.put("message", message);
+                notificationMap.put("status","notseen");
+                notificationMap.put("timestamp",FieldValue.serverTimestamp());
+
                 new AlertDialog.Builder(context)
                         .setMessage("Are you sure you want to cancle booking request of "+date +" "+list.get(position).time +" ?")
                         .setPositiveButton("YES", new DialogInterface.OnClickListener()
@@ -132,6 +140,8 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                             {
                                 mDatabase.collection("user_list").document(user_id)
                                         .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                mDatabase.collection("futsal_list").document(futsal_id)
+                                        .collection("Notification").add(notificationMap);
                                 mDatabase.collection("futsal_list").document(futsal_id)
                                         .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -144,7 +154,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                                                         if(task.isSuccessful()){
                                                             if(task.getResult().exists()){
                                                                 Map<String,Object> useMap = (Map<String, Object>) task.getResult().get(futsal_id);
-                                                                if(useMap.size() <= 1){
+                                                                if(useMap.size() < 1){
                                                                     mDatabase.collection("user_list").document(user_id)
                                                                             .collection("pending").document(date).delete();
                                                                     mDatabase.collection("futsal_list").document(futsal_id)

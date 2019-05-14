@@ -113,36 +113,28 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                             notificationMap.put("from", user_id);
                             notificationMap.put("type", "removed");
                             notificationMap.put("message", message);
+                            notificationMap.put("status","notseen");
+                            notificationMap.put("timestamp",FieldValue.serverTimestamp());
 
                             new AlertDialog.Builder(context)
                                     .setMessage("Are you sure you want to cancle booking request of"+list.get(position).book_time +" ?")
-                                    .setPositiveButton("YES", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-                                            mDatabase.collection("user_list").document(user_id)
-                                                    .collection("pending").document(date).set(userMap, SetOptions.merge());
-                                            mDatabase.collection("futsal_list").document(futsal_id)
-                                                    .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            holder.cancelbooking();
-                                                        }
-                                                    });
-                                            mDatabase.collection("futsal_list").document(futsal_id)
-                                                    .collection("Notification").add(notificationMap);
+                                    .setPositiveButton("YES", (dialog, which) -> {
+                                        mDatabase.collection("user_list").document(user_id)
+                                                .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                        mDatabase.collection("futsal_list").document(futsal_id)
+                                                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        holder.cancelbooking();
+                                                    }
+                                                });
+                                        mDatabase.collection("futsal_list").document(futsal_id)
+                                                .collection("Notification").add(notificationMap);
 
-                                        }
                                     })
-                                    .setNegativeButton("NO", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-                                            //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
-                                        }
+                                    .setNegativeButton("NO", (dialog, which) -> {
+                                        //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
                                     })
                                     .show();
 
@@ -165,30 +157,22 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                             notificationMap.put("from", user_id);
                             notificationMap.put("type", "added");
                             notificationMap.put("message", message);
+                            notificationMap.put("status","notseen");
+                            notificationMap.put("timestamp",FieldValue.serverTimestamp());
 
 
                             new AlertDialog.Builder(context)
                                     .setMessage("Do you want to book the futsal at "+list.get(position).book_time +" ?")
-                                    .setPositiveButton("YES", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-                                            mDatabase.collection("futsal_list").document(futsal_id)
-                                                    .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
-                                            mDatabase.collection("user_list").document(user_id)
-                                                    .collection("pending").document(date).set(userMap, SetOptions.merge());
-                                            mDatabase.collection("futsal_list").document(futsal_id)
-                                                    .collection("Notification").add(notificationMap);
-                                        }
+                                    .setPositiveButton("YES", (dialog, which) -> {
+                                        mDatabase.collection("futsal_list").document(futsal_id)
+                                                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
+                                        mDatabase.collection("user_list").document(user_id)
+                                                .collection("pending").document(date).set(userMap, SetOptions.merge());
+                                        mDatabase.collection("futsal_list").document(futsal_id)
+                                                .collection("Notification").add(notificationMap);
                                     })
-                                    .setNegativeButton("NO", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-                                            //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
-                                        }
+                                    .setNegativeButton("NO", (dialog, which) -> {
+                                        //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
                                     })
                                     .show();
                         }
