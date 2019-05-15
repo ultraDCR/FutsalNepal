@@ -66,19 +66,19 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
 
         String id = notificationsList.get(i).NotificationId;
         String status = notificationsList.get(i).status;
-        if(status.equals("notseen")){
-            holder.cardView.setBackgroundResource(R.color.light_green);
-        }
-        holder.cardView.setOnClickListener((view)->{
+//        if(status.equals("notseen")){
+//            holder.cardView.setBackgroundResource(R.color.light_green);
+//        }
+//        holder.cardView.setOnClickListener((view)->{
             Map<String,Object> not_map = new HashMap<>();
             not_map.put("status","seen");
             if(status.equals("notseen")) {
                 mDatabase.collection("user_list").document(user_id).collection("Notification").document(id).update(not_map);
             }
-            Intent notify = new Intent(context, FutsalIndivisualDetails.class);
-            notify.putExtra("futsal_id",notificationsList.get(i).from);
-            context.startActivity(notify);
-        });
+//            Intent notify = new Intent(context, FutsalIndivisualDetails.class);
+//            notify.putExtra("futsal_id",notificationsList.get(i).from);
+//            context.startActivity(notify);
+//        });
 
     }
 

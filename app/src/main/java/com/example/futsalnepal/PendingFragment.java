@@ -143,21 +143,16 @@ public class PendingFragment extends Fragment {
                             sectionModelArrayList.clear();
                             for (QueryDocumentSnapshot document : snapshot) {
                                 String pdate = document.getId();
-                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate) + "_" + compareDate(pdate, date));
                                 if (compareDate(pdate, date)) {
                                     Map<String, Object> dd1 = (Map<String, Object>) document.getData();
                                     p_list = new ArrayList<>();
                                     p_list.clear();
                                     for (String uid : dd1.keySet()) {
                                         for (int i = 0; i < futsal_list.size(); i++) {
-                                            Log.d("NEWREQTEST2.2", "onComplete: " + futsal_list.size() + " -- " + futsal_list.get(i).futsal_id + " -- " + uid);
                                             if (futsal_list.get(i).futsal_id.equals(uid)) {
-                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
                                                 Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
                                                 for (String time : dd2.keySet()) {
-
                                                     BookingFutsal futsal1 = new BookingFutsal();
-                                                    Log.d("FIREBASETEST2.3", "onComplete: " + time);
                                                     futsal1.setTime(time);
                                                     futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
                                                     futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
