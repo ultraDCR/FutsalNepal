@@ -39,7 +39,8 @@ public class UserNotificationActivity extends AppCompatActivity {
     //private List<Futsal> futsalList;
     private List<Notifications> notificationList;
     private List<NotificationSectionModel> sectionList;
-    private NotificationDateSectionAdapter adapter;
+    //private NotificationDateSectionAdapter adapter;
+    private NotificationRecyclerViewAdapter adapter;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String user_id;
@@ -63,7 +64,8 @@ public class UserNotificationActivity extends AppCompatActivity {
         notificationList = new ArrayList<>();
         sectionList = new ArrayList<>();
         recyclerView = findViewById(R.id.notification_rview);
-        adapter = new NotificationDateSectionAdapter( sectionList, getApplication());
+        //adapter = new NotificationDateSectionAdapter( sectionList, getApplication());
+        adapter = new NotificationRecyclerViewAdapter( notificationList, getApplication());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(UserNotificationActivity.this));
 
@@ -80,23 +82,26 @@ public class UserNotificationActivity extends AppCompatActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
                     for(QueryDocumentSnapshot doc: queryDocumentSnapshots) {
                         String id = doc.getId();
-                        Timestamp time2 = (Timestamp) doc.get("timestamp");
-                        Date cdate = time2.toDate();
-                        Log.d("NOTIFYTEST2", "onEvent: "+cdate);
-                        if(prevDate == null){
-                            prevDate = sdf.format(cdate);
-                        }
-                        currentDate = sdf.format(cdate);
-                        Log.d("NOTIFYTEST1", "onEvent: "+time2+"_"+prevDate+"__"+currentDate);
-                        do{
-                            Notifications notification = doc.toObject(Notifications.class).withId(id);
-                            notificationList.add(notification);
-                            prevDate = currentDate;
-                            Log.d("NOTIFYTEST3", "onEvent: "+notificationList+"_"+prevDate+"__"+currentDate);
-                        }while(prevDate.equals(currentDate));
+//                        Timestamp time2 = (Timestamp) doc.get("timestamp");
+//                        Date cdate = time2.toDate();
+//                        Log.d("NOTIFYTEST2", "onEvent: "+cdate);
+//                        if(prevDate == null){
+//                            prevDate = sdf.format(cdate);
+//                        }
+//                        currentDate = sdf.format(cdate);
+//                        Log.d("NOTIFYTEST1", "onEvent: "+time2+"_"+prevDate+"__"+currentDate);
+//                       if(prevDate.equals(currentDate)) {
+                           Notifications notification = doc.toObject(Notifications.class).withId(id);
+                           notificationList.add(notification);
 
-                        sectionList.add(new NotificationSectionModel(currentDate, notificationList));
-                        adapter.notifyDataSetChanged();
+//                           sectionList.add(new NotificationSectionModel(currentDate, notificationList));
+                           adapter.notifyDataSetChanged();
+                           Log.d("NOTIFYTEST3", "onEvent: " + notificationList + "_" + prevDate + "__" + currentDate);
+//                       }else{
+//                           prevDate = currentDate;
+//                       }
+                        //notificationList.clear();
+
                         Log.d("NOTIFYTEST", "onEvent: "+notificationList);
                     }
                 }

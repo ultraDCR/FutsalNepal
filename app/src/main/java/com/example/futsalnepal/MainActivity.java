@@ -4,13 +4,17 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.internal.NavigationMenuItemView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,10 +24,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +61,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
     private CircleImageView dUserPic;
-    private TextView dUserName, dUserAddress, dUserPhone;
+    private TextView dUserName, dUserAddress, dUserPhone, badge;
     private ImageView settingBtn, logOutBtn;
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
@@ -130,16 +139,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         logOutBtn = header.findViewById(R.id.logout_btn);
 
-        //hide nav bar item on login
         Menu nav_Menu = navigationView.getMenu();
+
+       // getMenuInflater().inflate(R.menu.drawer_menu, nav_Menu);
+        ConstraintLayout notify = (ConstraintLayout) nav_Menu.findItem(R.id.notification_menu).getActionView();
+        badge = (TextView) notify.findViewById(R.id.noicon_badge);
+
+        //hide nav bar item on login
         if(mAuth.getCurrentUser() != null){
+//            badge=(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+//                    findItem(R.id.notification_menu));
+
+
             nav_Menu.findItem(R.id.book_info_menu).setVisible(true);
             nav_Menu.findItem(R.id.favourite_menu).setVisible(true);
+            nav_Menu.findItem(R.id.notification_menu).setVisible(true);
 
             logOutBtn.setVisibility(View.VISIBLE);
         }else{
             nav_Menu.findItem(R.id.book_info_menu).setVisible(false);
             nav_Menu.findItem(R.id.favourite_menu).setVisible(false);
+            nav_Menu.findItem(R.id.notification_menu).setVisible(false);
 
             logOutBtn.setVisibility(View.INVISIBLE);
         }
@@ -259,6 +279,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
+
+            //for notification badge
+            mDatabase.collection("user_list").document(user_id).collection("Notification").whereEqualTo("status", "notseen").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                    if(snapshot != null){
+                        if(snapshot.size() != 0) {
+                            actionbar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px);
+                            notify.setVisibility(View.VISIBLE);
+                            String size = String.valueOf(snapshot.size());
+                            initializeCountDrawer(size);
+
+                        }else{
+                            actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+                            notify.setVisibility(View.INVISIBLE);
+                        }
+
+                    }
+                }
+            });
          }
 
          //Push notification
@@ -414,6 +454,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initializeCountDrawer(String size){
+        //Gravity property aligns the text
+//        badge.setGravity(Gravity.CENTER_VERTICAL);
+//        badge.setTypeface(null,Typeface.BOLD);
+//        badge.setTextColor(getResources().getColor(R.color.red));
+//        badge.setBackgroundResource(R.drawable.badge_background);
+//        badge.setHeight(20);
+//        badge.setWidth(20);
+        //count is added
+
+        badge.setText(size);
     }
 
 
