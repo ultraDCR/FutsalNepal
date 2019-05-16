@@ -119,8 +119,8 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
             time = itemView.findViewById(R.id.send_time);
 
         }
-        public void setSenderInfo(String futsalId){
-            mDatabase.collection("futsal_list").document(futsalId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        public void setSenderInfo(String fromId){
+            mDatabase.collection("futsal_list").document(fromId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
