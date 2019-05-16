@@ -144,12 +144,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
        // getMenuInflater().inflate(R.menu.drawer_menu, nav_Menu);
         ConstraintLayout notify = (ConstraintLayout) nav_Menu.findItem(R.id.notification_menu).getActionView();
         badge = (TextView) notify.findViewById(R.id.noicon_badge);
+        notify.setVisibility(View.INVISIBLE);
 
         //hide nav bar item on login
         if(mAuth.getCurrentUser() != null){
-//            badge=(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-//                    findItem(R.id.notification_menu));
-
 
             nav_Menu.findItem(R.id.book_info_menu).setVisible(true);
             nav_Menu.findItem(R.id.favourite_menu).setVisible(true);

@@ -1,22 +1,16 @@
 package com.example.futsalnepal;
 
-import android.app.Notification;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.TextView;
 
-
-import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.Model.NotificationSectionModel;
 import com.example.futsalnepal.Model.Notifications;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -26,15 +20,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class UserNotificationActivity extends AppCompatActivity {
-
+public class FutsalNotificationActivitiy  extends AppCompatActivity {
     private RecyclerView recyclerView;
     //private List<Futsal> futsalList;
     private List<Notifications> notificationList;
@@ -65,12 +56,12 @@ public class UserNotificationActivity extends AppCompatActivity {
         sectionList = new ArrayList<>();
         recyclerView = findViewById(R.id.notification_rview);
         //adapter = new NotificationDateSectionAdapter( sectionList, getApplication());
-        adapter = new NotificationRecyclerViewAdapter( "user",notificationList, getApplication());
+        adapter = new NotificationRecyclerViewAdapter( "futsal",notificationList, getApplication());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(UserNotificationActivity.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(FutsalNotificationActivitiy.this));
 
         user_id = mAuth.getCurrentUser().getUid();
-        mDatabase.collection("user_list").document(user_id).collection("Notification").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        mDatabase.collection("futsal_list").document(user_id).collection("Notification").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
@@ -91,12 +82,12 @@ public class UserNotificationActivity extends AppCompatActivity {
 //                        currentDate = sdf.format(cdate);
 //                        Log.d("NOTIFYTEST1", "onEvent: "+time2+"_"+prevDate+"__"+currentDate);
 //                       if(prevDate.equals(currentDate)) {
-                           Notifications notification = doc.toObject(Notifications.class).withId(id);
-                           notificationList.add(notification);
+                        Notifications notification = doc.toObject(Notifications.class).withId(id);
+                        notificationList.add(notification);
 
 //                           sectionList.add(new NotificationSectionModel(currentDate, notificationList));
-                           adapter.notifyDataSetChanged();
-                           Log.d("NOTIFYTEST3", "onEvent: " + notificationList + "_" + prevDate + "__" + currentDate);
+                        adapter.notifyDataSetChanged();
+                        Log.d("NOTIFYTEST3", "onEvent: " + notificationList + "_" + prevDate + "__" + currentDate);
 //                       }else{
 //                           prevDate = currentDate;
 //                       }

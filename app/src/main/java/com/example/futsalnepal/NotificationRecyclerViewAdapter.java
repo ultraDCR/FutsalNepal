@@ -38,12 +38,13 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
     private List<Notifications> notificationsList;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
-    private String user_id;
+    private String user_id, user_type;
 
 
-    public NotificationRecyclerViewAdapter( List<Notifications> notificationsList, Context context) {
+    public NotificationRecyclerViewAdapter(String user_type, List<Notifications> notificationsList, Context context) {
         this.context = context;
 //        this.futsalList = futsalList;
+        this.user_type = user_type;
         this.notificationsList = notificationsList;
         mDatabase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -60,7 +61,7 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int i) {
         user_id = mAuth.getCurrentUser().getUid();
-        holder.setSenderInfo(notificationsList.get(i).from);
+        holder.setSenderInfo(user_type,notificationsList.get(i).from);
         holder.fmessage.setText(notificationsList.get(i).message);
         holder.setTime(notificationsList.get(i).timestamp);
 
@@ -119,22 +120,42 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
             time = itemView.findViewById(R.id.send_time);
 
         }
-        public void setSenderInfo(String fromId){
-            mDatabase.collection("futsal_list").document(fromId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        String name = task.getResult().get("futsal_name").toString();
-                        String image = task.getResult().get("futsal_logo").toString();
-                        futsalName.setText(name);
+        public void setSenderInfo(String type, String fromId){
+            if(type.equals("futsal")) {
+                mDatabase.collection("futsal_list").document(fromId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String name = task.getResult().get("futsal_name").toString();
+                            String image = task.getResult().get("futsal_logo").toString();
+                            futsalName.setText(name);
 
-                        RequestOptions placeholderRequest = new RequestOptions();
-                        Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(image).into(futsalImage);
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(image).into(futsalImage);
+
+                        }
 
                     }
+                });
+            }
+            else{
+                mDatabase.collection("user_list").document(fromId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String name = task.getResult().get("user_full_name").toString();
+                            String image = task.getResult().get("user_profile_image").toString();
+                            futsalName.setText(name);
 
-                }
-            });
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(image).into(futsalImage);
+
+                        }
+
+                    }
+                });
+            }
+
         }
 
         public void setTime(Date timestamp){
