@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,8 +64,9 @@ public class FutsalBookNowFragment extends Fragment {
 
         Toolbar toolbar= view.findViewById(R.id.book_now_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
 
-        toolbar.setTitle("Book Now");
         mDatabase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         //date = DateFormat.getDateInstance().format(new Date());

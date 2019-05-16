@@ -1,6 +1,5 @@
 package com.example.futsalnepal;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
@@ -8,7 +7,6 @@ import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,11 +17,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class FutsalHome extends AppCompatActivity {
 
@@ -37,6 +40,7 @@ public class FutsalHome extends AppCompatActivity {
     private FutsalProfile fProfile;
     private FutsalRatingReview fRatingReview;
     private String user_id;
+    private TextView txtViewCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +90,52 @@ public class FutsalHome extends AppCompatActivity {
                 }
             }
         });
+
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.futsal_user_menu, menu);
+        final View notificaitons = menu.findItem(R.id.notification_btn).getActionView();
+        txtViewCount = (TextView) notificaitons.findViewById(R.id.icon_badge);
+        setNotificationBadge();
+        notificaitons.setOnClickListener(v -> {
+            Intent notfyIntent = new Intent(FutsalHome.this, FutsalNotificationActivity.class);
+            startActivity(notfyIntent);
+        });
         return true;
 
     }
+
+    private void setNotificationBadge() {
+        fDatabase.collection("futsal_list").document(user_id).collection("Notification").whereEqualTo("status", "notseen").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if(snapshot != null){
+                    if(snapshot.size() != 0) {
+                        txtViewCount.setVisibility(View.VISIBLE);
+                        String size = String.valueOf(snapshot.size());
+                        txtViewCount.setText(size);
+
+                    }else{
+                        txtViewCount.setVisibility(View.INVISIBLE);
+                    }
+
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+//
+//            case R.id.notification_btn:
+//                Intent notfyIntent = new Intent(FutsalHome.this, FutsalNotificationActivity.class);
+//                startActivity(notfyIntent);
 
             case R.id.logout_btn:
                 Map<String,Object> tokenMap = new HashMap<>();

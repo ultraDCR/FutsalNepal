@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -78,7 +79,9 @@ public class FutsalRatingReview extends Fragment {
 
         Toolbar toolbar = view.findViewById(R.id.rating_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        toolbar.setTitle("Rating & Reviews");
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
+
 
         ratingLayout = view.findViewById(R.id.rating_input_layout);
         ratingLayout.setVisibility(View.INVISIBLE);

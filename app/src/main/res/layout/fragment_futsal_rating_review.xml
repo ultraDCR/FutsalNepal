@@ -9,6 +9,7 @@
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.Toolbar
         android:id="@+id/rating_toolbar"
+        style="@style/ToolBarStyle.Event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -31,5 +32,24 @@
         app:layout_constraintTop_toBottomOf="@+id/rating_toolbar">
 
     </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView31"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Rating &amp; Reviews"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/include_review_rating"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rating_toolbar"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

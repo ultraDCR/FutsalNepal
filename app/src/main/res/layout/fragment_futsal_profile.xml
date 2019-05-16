@@ -20,6 +20,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/profile_toolbar"
+        style="@style/ToolBarStyle.Event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorTransparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/f_logo"
         android:layout_width="80dp"

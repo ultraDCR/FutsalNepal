@@ -25,7 +25,7 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-public class FutsalNotificationActivitiy  extends AppCompatActivity {
+public class FutsalNotificationActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     //private List<Futsal> futsalList;
     private List<Notifications> notificationList;
@@ -58,7 +58,7 @@ public class FutsalNotificationActivitiy  extends AppCompatActivity {
         //adapter = new NotificationDateSectionAdapter( sectionList, getApplication());
         adapter = new NotificationRecyclerViewAdapter( "futsal",notificationList, getApplication());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(FutsalNotificationActivitiy.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(FutsalNotificationActivity.this));
 
         user_id = mAuth.getCurrentUser().getUid();
         mDatabase.collection("futsal_list").document(user_id).collection("Notification").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -73,26 +73,10 @@ public class FutsalNotificationActivitiy  extends AppCompatActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
                     for(QueryDocumentSnapshot doc: queryDocumentSnapshots) {
                         String id = doc.getId();
-//                        Timestamp time2 = (Timestamp) doc.get("timestamp");
-//                        Date cdate = time2.toDate();
-//                        Log.d("NOTIFYTEST2", "onEvent: "+cdate);
-//                        if(prevDate == null){
-//                            prevDate = sdf.format(cdate);
-//                        }
-//                        currentDate = sdf.format(cdate);
-//                        Log.d("NOTIFYTEST1", "onEvent: "+time2+"_"+prevDate+"__"+currentDate);
-//                       if(prevDate.equals(currentDate)) {
                         Notifications notification = doc.toObject(Notifications.class).withId(id);
                         notificationList.add(notification);
-
-//                           sectionList.add(new NotificationSectionModel(currentDate, notificationList));
                         adapter.notifyDataSetChanged();
                         Log.d("NOTIFYTEST3", "onEvent: " + notificationList + "_" + prevDate + "__" + currentDate);
-//                       }else{
-//                           prevDate = currentDate;
-//                       }
-                        //notificationList.clear();
-
                         Log.d("NOTIFYTEST", "onEvent: "+notificationList);
                     }
                 }

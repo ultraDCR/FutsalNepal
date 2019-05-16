@@ -74,7 +74,11 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
             Map<String,Object> not_map = new HashMap<>();
             not_map.put("status","seen");
             if(status.equals("notseen")) {
-                mDatabase.collection("user_list").document(user_id).collection("Notification").document(id).update(not_map);
+                if(user_type.equals("user")) {
+                    mDatabase.collection("user_list").document(user_id).collection("Notification").document(id).update(not_map);
+                }else{
+                    mDatabase.collection("futsal_list").document(user_id).collection("Notification").document(id).update(not_map);
+                }
             }
 //            Intent notify = new Intent(context, FutsalIndivisualDetails.class);
 //            notify.putExtra("futsal_id",notificationsList.get(i).from);
@@ -121,7 +125,7 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
 
         }
         public void setSenderInfo(String type, String fromId){
-            if(type.equals("futsal")) {
+            if(type.equals("user")) {
                 mDatabase.collection("futsal_list").document(fromId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {

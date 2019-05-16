@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +55,11 @@ public class FutsalProfile extends Fragment {
         ConstraintLayout placeHolder =  view.findViewById(R.id.include_futsal_info);
         getLayoutInflater().inflate(R.layout.fragment_futsal_info, placeHolder);
 
+        Toolbar toolbar= view.findViewById(R.id.profile_toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
 
@@ -93,9 +101,7 @@ public class FutsalProfile extends Fragment {
                             fPhone.setText(futsal_phone);
                             fName.setText(futsal_name);
                             fAddress.setText(futsal_address);
-                            RequestOptions placeholderRequest = new RequestOptions();
-                            placeholderRequest.placeholder(R.drawable.logo_placeholder_circle);
-                            Glide.with(getContext()).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(fLogo);
+
                             fopen.setText(open_time);
                             fclose.setText(close_time);
                             wPriceM.setText(w_morning);
@@ -104,6 +110,12 @@ public class FutsalProfile extends Fragment {
                             wePriceM.setText(we_morning);
                             wePriceD.setText(we_day);
                             wePriceE.setText(we_evening);
+
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            placeholderRequest.placeholder(R.drawable.logo_placeholder_circle);
+                            if(getContext() != null) {
+                                Glide.with(getContext()).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(fLogo);
+                            }
                         }
                     }
                 }

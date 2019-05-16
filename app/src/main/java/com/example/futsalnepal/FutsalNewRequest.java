@@ -3,6 +3,7 @@ package com.example.futsalnepal;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookingFutsal;
@@ -49,6 +52,8 @@ public class FutsalNewRequest extends Fragment {
     private String date;
     DatePickerDialog dpd;
     private TextView fDatePicker;
+    private Switch fSwitch;
+    private Boolean switchState;
     private RecyclerView recyclerView;
     private DateSectionUserRecyclerViewAdapter sadapter;
     Boolean firstload = true;
@@ -70,6 +75,22 @@ public class FutsalNewRequest extends Fragment {
 
         fDatePicker = view.findViewById(R.id.date_picker_new_request);
         fDatePicker.setText(date);
+        fSwitch = view.findViewById(R.id.new_request_switch);
+        ConstraintLayout datepickLayout = view.findViewById(R.id.layout_new_request);
+        switchState = fSwitch.isChecked();
+        fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    datepickLayout.setVisibility(View.INVISIBLE);
+                }else{
+                    datepickLayout.setVisibility(View.VISIBLE);
+
+                }
+            }
+        }
+        );
+
 
         sectionModelArrayList = new ArrayList<>();
         recyclerView =  view.findViewById(R.id.new_request_rview);
@@ -221,9 +242,16 @@ public class FutsalNewRequest extends Fragment {
 //            Log.e("app", "Date1 is before Date2");
 //            return true ;
 //        }
-            if (date1.equals(date2) || date1.after(date2)) {
-                Log.e("APPTEST", "Date1 is after Date2");
-                return true;
+            if(switchState){
+                if (date1.equals(date2)) {
+                    Log.e("APPTEST", "Date1 is after Date2");
+                    return true;
+                }
+            }else {
+                if (date1.equals(date2) || date1.after(date2)) {
+                    Log.e("APPTEST", "Date1 is after Date2");
+                    return true;
+                }
             }
 
         } catch (Exception e) {

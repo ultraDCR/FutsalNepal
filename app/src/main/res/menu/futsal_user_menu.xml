@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/notification_btn"
+        android:icon="@drawable/ic_notifications_24dp"
+        android:title="Notification"
+        app:actionLayout="@layout/badge_with_icon"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/setting_btn"
         android:icon="@drawable/ic_settings"
         android:title="Settings" />
