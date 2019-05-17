@@ -54,11 +54,13 @@ public class LoginDialog  {
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(adapter);
         AlertDialog dialog = builder.create();
-        dialog.show();
+
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
+        dialog.show();
         dialog.getWindow().clearFlags(
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+
     }
 
 }

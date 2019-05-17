@@ -344,7 +344,7 @@ public class FutsalInfoEdit extends AppCompatActivity {
                             saveBtn.setEnabled(true);
                             pbar.setVisibility(View.GONE);
                             Toast.makeText(FutsalInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
-                            Intent mainIntent = new Intent(FutsalInfoEdit.this, MainActivity.class);
+                            Intent mainIntent = new Intent(FutsalInfoEdit.this, FutsalHome.class);
                             startActivity(mainIntent);
                             finish();
 

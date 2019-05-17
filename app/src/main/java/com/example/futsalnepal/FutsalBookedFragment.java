@@ -3,6 +3,7 @@ package com.example.futsalnepal;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookingFutsal;
@@ -46,8 +49,10 @@ public class FutsalBookedFragment extends Fragment {
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String futsal_id;
-    private String date;
+    private String date, currentDate;
     DatePickerDialog dpd;
+    private Switch fSwitch;
+    private Boolean switchState;
     private TextView fDatePicker;
     private RecyclerView recyclerView;
     private DateSectionUserRecyclerViewAdapter sadapter;
@@ -63,9 +68,13 @@ public class FutsalBookedFragment extends Fragment {
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         date = sdf.format(new Date());
+        currentDate = sdf.format(new Date());
 
         fDatePicker = view.findViewById(R.id.date_picker_booked);
         fDatePicker.setText(date);
+        fSwitch = view.findViewById(R.id.booked_switch);
+        ConstraintLayout datepickLayout = view.findViewById(R.id.date_filter_booked);
+        switchState = fSwitch.isChecked();
 
         sectionModelArrayList = new ArrayList<>();
         recyclerView =  view.findViewById(R.id.booked_rview);
@@ -79,6 +88,18 @@ public class FutsalBookedFragment extends Fragment {
 
             futsal_id = mAuth.getCurrentUser().getUid();
             loadUsercalss();
+            fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+               @Override
+               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                   if(isChecked){
+                       datepickLayout.setVisibility(View.INVISIBLE);
+                       loadToRecyclerViewWhenOn(sadapter);
+                   }else{
+                       datepickLayout.setVisibility(View.VISIBLE);
+                       loadToRecyclerViewWhenOff(sadapter);
+                   }
+               }
+           });
         }
 
 
@@ -105,7 +126,7 @@ public class FutsalBookedFragment extends Fragment {
                         fDatePicker.setText(date);
                         sectionModelArrayList.clear();
 //                        loadDataToRecyclerView(sadapter);
-                        loadToRecyclerView(sadapter);
+                        loadToRecyclerViewWhenOff(sadapter);
                         //adapter.notifyDataSetChanged();
                         //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +", "+mYear);
                     }
@@ -123,71 +144,8 @@ public class FutsalBookedFragment extends Fragment {
 
         return view;
     }
-//    private void loadDataToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter) {
-//        mDatabase.collection("futsal_list").document(futsal_id).collection("book_info").document("booked")
-//                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    if (task.getResult().exists()) {
-//                        Map<String, Object> dd = task.getResult().getData();
-//                        for (String pdate : dd.keySet()) {
-//                            Log.d("TESTING@", "" + pdate);
-//                            if (compareDate(pdate, date)) {
-//                                Log.d("DATETEST2", "" + user_list);
-//                                Map<String, Object> dd1 = (Map<String, Object>) task.getResult().get(pdate);
-//
-//                                r_list = new ArrayList<>();
-//                                for (String userid : dd1.keySet()) {
-//                                    if (userid != null) {
-//                                        Log.d("NEWTEST1", "" + userid);
-//                                        for (int i = 0; i < user_list.size(); i++) {
-//                                            Log.d("NEWTEST2.0", "onComplete: " + user_list.size() + " -- " + user_list.get(1).user_id + " -- " + userid);
-//                                            if (user_list.get(i).user_id.equals(userid)) {
-//                                                Log.d("NEWTEST2.2", "onComplete: " + dd1.get(userid));
-//                                                Map<String, String> dd2 = (Map<String, String>) dd1.get(userid);
-//                                                for (String time : dd2.keySet()) {
-//                                                    if(compareTimee(time)) {
-//                                                        BookingUser user = new BookingUser();
-//                                                        Log.d("NEWTEST2.3", "onComplete: " + time);
-//                                                        user.setTime(time);
-//                                                        user.setUser_full_name(user_list.get(i).getUser_full_name());
-//                                                        user.setUser_id(user_list.get(i).getUser_id());
-//                                                        user.setUser_address(user_list.get(i).getUser_address());
-//                                                        user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-//                                                        user.setUser_profile_image(user_list.get(i).getUser_profile_image());
-//                                                        Log.d("NEWTEST2.3", "onComplete1: " + user.getTime());
-//                                                        r_list.add(user);
-//                                                    }
-//                                                }
-//
-//                                                Log.d("NEWTEST2.1", "onComplete: " + r_list);
-//                                            }
-//
-//                                        }
-//
-//                                    }
-//
-//                                }
-//                                Log.d("NEWTEST3", "onComplete: " + pdate + "  " + r_list);
-//                                sectionModelArrayList.add(new SectionModel(pdate, null, r_list));
-//                                sadapter.notifyDataSetChanged();
-//                                //r_list.clear();
-//                                Log.d("NEWTEST4", "onComplete: " + pdate + "  " + r_list);
-//                                Log.d("DATETEST7", "onComplete: " + sectionModelArrayList);
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//
-//    }
 
-
-    private void loadToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter){
+    private void loadToRecyclerViewWhenOff(DateSectionUserRecyclerViewAdapter sadapter){
         mDatabase.collection("futsal_list").document(futsal_id).collection("booked")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -197,7 +155,7 @@ public class FutsalBookedFragment extends Fragment {
                             for (QueryDocumentSnapshot document : snapshot) {
                                 String pdate = document.getId();
                                 Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate)+"_"+compareDate(pdate,date));
-                                if (compareDate(pdate, date)) {
+                                if (pdate.equals(date)) {
                                     Map<String, Object> dd1 = (Map<String, Object>) document.getData();
                                     r_list = new ArrayList<>();
                                     r_list.clear();
@@ -235,6 +193,61 @@ public class FutsalBookedFragment extends Fragment {
 
                                 }
                             }
+                            sadapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+    }
+
+    private void loadToRecyclerViewWhenOn(DateSectionUserRecyclerViewAdapter sadapter){
+        mDatabase.collection("futsal_list").document(futsal_id).collection("booked")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                        if (snapshot != null) {
+                            sectionModelArrayList.clear();
+                            for (QueryDocumentSnapshot document : snapshot) {
+                                String pdate = document.getId();
+                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate)+"_"+compareDate(pdate,date));
+                                if (compareDate(pdate, currentDate)) {
+                                    Map<String, Object> dd1 = (Map<String, Object>) document.getData();
+                                    r_list = new ArrayList<>();
+                                    r_list.clear();
+                                    for(String uid: dd1.keySet()){
+                                        for (int i = 0; i < user_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
+                                            if (user_list.get(i).user_id.equals(uid)) {
+                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
+                                                Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
+                                                for (String time : dd2.keySet()) {
+                                                    if (compareTimee(pdate, time)) {
+                                                        BookingUser user = new BookingUser();
+                                                        Log.d("NEWREQTEST2.4", "onComplete: " + time);
+                                                        user.setTime(time);
+                                                        user.setUser_full_name(user_list.get(i).getUser_full_name());
+                                                        user.setUser_id(user_list.get(i).getUser_id());
+                                                        user.setUser_address(user_list.get(i).getUser_address());
+                                                        user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+                                                        user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                        Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+                                                        r_list.add(user);
+                                                    }
+                                                }
+
+                                                Log.d("NEWTEST2.1", "onComplete: " + r_list);
+                                            }
+                                        }
+                                    }
+                                    if(r_list.size() != 0) {
+                                        sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+                                        sadapter.notifyDataSetChanged();
+                                        //firstload = false;
+//
+                                    }
+
+                                }
+                            }
+                            sadapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -257,7 +270,7 @@ public class FutsalBookedFragment extends Fragment {
 
                 }
                 //loadDataToRecyclerView(sadapter);
-                loadToRecyclerView(sadapter);
+                loadToRecyclerViewWhenOff(sadapter);
             }
 
 

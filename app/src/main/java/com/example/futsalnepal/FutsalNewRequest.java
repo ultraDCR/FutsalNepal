@@ -49,14 +49,13 @@ public class FutsalNewRequest extends Fragment {
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
     private String futsal_id;
-    private String date;
+    private String date, currentDate;
     DatePickerDialog dpd;
     private TextView fDatePicker;
     private Switch fSwitch;
     private Boolean switchState;
     private RecyclerView recyclerView;
     private DateSectionUserRecyclerViewAdapter sadapter;
-    Boolean firstload = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,6 +70,7 @@ public class FutsalNewRequest extends Fragment {
 //        current.add(Calendar.DATE, -1);
 //        date = sdf.format(current.getTime());
         date = sdf.format(new Date());
+        currentDate = sdf.format(new Date());
         Log.d("TIMETEST", "onCreateView: " + date);
 
         fDatePicker = view.findViewById(R.id.date_picker_new_request);
@@ -78,18 +78,7 @@ public class FutsalNewRequest extends Fragment {
         fSwitch = view.findViewById(R.id.new_request_switch);
         ConstraintLayout datepickLayout = view.findViewById(R.id.layout_new_request);
         switchState = fSwitch.isChecked();
-        fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    datepickLayout.setVisibility(View.INVISIBLE);
-                }else{
-                    datepickLayout.setVisibility(View.VISIBLE);
 
-                }
-            }
-        }
-        );
 
 
         sectionModelArrayList = new ArrayList<>();
@@ -106,6 +95,18 @@ public class FutsalNewRequest extends Fragment {
 
             futsal_id = mAuth.getCurrentUser().getUid();
             loadUsercalss();
+            fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+               @Override
+               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                   if(isChecked){
+                       datepickLayout.setVisibility(View.INVISIBLE);
+                       loadToRecyclerViewWhenOn(sadapter);
+                   }else{
+                       datepickLayout.setVisibility(View.VISIBLE);
+                       loadToRecyclerViewWhenOff(sadapter);
+                   }
+               }
+           });
         }
 
 
@@ -132,7 +133,7 @@ public class FutsalNewRequest extends Fragment {
                         fDatePicker.setText(date);
                         sectionModelArrayList.clear();
 //                        loadDataToRecyclerView(sadapter);
-                        loadToRecyclerView(sadapter);
+                        loadToRecyclerViewWhenOff(sadapter);
 
                         //adapter.notifyDataSetChanged();
                         //fDatePicker.setText(MONTHS[mMonth]+" "+ mDayOfMonth +", "+mYear);
@@ -152,7 +153,7 @@ public class FutsalNewRequest extends Fragment {
         return view;
     }
 
-    private void loadToRecyclerView(DateSectionUserRecyclerViewAdapter sadapter){
+    private void loadToRecyclerViewWhenOn(DateSectionUserRecyclerViewAdapter sadapter){
         Log.d("NEWREQTEST2", "loadToRecyclerView: "+futsal_id);
         mDatabase.collection("futsal_list").document(futsal_id).collection("newrequest")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -174,16 +175,16 @@ public class FutsalNewRequest extends Fragment {
                                                 Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
                                                 Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
                                                 for (String time : dd2.keySet()) {
-                                                        BookingUser user = new BookingUser();
-                                                        Log.d("NEWREQTEST2.4", "onComplete: " + time);
-                                                        user.setTime(time);
-                                                        user.setUser_full_name(user_list.get(i).getUser_full_name());
-                                                        user.setUser_id(user_list.get(i).getUser_id());
-                                                        user.setUser_address(user_list.get(i).getUser_address());
-                                                        user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-                                                        user.setUser_profile_image(user_list.get(i).getUser_profile_image());
-                                                        Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
-                                                        r_list.add(user);
+                                                    BookingUser user = new BookingUser();
+                                                    Log.d("NEWREQTEST2.4", "onComplete: " + time);
+                                                    user.setTime(time);
+                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
+                                                    user.setUser_id(user_list.get(i).getUser_id());
+                                                    user.setUser_address(user_list.get(i).getUser_address());
+                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                    Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+                                                    r_list.add(user);
                                                 }
 
                                                 Log.d("NEWTEST2.1", "onComplete: " + r_list);
@@ -191,14 +192,71 @@ public class FutsalNewRequest extends Fragment {
                                         }
                                     }
                                     if(r_list.size() != 0) {
-                                            sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
-                                            sadapter.notifyDataSetChanged();
-                                            //firstload = false;
+                                        sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+                                        sadapter.notifyDataSetChanged();
+                                        //firstload = false;
 //
                                     }
 
                                 }
                             }
+                            sadapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
+
+    }
+
+    private void loadToRecyclerViewWhenOff(DateSectionUserRecyclerViewAdapter sadapter){
+        Log.d("NEWREQTEST2", "loadToRecyclerView: "+futsal_id);
+        mDatabase.collection("futsal_list").document(futsal_id).collection("newrequest")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                        if (snapshot != null) {
+                            sectionModelArrayList.clear();
+                            for (QueryDocumentSnapshot document : snapshot) {
+                                String pdate = document.getId();
+                                Log.d("NEWREQTEST2.0.0", "onComplete: " + pdate + "-" + document.getData().get(pdate)+"_"+compareDate(pdate,date));
+                                if (pdate.equals(currentDate)) {
+                                    Map<String, Object> dd1 = (Map<String, Object>) document.getData();
+                                    r_list = new ArrayList<>();
+                                    r_list.clear();
+                                    for(String uid: dd1.keySet()){
+                                        for (int i = 0; i < user_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
+                                            if (user_list.get(i).user_id.equals(uid)) {
+                                                Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
+                                                Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
+                                                for (String time : dd2.keySet()) {
+                                                    BookingUser user = new BookingUser();
+                                                    Log.d("NEWREQTEST2.4", "onComplete: " + time);
+                                                    user.setTime(time);
+                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
+                                                    user.setUser_id(user_list.get(i).getUser_id());
+                                                    user.setUser_address(user_list.get(i).getUser_address());
+                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
+                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                    Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
+                                                    r_list.add(user);
+                                                }
+
+                                                Log.d("NEWTEST2.1", "onComplete: " + r_list);
+                                            }
+                                        }
+                                    }
+                                    if(r_list.size() != 0) {
+                                        sectionModelArrayList.add(new SectionModel(pdate,null, r_list));
+                                        sadapter.notifyDataSetChanged();
+                                        //firstload = false;
+//
+                                    }
+
+                                }
+                            }
+                            sadapter.notifyDataSetChanged();
+
                         }
                     }
                 });
@@ -224,7 +282,7 @@ public class FutsalNewRequest extends Fragment {
 
                 }
 //                loadDataToRecyclerView(sadapter);
-                loadToRecyclerView(sadapter);
+                loadToRecyclerViewWhenOff(sadapter);
 
             }
 
@@ -242,17 +300,12 @@ public class FutsalNewRequest extends Fragment {
 //            Log.e("app", "Date1 is before Date2");
 //            return true ;
 //        }
-            if(switchState){
-                if (date1.equals(date2)) {
-                    Log.e("APPTEST", "Date1 is after Date2");
-                    return true;
-                }
-            }else {
-                if (date1.equals(date2) || date1.after(date2)) {
-                    Log.e("APPTEST", "Date1 is after Date2");
-                    return true;
-                }
-            }
+
+        if (date1.equals(date2) || date1.after(date2)) {
+            Log.e("APPTEST", "Date1 is after Date2");
+            return true;
+        }
+
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
     DatePickerDialog dpd;
@@ -77,15 +78,22 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 dpd = new DatePickerDialog(SearchLayout.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDayOfMonth) {
-                        dateSearch.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
+                        //dateSearch.setText(MONTHS[mMonth]+" "+ mDayOfMonth +","+mYear);
+                        now.set(Calendar.YEAR, mYear);
+                        now.set(Calendar.MONTH, mMonth);
+                        now.set(Calendar.DAY_OF_MONTH, mDayOfMonth);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+                        String date = sdf.format(now.getTime());
+                        dateSearch.setText(date);
                     }
                 },day,month,year);
                 dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 dpd.show();
             }
         });
-
     }
+
     // for toolbar
     @Override
     public boolean onSupportNavigateUp() {
@@ -99,11 +107,11 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("hh a");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("hha",Locale.US);
 
-        Date date1 = null;
+        Date date1 ;
         String str1 = null;
-        Date date2 = null;
+        Date date2 ;
         String str2 = null;
 
         try {
