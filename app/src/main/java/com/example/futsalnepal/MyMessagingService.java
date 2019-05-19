@@ -2,6 +2,8 @@ package com.example.futsalnepal;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -18,12 +20,16 @@ public class MyMessagingService extends FirebaseMessagingService {
         String dataMessage = remoteMessage.getData().get("message");
         String dataFrom = remoteMessage.getData().get("futsal_id");
 
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.logo)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentText(message);
+                .setContentText(message)
+                .setSound(alarmSound);
 
         Intent resultIntent = new Intent(click_action);
         resultIntent.putExtra("message",dataMessage);

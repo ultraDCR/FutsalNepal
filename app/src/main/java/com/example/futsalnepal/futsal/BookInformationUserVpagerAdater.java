@@ -1,18 +1,20 @@
-package com.example.futsalnepal;
-
+package com.example.futsalnepal.futsal;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.futsalnepal.futsal.FutsalInfoFragment;
+import com.example.futsalnepal.R;
+import com.example.futsalnepal.users.BookedFragment;
+import com.example.futsalnepal.users.HistoryFragment;
+import com.example.futsalnepal.users.PendingFragment;
 
-public class FutsalDetailViewPageAdapter  extends FragmentPagerAdapter {
+public class BookInformationUserVpagerAdater extends FragmentPagerAdapter {
 
     private Context mContext;
 
-    public FutsalDetailViewPageAdapter (Context context, FragmentManager fm) {
+    public BookInformationUserVpagerAdater (Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
     }
@@ -21,11 +23,11 @@ public class FutsalDetailViewPageAdapter  extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new BookTimeFragment();
+            return new PendingFragment();
         } else if (position == 1){
-            return new FutsalInfoFragment();
+            return new BookedFragment();
         } else {
-            return new RatingReviewFragment();
+            return new HistoryFragment();
         }
     }
 
@@ -41,15 +43,14 @@ public class FutsalDetailViewPageAdapter  extends FragmentPagerAdapter {
         // Generate title based on item position
         switch (position) {
             case 0:
-                return mContext.getString(R.string.book_time);
+                return mContext.getString(R.string.pending_time);
             case 1:
-                return mContext.getString(R.string.futsal_info);
+                return mContext.getString(R.string.booked);
             case 2:
-                return mContext.getString(R.string.rating_review);
+                return mContext.getString(R.string.history);
             default:
                 return null;
         }
     }
 
 }
-

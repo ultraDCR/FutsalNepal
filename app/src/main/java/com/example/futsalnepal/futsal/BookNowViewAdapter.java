@@ -1,10 +1,9 @@
-package com.example.futsalnepal;
+package com.example.futsalnepal.futsal;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,22 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookTime;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.futsalnepal.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
@@ -40,8 +33,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-
-public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapter.BookTimeViewHolder> {
+public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.BookTimeViewHolder> {
 
     List<BookTime> list ;
     Context context;
@@ -51,11 +43,10 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
     String date;
     String futsal_id;
 
-    public BookTimeViewAdapter(List<BookTime> list, String date, String futsal_id, Context context, Activity activity) {
+    public BookNowViewAdapter(List<BookTime> list, String date, Context context, Activity activity) {
         this.list = list;
         this.date = date;
-        this.futsal_id = futsal_id;
-        Log.d("FUTSAL", "BookTimeViewAdapter: "+futsal_id);
+        Log.d("FUTSAL", "BookNowViewAdapter: "+futsal_id);
         this.context = context;
         this.activity = activity;
         mauth = FirebaseAuth.getInstance();
@@ -75,111 +66,52 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
     @Override
     public void onBindViewHolder(BookTimeViewHolder holder, int position) {
         mauth = FirebaseAuth.getInstance();
+        futsal_id = mauth.getCurrentUser().getUid();
+
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.book_time.setText(list.get(position).book_time);
         Log.d("ARRAY4", "onBindViewHolder: "+futsal_id+"  "+date);
         boolean pastTime = holder.pastTimeDisable(list.get(position).book_time, date);
         if(pastTime) {
             holder.firstLoadPendingData(list.get(position).book_time);
-
+            holder.firstLoadBookedData(list.get(position).book_time);
 
 
             holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("CLICKABLE", "onBindViewHolder: "+holder.own_pending);
-                    if (mauth.getCurrentUser() == null) {
-                        LoginDialog dialog = new LoginDialog(context, activity);
-                        dialog.startLoginDialog();
-                        Log.d("pressed", "alertdialog");
-                    }else {
-                        if (holder.own_pending) {
-                            Log.d("CLICKABLE1", "onBindViewHolder: " + holder.own_pending);
-                            String user_id = mauth.getCurrentUser().getUid();
+                    Map<String, Object> futsalMap = new HashMap<>();
+                    Map<String, Object> timeMap1 = new HashMap<>();
+                    timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
+                    futsalMap.put(futsal_id, timeMap1);
 
-                            Map<String, Object> userMap = new HashMap<>();
-                            Map<String, Object> timeMap = new HashMap<>();
-                            timeMap.put(list.get(position).book_time, FieldValue.delete());
-                            userMap.put(futsal_id, timeMap);
-
-
-                            Map<String, Object> futsalMap = new HashMap<>();
-                            Map<String, Object> timeMap1 = new HashMap<>();
-                            timeMap1.put(list.get(position).book_time, FieldValue.delete());
-                            futsalMap.put(user_id, timeMap1);
-
-                            String message = "Booking request for "+date+" at "+list.get(position).book_time+"was cancled";
-                            Map<String, Object> notificationMap = new HashMap<>();
-                            notificationMap.put("from", user_id);
-                            notificationMap.put("type", "removed");
-                            notificationMap.put("message", message);
-                            notificationMap.put("status","notseen");
-                            notificationMap.put("timestamp",FieldValue.serverTimestamp());
-
-                            new AlertDialog.Builder(context)
-                                    .setMessage("Are you sure you want to cancle booking request of"+list.get(position).book_time +" ?")
-                                    .setPositiveButton("YES", (dialog, which) -> {
-                                        mDatabase.collection("users_list").document(user_id)
-                                                .collection("pending").document(date).set(userMap, SetOptions.merge());
-                                        mDatabase.collection("futsal_list").document(futsal_id)
-                                                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        holder.cancelbooking();
-                                                    }
-                                                });
-                                        mDatabase.collection("futsal_list").document(futsal_id)
-                                                .collection("Notification").add(notificationMap);
-
-                                    })
-                                    .setNegativeButton("NO", (dialog, which) -> {
-                                        //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .show();
-
-                        } else {
-                            String user_id = mauth.getCurrentUser().getUid();
-                            Log.d("CLICKABLE1", "onBindViewHolder: " + user_id);
-                            Map<String, Object> userMap = new HashMap<>();
-                            Map<String, Object> timeMap = new HashMap<>();
-                            timeMap.put(list.get(position).book_time, FieldValue.serverTimestamp());
-                            userMap.put(futsal_id, timeMap);
+                    new AlertDialog.Builder(context)
+                            .setMessage("Do you want to booking your futsal at "+list.get(position).book_time +" ?")
+                            .setPositiveButton("YES", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    mDatabase.collection("futsal_list").document(futsal_id)
+                                            .collection("booked").document(date).set(futsalMap, SetOptions.merge());
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .show();
 
 
-                            Map<String, Object> futsalMap = new HashMap<>();
-                            Map<String, Object> timeMap1 = new HashMap<>();
-                            timeMap1.put(list.get(position).book_time, FieldValue.serverTimestamp());
-                            futsalMap.put(user_id, timeMap1);
-
-                            String message = "You have new booking request for "+date+" at "+list.get(position).book_time;
-                            Map<String, Object> notificationMap = new HashMap<>();
-                            notificationMap.put("from", user_id);
-                            notificationMap.put("type", "added");
-                            notificationMap.put("message", message);
-                            notificationMap.put("status","notseen");
-                            notificationMap.put("timestamp",FieldValue.serverTimestamp());
-
-
-                            new AlertDialog.Builder(context)
-                                    .setMessage("Do you want to book the futsal at "+list.get(position).book_time +" ?")
-                                    .setPositiveButton("YES", (dialog, which) -> {
-                                        mDatabase.collection("futsal_list").document(futsal_id)
-                                                .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
-                                        mDatabase.collection("users_list").document(user_id)
-                                                .collection("pending").document(date).set(userMap, SetOptions.merge());
-                                        mDatabase.collection("futsal_list").document(futsal_id)
-                                                .collection("Notification").add(notificationMap);
-                                    })
-                                    .setNegativeButton("NO", (dialog, which) -> {
-                                        //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .show();
-                        }
                     }
 
-                }
             });
+
+
         }
 
     }
@@ -223,7 +155,6 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         TextView book_time;
         Button bookBtn;
-        boolean own_pending = false;
 
 
 
@@ -235,13 +166,11 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         }
 
-        public void cancelbooking(){
-            bookBtn.setTextColor(Color.parseColor("#5FBA3A"));
-            bookBtn.setBackgroundResource(R.drawable.input_field);
-            bookBtn.setText("Book Now");
-            bookBtn.setClickable(true);
-            own_pending = false;
-
+        public void setBooked() {
+            bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
+            bookBtn.setBackgroundResource(R.drawable.your_booking_button);
+            bookBtn.setText("Booked");
+            bookBtn.setClickable(false);
         }
         public void firstLoadPendingData(String bookdate){
             mDatabase.collection("futsal_list").document(futsal_id)
@@ -261,27 +190,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                     bookBtn.setBackgroundResource(R.drawable.pending_button);
                                     bookBtn.setText("Pending");
                                     bookBtn.setClickable(false);
-                                    Log.d("CLICKABLE", "Book: " + user_id);
-                                    if (mauth.getCurrentUser() != null) {
-                                        String uid = mauth.getCurrentUser().getUid();
-                                        if (user_id.equals(uid)) {
-                                            Log.d("CLICKABLE", "onComplete: " + uid);
-                                            bookBtn.setClickable(true);
-                                            bookBtn.setBackgroundResource(R.drawable.own_pending_btn);
-                                            own_pending = true;
-
-                                        }
-                                        firstLoadBookedData(bookdate);
-                                    }
-                                }else {
-//                                    if(timeMap.size() == 0)
-                                    bookBtn.setTextColor(Color.parseColor("#5FBA3A"));
-                                    bookBtn.setBackgroundResource(R.drawable.input_field);
-                                    bookBtn.setText("Book Now");
-                                    bookBtn.setClickable(true);
-                                    firstLoadBookedData(bookdate);
                                 }
-
 
                             }
                         }
@@ -301,7 +210,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                         Map<String, Object> userIdMap = documentSnapshot.getData();
                         if(userIdMap != null) {
                             for (String user_id : userIdMap.keySet()) {
-                                Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
                                 if (timeMap.get(book_time) != null) {
                                     bookBtn.setTextColor(Color.parseColor("#FFFFFF"));
                                     bookBtn.setBackgroundResource(R.drawable.already_booked_button);

@@ -171,7 +171,7 @@ public class RatingReviewFragment extends Fragment {
         ReviewRecyclerView adapter = new ReviewRecyclerView(users_list,review_list,getContext());
         recyclerView.setAdapter(adapter);
 
-        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").orderBy("timeStamp", Query.Direction.).addSnapshotListener(new EventListener<QuerySnapshot >() {
+        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").orderBy("timeStamp", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot >() {
             @Override
             public void onEvent(QuerySnapshot  snapshots, FirebaseFirestoreException e) {
 

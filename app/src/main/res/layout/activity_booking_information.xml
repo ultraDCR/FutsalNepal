@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BookingInformation">
+    tools:context=".users.BookingInformation">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/book_info_toolbar"
@@ -38,10 +38,10 @@
             android:id="@+id/book_info_user_tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginRight="2dp"
             android:background="@drawable/tab_custom_shape"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
             app:tabIndicator="@drawable/tab_indicater_shape"
             app:tabIndicatorColor="@color/white"
             app:tabIndicatorGravity="center"
-            app:tabIndicatorHeight="40dp"
+            app:tabIndicatorHeight="44dp"
             app:tabMaxWidth="150dp"
             app:tabRippleColor="@color/colorTransparent"
             app:tabSelectedTextColor="@color/colorPrimary"

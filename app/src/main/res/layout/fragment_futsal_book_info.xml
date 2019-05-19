@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    tools:context=".FutsalBookInfoFragment">
+    tools:context=".futsal.FutsalBookInfoFragment">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -55,10 +55,10 @@
                 android:id="@+id/book_information_tablayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
                 android:background="@drawable/tab_custom_shape"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -68,7 +68,7 @@
                 app:tabIndicator="@drawable/tab_indicater_shape"
                 app:tabIndicatorColor="@color/white"
                 app:tabIndicatorGravity="center"
-                app:tabIndicatorHeight="40dp"
+                app:tabIndicatorHeight="44dp"
                 app:tabMaxWidth="150dp"
                 app:tabRippleColor="@color/colorTransparent"
                 app:tabSelectedTextColor="@color/colorPrimary"
