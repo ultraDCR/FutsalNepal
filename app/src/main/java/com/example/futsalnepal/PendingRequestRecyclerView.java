@@ -138,7 +138,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                mDatabase.collection("user_list").document(user_id)
+                                mDatabase.collection("users_list").document(user_id)
                                         .collection("pending").document(date).set(userMap, SetOptions.merge());
                                 mDatabase.collection("futsal_list").document(futsal_id)
                                         .collection("Notification").add(notificationMap);
@@ -147,7 +147,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                mDatabase.collection("user_list").document(user_id)
+                                                mDatabase.collection("users_list").document(user_id)
                                                         .collection("pending").document(date).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -155,12 +155,12 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<com.example
                                                             if(task.getResult().exists()){
                                                                 Map<String,Object> useMap = (Map<String, Object>) task.getResult().get(futsal_id);
                                                                 if(useMap.size() < 1){
-                                                                    mDatabase.collection("user_list").document(user_id)
+                                                                    mDatabase.collection("users_list").document(user_id)
                                                                             .collection("pending").document(date).delete();
                                                                     mDatabase.collection("futsal_list").document(futsal_id)
                                                                             .collection("newrequest").document(date).delete();
                                                                 }else{
-                                                                    mDatabase.collection("user_list").document(user_id)
+                                                                    mDatabase.collection("users_list").document(user_id)
                                                                             .collection("pending").document(date).set(userMap, SetOptions.merge());
                                                                     mDatabase.collection("futsal_list").document(futsal_id)
                                                                             .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());

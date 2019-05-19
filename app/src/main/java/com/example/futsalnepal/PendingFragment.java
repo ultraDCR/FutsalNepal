@@ -151,7 +151,7 @@ public class PendingFragment extends Fragment {
 
 
     private void loadToRecyclerViewWhenOn(DateSectionFutsalRecyclerViewAdapter sadapter){
-        mDatabase.collection("user_list").document(user_id).collection("pending")
+        mDatabase.collection("users_list").document(user_id).collection("pending")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -207,7 +207,7 @@ public class PendingFragment extends Fragment {
     }
 
     private void loadToRecyclerViewWhenOff(DateSectionFutsalRecyclerViewAdapter sadapter){
-        mDatabase.collection("user_list").document(user_id).collection("pending")
+        mDatabase.collection("users_list").document(user_id).collection("pending")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {

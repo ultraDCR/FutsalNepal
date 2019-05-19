@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String uid = mAuth.getCurrentUser().getUid();
                 Map<String,Object> tokenMap = new HashMap<>();
                 tokenMap.put("token_id", FieldValue.delete());
-                mDatabase.collection("user_list").document(uid).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDatabase.collection("users_list").document(uid).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         mAuth.signOut();
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //data for drawer header elements
             user_id = mAuth.getCurrentUser().getUid();
-            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            mDatabase.collection("users_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
             //for notification badge
-            mDatabase.collection("user_list").document(user_id).collection("Notification").whereEqualTo("status", "notseen").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            mDatabase.collection("users_list").document(user_id).collection("Notification").whereEqualTo("status", "notseen").addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                     if(snapshot != null){
@@ -336,8 +336,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             startActivity(futsalhome);
                             finish();
                         } else {
-                            Log.d("TestingInfo3", "onComplete: "+ mDatabase.collection("user_list").document(user_id).get());
-                            mDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            Log.d("TestingInfo3", "onComplete: "+ mDatabase.collection("users_list").document(user_id).get());
+                            mDatabase.collection("users_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     Log.d("TestingInfo4", "onComplete: "+task);

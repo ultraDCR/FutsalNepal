@@ -157,7 +157,7 @@ public class BookedFragment extends Fragment {
 
 
     private void loadToRecyclerViewWhenOn(DateSectionFutsalRecyclerViewAdapter sadapter){
-        mDatabase.collection("user_list").document(user_id).collection("booked")
+        mDatabase.collection("users_list").document(user_id).collection("booked")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -214,7 +214,7 @@ public class BookedFragment extends Fragment {
     }
 
     private void loadToRecyclerViewWhenOff(DateSectionFutsalRecyclerViewAdapter sadapter){
-        mDatabase.collection("user_list").document(user_id).collection("booked")
+        mDatabase.collection("users_list").document(user_id).collection("booked")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {

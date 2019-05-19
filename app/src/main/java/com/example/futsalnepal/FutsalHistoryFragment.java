@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 public class FutsalHistoryFragment extends Fragment {
 
     List<SectionModel> sectionModelArrayList;
-    List<BookingUser> user_list;
+    List<BookingUser> users_list;
     List<BookingUser> r_list;
 
     private FirebaseFirestore mDatabase;
@@ -170,20 +170,20 @@ public class FutsalHistoryFragment extends Fragment {
                                     r_list = new ArrayList<>();
                                     r_list.clear();
                                     for(String uid: dd1.keySet()){
-                                        for (int i = 0; i < user_list.size(); i++) {
-                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
-                                            if (user_list.get(i).user_id.equals(uid)) {
+                                        for (int i = 0; i < users_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + users_list.size() + " -- " + users_list.get(i).user_id + " -- " + uid);
+                                            if (users_list.get(i).user_id.equals(uid)) {
                                                 Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
                                                 Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
                                                 for (String time : dd2.keySet()) {
                                                     BookingUser user = new BookingUser();
                                                     Log.d("NEWREQTEST2.4", "onComplete: " + time);
                                                     user.setTime(time);
-                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
-                                                    user.setUser_id(user_list.get(i).getUser_id());
-                                                    user.setUser_address(user_list.get(i).getUser_address());
-                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                    user.setUser_full_name(users_list.get(i).getUser_full_name());
+                                                    user.setUser_id(users_list.get(i).getUser_id());
+                                                    user.setUser_address(users_list.get(i).getUser_address());
+                                                    user.setUser_phone_number(users_list.get(i).getUser_phone_number());
+                                                    user.setUser_profile_image(users_list.get(i).getUser_profile_image());
                                                     Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
                                                     r_list.add(user);
                                                 }
@@ -224,20 +224,20 @@ public class FutsalHistoryFragment extends Fragment {
                                     r_list = new ArrayList<>();
                                     r_list.clear();
                                     for(String uid: dd1.keySet()){
-                                        for (int i = 0; i < user_list.size(); i++) {
-                                            Log.d("NEWREQTEST2.2", "onComplete: " + user_list.size() + " -- " + user_list.get(i).user_id + " -- " + uid);
-                                            if (user_list.get(i).user_id.equals(uid)) {
+                                        for (int i = 0; i < users_list.size(); i++) {
+                                            Log.d("NEWREQTEST2.2", "onComplete: " + users_list.size() + " -- " + users_list.get(i).user_id + " -- " + uid);
+                                            if (users_list.get(i).user_id.equals(uid)) {
                                                 Log.d("NEWREQTEST2.3", "onComplete: " + dd1.get(uid));
                                                 Map<String, Object> dd2 = (Map<String, Object>) dd1.get(uid);
                                                 for (String time : dd2.keySet()) {
                                                     BookingUser user = new BookingUser();
                                                     Log.d("NEWREQTEST2.4", "onComplete: " + time);
                                                     user.setTime(time);
-                                                    user.setUser_full_name(user_list.get(i).getUser_full_name());
-                                                    user.setUser_id(user_list.get(i).getUser_id());
-                                                    user.setUser_address(user_list.get(i).getUser_address());
-                                                    user.setUser_phone_number(user_list.get(i).getUser_phone_number());
-                                                    user.setUser_profile_image(user_list.get(i).getUser_profile_image());
+                                                    user.setUser_full_name(users_list.get(i).getUser_full_name());
+                                                    user.setUser_id(users_list.get(i).getUser_id());
+                                                    user.setUser_address(users_list.get(i).getUser_address());
+                                                    user.setUser_phone_number(users_list.get(i).getUser_phone_number());
+                                                    user.setUser_profile_image(users_list.get(i).getUser_profile_image());
                                                     Log.d("NEWREQTEST2.5", "onComplete1: " + user.getTime());
                                                     r_list.add(user);
                                                 }
@@ -264,8 +264,8 @@ public class FutsalHistoryFragment extends Fragment {
 
 
     private void loadUsercalss() {
-        user_list = new ArrayList<>();
-        mDatabase.collection("user_list").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        users_list = new ArrayList<>();
+        mDatabase.collection("users_list").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
@@ -275,8 +275,8 @@ public class FutsalHistoryFragment extends Fragment {
                     Log.d("DATETEST4", "" + user);
                     user.setUser_id(userid);
 
-                    user_list.add(user);
-                    Log.d("NEWTEST2", "onComplete: " + user_list.size());
+                    users_list.add(user);
+                    Log.d("NEWTEST2", "onComplete: " + users_list.size());
 
                 }
 //                loadDataToRecyclerView(sadapter);

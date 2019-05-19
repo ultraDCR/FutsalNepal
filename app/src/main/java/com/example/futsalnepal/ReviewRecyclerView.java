@@ -24,12 +24,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsalnepal.ReviewRecyclerView.ReviewViewHolder> {
 
-    List<User> user_list ;
+    List<User> users_list ;
     List<Review> review_list;
     Context context;
 
-    public ReviewRecyclerView(List<User> user_list,List<Review> review_list, Context context) {
-        this.user_list = user_list;
+    public ReviewRecyclerView(List<User> users_list,List<Review> review_list, Context context) {
+        this.users_list = users_list;
         this.review_list = review_list;
         this.context = context;
     }
@@ -49,8 +49,8 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.setIsRecyclable(false);
-        String user_name = user_list.get(position).getUser_full_name();
-        String user_profile = user_list.get(position).getUser_profile_image();
+        String user_name = users_list.get(position).getUser_full_name();
+        String user_profile = users_list.get(position).getUser_profile_image();
 
         holder.setUserInfo(user_name, user_profile);
 

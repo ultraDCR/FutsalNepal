@@ -61,8 +61,8 @@ public class NotificationDateSectionAdapter extends RecyclerView.Adapter<Notific
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         holder.itemRecyclerView.setLayoutManager(linearLayoutManager);
 
-            //NotificationRecyclerViewAdapter adapter = new NotificationRecyclerViewAdapter(sectionModel.getNotificationList(), context);
-            //holder.itemRecyclerView.setAdapter(adapter);
+//            NotificationRecyclerViewAdapter adapter = new NotificationRecyclerViewAdapter(sectionModel.getNotificationList(), context);
+//            holder.itemRecyclerView.setAdapter(adapter);
 
 
     }

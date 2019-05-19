@@ -63,7 +63,7 @@ public class Favourite extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             user_id = mAuth.getCurrentUser().getUid();
-            mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            mDatabase.collection("users_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot snapshot,
                                     @Nullable FirebaseFirestoreException e) {

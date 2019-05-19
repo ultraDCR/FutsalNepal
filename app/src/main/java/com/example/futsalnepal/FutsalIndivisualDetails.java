@@ -100,7 +100,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                     //favBtn.setImageResource(R.drawable.ic_favorite_selected);
                 }
             });
-            mDatabase.collection("user_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            mDatabase.collection("users_list").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot snapshot,
                                     @Nullable FirebaseFirestoreException e) {
@@ -121,7 +121,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                                     @Override
                                     public void onClick(View v) {
                                         alertBoxUnFavourite();
-//                                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+//                                        mDatabase.collection("users_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
                                     }
                                 });
                             }
@@ -170,7 +170,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d("ALERTTEST", "onClick: YES" + dialog + "  " + which);
                         Log.d("ALERTTEST", "onClick: YES" + user_id + "  " + futsal_id);
-                        mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
+                        mDatabase.collection("users_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
 //                        Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
 //                        favBtn.setImageResource(R.drawable.ic_favorite_selected);
 
@@ -196,7 +196,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                         {
                             Log.d("ALERTTEST", "onClick: YES"+dialog+"  "+which);
                             Log.d("ALERTTEST", "onClick: YES"+user_id+"  "+futsal_id);
-                            mDatabase.collection("user_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
+                            mDatabase.collection("users_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
                             //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
                             favBtn.setImageResource(R.drawable.ic_favorite_selected);
 

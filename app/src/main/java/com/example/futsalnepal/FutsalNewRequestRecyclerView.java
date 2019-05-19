@@ -242,7 +242,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
 
         mDatabase.collection("futsal_list").document(futsal_id)
                 .collection("booked").document(date).set(futsalMap, SetOptions.merge());
-        mDatabase.collection("user_list").document(user_id)
+        mDatabase.collection("users_list").document(user_id)
                 .collection("booked").document(date).set(userMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -267,7 +267,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         futsalMap.put(user_id, timeMap1);
 
 
-        mDatabase.collection("user_list").document(user_id)
+        mDatabase.collection("users_list").document(user_id)
                 .collection("pending").document(date).set(userMap, SetOptions.merge());
         mDatabase.collection("futsal_list").document(futsal_id)
                 .collection("newrequest").document(date).set(futsalMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -290,7 +290,7 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<com.examp
         notificationMap.put("status","notseen");
         notificationMap.put("timestamp",FieldValue.serverTimestamp());
 
-        mDatabase.collection("user_list").document(user_id)
+        mDatabase.collection("users_list").document(user_id)
                 .collection("Notification").add(notificationMap);
 
     }

@@ -126,7 +126,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 if(logintype.isChecked()){
                     userType = "futsal_list";
                 }else {
-                    userType = "user_list";
+                    userType = "users_list";
                 }
                 if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)){
 
@@ -171,7 +171,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                 if(signup_type.isChecked()){
                     userType = "futsal_list";
                 }else {
-                    userType = "user_list";
+                    userType = "users_list";
                 }
                 Log.d("SwitchOn", "onClick: "+userType);
                 if (!TextUtils.isEmpty(email)&&!TextUtils.isEmpty(password) &&!TextUtils.isEmpty(confirm_password)){
@@ -226,7 +226,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                     if (task.isSuccessful()) {
 
                                         if (task.getResult().exists()) {
-                                            if(type.equals("user_list")) {
+                                            if(type.equals("users_list")) {
                                                 FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<InstanceIdResult> task) {
@@ -234,7 +234,7 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                                                         String token_id = task.getResult().getToken();
                                                         Map<String,Object> tokenMap = new HashMap<>();
                                                         tokenMap.put("token_id",token_id);
-                                                        fDatabase.collection("user_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        fDatabase.collection("users_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
                                                                 prg_layout.setVisibility(View.GONE);
@@ -305,8 +305,8 @@ public class LoginSignupFragmentPagerAdapter extends PagerAdapter {
                             String user_id = mAuth.getCurrentUser().getUid();
                             Map<String, Object> updates = new HashMap<>();
                             updates.put("created_at", FieldValue.serverTimestamp());
-                            if(userType.equals("user_list")) {
-                                fDatabase.collection("user_list").document(user_id).set(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            if(userType.equals("users_list")) {
+                                fDatabase.collection("users_list").document(user_id).set(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){

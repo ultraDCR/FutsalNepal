@@ -77,7 +77,7 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
 
     public void deleteItem(int position){
         String user_id = mAuth.getCurrentUser().getUid();
-        DocumentReference docRef = db.collection("user_list").document(user_id);
+        DocumentReference docRef = db.collection("users_list").document(user_id);
         docRef.update("favourite_futsal", FieldValue.arrayRemove(list.get(position).FutsalId))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

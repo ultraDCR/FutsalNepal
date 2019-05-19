@@ -83,7 +83,7 @@ public class UserInfoEdit extends AppCompatActivity {
         String user_email = uAuth.getCurrentUser().getEmail();
 
 
-        uDatabase.collection("user_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        uDatabase.collection("users_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
@@ -156,7 +156,7 @@ public class UserInfoEdit extends AppCompatActivity {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] thumbData = baos.toByteArray();
-                        StorageReference ref = uStorage.child("user_pic_list").child(user_id).child("profile_pic").child( "pic.png");
+                        StorageReference ref = uStorage.child("users_pic_list").child(user_id).child("profile_pic").child( "pic.png");
                         UploadTask image_path = ref.putBytes(thumbData);
 
                         Task<Uri> urlTask = image_path.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -274,7 +274,7 @@ public class UserInfoEdit extends AppCompatActivity {
 
 
 
-                uDatabase.collection("user_list").document(user_id).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                uDatabase.collection("users_list").document(user_id).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 

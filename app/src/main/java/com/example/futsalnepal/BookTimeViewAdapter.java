@@ -119,7 +119,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                             new AlertDialog.Builder(context)
                                     .setMessage("Are you sure you want to cancle booking request of"+list.get(position).book_time +" ?")
                                     .setPositiveButton("YES", (dialog, which) -> {
-                                        mDatabase.collection("user_list").document(user_id)
+                                        mDatabase.collection("users_list").document(user_id)
                                                 .collection("pending").document(date).set(userMap, SetOptions.merge());
                                         mDatabase.collection("futsal_list").document(futsal_id)
                                                 .collection("newrequest").document(date).set(futsalMap, SetOptions.merge())
@@ -166,7 +166,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                     .setPositiveButton("YES", (dialog, which) -> {
                                         mDatabase.collection("futsal_list").document(futsal_id)
                                                 .collection("newrequest").document(date).set(futsalMap, SetOptions.merge());
-                                        mDatabase.collection("user_list").document(user_id)
+                                        mDatabase.collection("users_list").document(user_id)
                                                 .collection("pending").document(date).set(userMap, SetOptions.merge());
                                         mDatabase.collection("futsal_list").document(futsal_id)
                                                 .collection("Notification").add(notificationMap);

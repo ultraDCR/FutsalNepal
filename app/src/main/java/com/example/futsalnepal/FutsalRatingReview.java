@@ -51,7 +51,7 @@ public class FutsalRatingReview extends Fragment {
     private TextView mOverallRating,mTotalNoRating;
     private RoundCornerProgressBar mProgressOne,mProgressTwo,mProgressThree,mProgressFour,mProgressFive;
     private ConstraintLayout ratingLayout;
-    List<User> user_list;
+    List<User> users_list;
     List<Review> review_list;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
@@ -103,11 +103,11 @@ public class FutsalRatingReview extends Fragment {
             futsal_id = mAuth.getCurrentUser().getUid();
             loadRating(futsal_id);
 
-            user_list = new ArrayList<>();
+            users_list = new ArrayList<>();
             review_list = new ArrayList<>();
             RecyclerView recyclerView = view.findViewById(R.id.review_rview);
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-            ReviewRecyclerView adapter = new ReviewRecyclerView(user_list, review_list, getContext());
+            ReviewRecyclerView adapter = new ReviewRecyclerView(users_list, review_list, getContext());
             recyclerView.setAdapter(adapter);
 
             mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -117,17 +117,17 @@ public class FutsalRatingReview extends Fragment {
                     for (QueryDocumentSnapshot doc : snapshots) {
                         if (doc.get("timeStamp") != null) {
                             review_list.clear();
-                            user_list.clear();
+                            users_list.clear();
                             String userId = doc.getId();
                             Review review = doc.toObject(Review.class);
 
-                            mDatabase.collection("user_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            mDatabase.collection("users_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     if (task.isSuccessful()) {
                                         User user = task.getResult().toObject(User.class);
                                         review_list.add(review);
-                                        user_list.add(user);
+                                        users_list.add(user);
                                         adapter.notifyDataSetChanged();
                                     }
                                 }
