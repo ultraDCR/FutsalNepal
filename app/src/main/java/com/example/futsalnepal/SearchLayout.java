@@ -7,7 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -17,18 +21,34 @@ import android.widget.TextView;
 
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
+import com.example.futsalnepal.Model.Futsal;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 //import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
     DatePickerDialog dpd;
+    private List<Futsal> futsalList, newList;
     private TextView dateSearch,timeSearch;
     private EditText searchByName,searchByLocation;
+    private FirebaseFirestore mDatabase;
+    private FirebaseAuth mAuth;
+
     public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +60,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mDatabase = FirebaseFirestore.getInstance();
 
         dateSearch = findViewById(R.id.date_search);
         timeSearch = findViewById(R.id.time_search);
@@ -92,6 +114,73 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 dpd.show();
             }
         });
+
+        mDatabase.collection("futsal_list").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(!queryDocumentSnapshots.isEmpty()) {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String futsalId = doc.getId();
+                        Log.d("TESTING", "onEvent: " + doc);
+                        Futsal futsals = doc.toObject(Futsal.class).withId(futsalId);
+                        futsalList.add(futsals);
+                    }
+                }
+            }
+        });
+
+
+
+        newList = new ArrayList<>();
+        futsalList = new ArrayList<>();
+        RecyclerView recyclerView = findViewById(R.id.search_item_rview);
+        FutsalRecycleView adapter = new FutsalRecycleView(newList,this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        searchByName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                newList.clear();
+                String searchTxt = s.toString().toLowerCase();
+                for(Futsal f : futsalList){
+                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
+                        newList.add(f);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                newList.clear();
+                String searchTxt = s.toString().toLowerCase();
+                for(Futsal f : futsalList){
+                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
+                        newList.add(f);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                newList.clear();
+                String searchTxt = s.toString().toLowerCase();
+                for(Futsal f : futsalList){
+                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
+                        newList.add(f);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+
+
+
+
+
     }
 
     // for toolbar
