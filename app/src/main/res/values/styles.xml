@@ -46,7 +46,7 @@
     </style>
 
 
-    <style name="switchTextAppearance">
+    <style name="switchTextAppearance" parent="Widget.AppCompat.CompoundButton.Switch">
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
@@ -56,7 +56,7 @@
     </style>
 
     <style name="collapseToolbar" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
 </resources>

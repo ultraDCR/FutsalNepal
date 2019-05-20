@@ -48,8 +48,8 @@ public class RatingReviewFragment extends Fragment {
     private EditText mReview;
     private Button mPost;
     private RatingBar mRating, mRatingIndicator;
-    private TextView mOverallRating,mTotalNoRating;
-    private RoundCornerProgressBar mProgressOne,mProgressTwo,mProgressThree,mProgressFour,mProgressFive;
+    private TextView mOverallRating, mTotalNoRating;
+    private RoundCornerProgressBar mProgressOne, mProgressTwo, mProgressThree, mProgressFour, mProgressFive;
     private ConstraintLayout ratingLayout;
     List<User> users_list;
     List<Review> review_list;
@@ -77,7 +77,7 @@ public class RatingReviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view  = inflater.inflate(R.layout.fragment_rating_review, container, false);
+        View view = inflater.inflate(R.layout.fragment_rating_review, container, false);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
 
@@ -99,106 +99,109 @@ public class RatingReviewFragment extends Fragment {
 
         loadRating(futsal_id);
         validateRatingInput();
-        if(mAuth.getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null) {
             user_id = mAuth.getCurrentUser().getUid();
             mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        if(task.getResult().exists()) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().exists()) {
                             ratingLayout.setVisibility(View.GONE);
                         }
                     }
                 }
             });
 
-
-            mPost.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mAuth.getCurrentUser() != null) {
-                        ratingLayout.setVisibility(View.GONE);
-                        int rating = (int) mRating.getRating();
-                        String review = mReview.getText().toString();
-                        number_of_rating(rating);
-                        total_rated_by = total_rated_by + 1;
-                        float overalRatings = calculateOveralRating();
-                        Log.d("TTE", "onClick: " + overalRatings);
-                        Map<String, Object> ratingInfo = new HashMap<>();
-                        ratingInfo.put("overall_rating", overalRatings);
-                        Map<String, Number> starMap = new HashMap<>();
-                        starMap.put("one_star_rating", one_star_rating);
-                        starMap.put("two_star_rating", two_star_rating);
-                        starMap.put("three_star_rating", three_star_rating);
-                        starMap.put("four_star_rating", four_star_rating);
-                        starMap.put("five_star_rating", five_star_rating);
-                        starMap.put("total_rated_by", total_rated_by);
-                        ratingInfo.put("rating_brief_info", starMap);
-                        mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
-
-                        Map<String, Object> rating_by = new HashMap<>();
-                        rating_by.put("rating", rating);
-                        rating_by.put("review", review);
-                        rating_by.put("timeStamp", FieldValue.serverTimestamp());
-                        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").document(user_id).set(rating_by)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        loadRating(futsal_id);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        ratingLayout.setVisibility(View.VISIBLE);
-                                    }
-                                });
-
-                        mDatabase.collection("users_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
-
-                    }else{
-                        LoginDialog dialog = new LoginDialog(getContext(), activity);
-                        dialog.startLoginDialog();
-                    }
-                }
-            });
         }
-
-        users_list = new ArrayList<>();
-        review_list = new ArrayList<>();
-        RecyclerView recyclerView =  view.findViewById(R.id.review_rview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        ReviewRecyclerView adapter = new ReviewRecyclerView(users_list,review_list,getContext());
-        recyclerView.setAdapter(adapter);
-
-        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").orderBy("timeStamp", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot >() {
+        mPost.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(QuerySnapshot  snapshots, FirebaseFirestoreException e) {
+            public void onClick(View v) {
+                if (mAuth.getCurrentUser() != null) {
+                    ratingLayout.setVisibility(View.GONE);
+                    int rating = (int) mRating.getRating();
+                    String review = mReview.getText().toString();
+                    number_of_rating(rating);
+                    total_rated_by = total_rated_by + 1;
+                    float overalRatings = calculateOveralRating();
+                    Log.d("TTE", "onClick: " + overalRatings);
+                    Map<String, Object> ratingInfo = new HashMap<>();
+                    ratingInfo.put("overall_rating", overalRatings);
+                    Map<String, Number> starMap = new HashMap<>();
+                    starMap.put("one_star_rating", one_star_rating);
+                    starMap.put("two_star_rating", two_star_rating);
+                    starMap.put("three_star_rating", three_star_rating);
+                    starMap.put("four_star_rating", four_star_rating);
+                    starMap.put("five_star_rating", five_star_rating);
+                    starMap.put("total_rated_by", total_rated_by);
+                    ratingInfo.put("rating_brief_info", starMap);
+                    mDatabase.collection("futsal_list").document(futsal_id).update(ratingInfo);
 
-                for (QueryDocumentSnapshot  doc : snapshots) {
-                    if (doc.get("timeStamp") != null) {
-
-                        String userId = doc.getId();
-
-                        review_list.clear();
-                        users_list.clear();
-                        mDatabase.collection("users_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-
-                                    Review review = doc.toObject(Review.class);
-                                    User user = task.getResult().toObject(User.class);
-                                    review_list.add(review);
-                                    users_list.add(user);
-                                    adapter.notifyDataSetChanged();
+                    Map<String, Object> rating_by = new HashMap<>();
+                    rating_by.put("rating", rating);
+                    rating_by.put("review", review);
+                    rating_by.put("timeStamp", FieldValue.serverTimestamp());
+                    mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by")
+                            .document(user_id).set(rating_by)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    loadRating(futsal_id);
                                 }
-                            }
-                        });
-                    }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    ratingLayout.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                    mDatabase.collection("users_list").document(user_id).update("rated_to", FieldValue.arrayUnion(futsal_id));
+
+                } else {
+                    LoginDialog dialog = new LoginDialog(getContext(), activity);
+                    dialog.startLoginDialog();
                 }
             }
         });
+
+
+        users_list = new ArrayList<>();
+        review_list = new ArrayList<>();
+        RecyclerView recyclerView = view.findViewById(R.id.review_rview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        ReviewRecyclerView adapter = new ReviewRecyclerView(users_list, review_list, getContext());
+        recyclerView.setAdapter(adapter);
+
+        mDatabase.collection("futsal_list").document(futsal_id).collection("rated_by").
+                orderBy("timeStamp", Query.Direction.ASCENDING).
+                addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot snapshots, FirebaseFirestoreException e) {
+
+                        for (QueryDocumentSnapshot doc : snapshots) {
+                            if (doc.get("timeStamp") != null) {
+
+                                String userId = doc.getId();
+
+                                review_list.clear();
+                                users_list.clear();
+                                mDatabase.collection("users_list").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+
+                                            Review review = doc.toObject(Review.class);
+                                            User user = task.getResult().toObject(User.class);
+                                            review_list.add(review);
+                                            users_list.add(user);
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
 
 
         return view;
@@ -208,11 +211,11 @@ public class RatingReviewFragment extends Fragment {
         mRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if(rating != 0) {
+                if (rating != 0) {
                     filledR = true;
                     check();
-                }else if(rating == 0) {
-                    filledR=false;
+                } else if (rating == 0) {
+                    filledR = false;
                     check();
                 }
 
@@ -224,18 +227,19 @@ public class RatingReviewFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("ONCHANGE", "onTextChanged: "+s+""+start+""+before+""+count);
-                if(count != 0 ){
-                    filledT=true;
+                Log.d("ONCHANGE", "onTextChanged: " + s + "" + start + "" + before + "" + count);
+                if (count != 0) {
+                    filledT = true;
                     check();
-                }
-                else if(count == 0 && start == 0){
-                    filledT=false;
+                } else if (count == 0 && start == 0) {
+                    filledT = false;
                     check();
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -244,10 +248,10 @@ public class RatingReviewFragment extends Fragment {
     }
 
     private float calculateOveralRating() {
-        if(total_rated_by != 0){
-            double Rating = ((( 5.0 * five_star_rating) + (4.0 * four_star_rating) +(3.0 * three_star_rating) +(2.0 * two_star_rating) +(1.0 * one_star_rating))/(total_rated_by));
+        if (total_rated_by != 0) {
+            double Rating = (((5.0 * five_star_rating) + (4.0 * four_star_rating) + (3.0 * three_star_rating) + (2.0 * two_star_rating) + (1.0 * one_star_rating)) / (total_rated_by));
             overall_rating = Float.parseFloat(df2.format(Rating));
-            Log.d("RTT", "calculateOveralRating: "+overall_rating);
+            Log.d("RTT", "calculateOveralRating: " + overall_rating);
         }
         return overall_rating;
     }
@@ -256,7 +260,7 @@ public class RatingReviewFragment extends Fragment {
         mDatabase.collection("futsal_list").document(futsal_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     if (task.getResult().get("rating_brief_info") != null) {
                         Map<String, Number> week_price = (Map<String, Number>) task.getResult().get("rating_brief_info");
                         Log.d("TRating", "onComplete: " + week_price.get("one_star_rating"));
@@ -307,33 +311,34 @@ public class RatingReviewFragment extends Fragment {
             }
         });
     }
+
     //check if rating and review is filled
-    public void check(){
-        if(filledR && filledT){
+    public void check() {
+        if (filledR && filledT) {
             mPost.setBackgroundResource(R.drawable.tab_custom_shape);
             mPost.setClickable(true);
-        }else {
+        } else {
             mPost.setBackgroundResource(R.drawable.unselected_btn_shape);
             mPost.setClickable(false);
         }
     }
 
-    public void number_of_rating(int rating){
-        switch(rating){
+    public void number_of_rating(int rating) {
+        switch (rating) {
             case 1:
                 one_star_rating++;
                 break;
             case 2:
-                two_star_rating ++;
+                two_star_rating++;
                 break;
             case 3:
-                three_star_rating ++;
+                three_star_rating++;
                 break;
             case 4:
-                four_star_rating ++;
+                four_star_rating++;
                 break;
             case 5:
-                five_star_rating ++;
+                five_star_rating++;
                 break;
         }
     }

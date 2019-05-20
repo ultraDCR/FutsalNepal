@@ -48,6 +48,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private EditText searchByName,searchByLocation;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
+    private FutsalRecycleView adapter;
+    private String date;
 
     public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     @Override
@@ -67,6 +69,10 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         timeSearch = findViewById(R.id.time_search);
         searchByName =findViewById(R.id.futsal_name_search);
         searchByLocation = findViewById(R.id.location_search);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+        date = sdf.format(new Date());
+        dateSearch.setText(date);
 
         //time picker
         timeSearch.setOnClickListener(new View.OnClickListener() {
@@ -105,8 +111,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         now.set(Calendar.MONTH, mMonth);
                         now.set(Calendar.DAY_OF_MONTH, mDayOfMonth);
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-                        String date = sdf.format(now.getTime());
+//                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+                        date = sdf.format(now.getTime());
                         dateSearch.setText(date);
                     }
                 },day,month,year);
@@ -134,7 +140,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         newList = new ArrayList<>();
         futsalList = new ArrayList<>();
         RecyclerView recyclerView = findViewById(R.id.search_item_rview);
-        FutsalRecycleView adapter = new FutsalRecycleView(newList,this);
+        adapter = new FutsalRecycleView(newList,this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -142,38 +148,17 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         searchByName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                newList.clear();
-                String searchTxt = s.toString().toLowerCase();
-                for(Futsal f : futsalList){
-                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
-                        newList.add(f);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
+                SearchItem();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                newList.clear();
-                String searchTxt = s.toString().toLowerCase();
-                for(Futsal f : futsalList){
-                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
-                        newList.add(f);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
+                SearchItem();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                newList.clear();
-                String searchTxt = s.toString().toLowerCase();
-                for(Futsal f : futsalList){
-                    if(f.getFutsal_name().toLowerCase().contains(searchTxt)){
-                        newList.add(f);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
+                SearchItem();
             }
         });
 
@@ -183,7 +168,21 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     }
 
-    // for toolbar
+    public void SearchItem(){
+        newList.clear();
+        String searchTxt = searchByName.getText().toString().toLowerCase();
+        if(!searchTxt.isEmpty()) {
+            for (Futsal f : futsalList) {
+                if (f.getFutsal_name().toLowerCase().contains(searchTxt)) {
+                    newList.add(f);
+                    adapter.notifyDataSetChanged();
+
+                }
+            }
+        }
+    }
+
+        // for toolbar
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
