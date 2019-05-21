@@ -22,6 +22,12 @@ import android.widget.TextView;
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
 import com.example.futsalnepal.Model.Futsal;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -148,7 +155,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         searchByName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                SearchItem();
+
             }
 
             @Override
@@ -157,15 +164,35 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                SearchItem();
+            public void afterTextChanged(Editable s){
+                startActivity(new Intent(SearchLayout.this,MapsActivity.class));
             }
         });
 
 
-
-
-
+//        Places.initialize(getApplicationContext(), "AIzaSyAoCtPfy1MC-V_08UJSFKYNikt_hMAUWuQ");
+//
+//        // Create a new Places client instance.
+//        PlacesClient placesClient = Places.createClient(this);
+//
+//        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+//        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+//
+//
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                // TODO: Get info about the selected place.
+//                Log.i("PLACE", "Place: " + place.getName() + ", " + place.getId());
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                // TODO: Handle the error.
+//                Log.i("Error", "An error occurred: " + status);
+//            }
+//        });
     }
 
     public void SearchItem(){

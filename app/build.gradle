@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:17.0.0'
     implementation 'com.google.firebase:firebase-firestore:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -60,5 +61,7 @@ dependencies {
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
 
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+
+    implementation 'com.google.android.libraries.places:places:1.1.0'
 
 }

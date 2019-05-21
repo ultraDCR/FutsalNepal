@@ -21,4 +21,5 @@
     <string name="nav_rating_review">Rating and Review</string>
     <string name="new_request"> New Request</string>
     <string name="default_notification_channel_id">FutsalTime_CH1</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
