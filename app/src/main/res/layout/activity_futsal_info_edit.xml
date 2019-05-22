@@ -188,6 +188,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/futsal_number" />
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/futsal_address"
+                    app:layout_constraintStart_toStartOf="@+id/futsal_address"
+                    app:layout_constraintTop_toBottomOf="@+id/futsal_address" />
             </android.support.constraint.ConstraintLayout>
 
             <TextView

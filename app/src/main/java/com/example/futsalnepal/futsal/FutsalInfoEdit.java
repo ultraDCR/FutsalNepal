@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +16,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -35,9 +38,11 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.JsonObject;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,7 +50,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -53,6 +61,8 @@ import id.zelory.compressor.Compressor;
 
 
 public class FutsalInfoEdit extends AppCompatActivity {
+
+    private static StringBuilder strOut = new StringBuilder();
 
     private CircleImageView fProfilePic;
     private Button saveBtn;
@@ -93,17 +103,28 @@ public class FutsalInfoEdit extends AppCompatActivity {
         user_id = fAuth.getCurrentUser().getUid();
         String futsal_email = fAuth.getCurrentUser().getEmail();
 
-
+        ArrayList<String> clist = new ArrayList<>();
         String hello = loadJSONFromAsset(this);
+        JSONObject json=null;
         try {
-            JSONObject json = new JSONObject(hello);
-            Log.d("JSONFILE", "onCreate: "+hello+"  "+json);
+            json = new JSONObject(hello);
+            //Log.d("JSONFILE", "onCreate: "+json);
+            JSONObject n = json.getJSONObject("Province");
+
+            List<String> lst = new ArrayList<String>();
+            lst = findKeysOfJsonObject(n, lst);
+
+
+
+        Spinner spinn = findViewById(R.id.spinner);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,lst);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinn.setAdapter(adapter);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-
         fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -436,5 +457,21 @@ public class FutsalInfoEdit extends AppCompatActivity {
         }
         return json;
 
+    }
+
+    private static List<String> findKeysOfJsonObject(JSONObject jsonIn, List<String> keys) {
+
+        Iterator<String> itr = jsonIn.keys();
+        List<String> keysFromObj = makeList(itr);
+        keys.addAll(keysFromObj);
+        return keys;
+    }
+
+    public static List<String> makeList(Iterator<String> iter) {
+        List<String> list = new ArrayList<String>();
+        while (iter.hasNext()) {
+            list.add(iter.next());
+        }
+        return list;
     }
 }

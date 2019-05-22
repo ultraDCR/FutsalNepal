@@ -51,6 +51,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -131,6 +132,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         logOutBtn = header.findViewById(R.id.logout_btn);
+        logOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uid = mAuth.getCurrentUser().getUid();
+                Map<String,Object> tokenMap = new HashMap<>();
+                tokenMap.put("token_id", FieldValue.delete());
+                mDatabase.collection("users_list").document(uid).set(tokenMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        mAuth.signOut();
+                        Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(signOutIntent);
+                        finish();
+                    }
+                });
+
+            }
+        });
 
         Menu nav_Menu = navigationView.getMenu();
 
@@ -155,24 +174,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             logOutBtn.setVisibility(View.INVISIBLE);
         }
 
-        logOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String uid = mAuth.getCurrentUser().getUid();
-                Map<String,Object> tokenMap = new HashMap<>();
-                tokenMap.put("token_id", FieldValue.delete());
-                mDatabase.collection("users_list").document(uid).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mAuth.signOut();
-                        Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
-                        startActivity(signOutIntent);
-                        finish();
-                    }
-                });
 
-            }
-        });
 
 
         //image slider

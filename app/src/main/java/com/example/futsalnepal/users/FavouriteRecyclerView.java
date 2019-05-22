@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -82,7 +83,7 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
             @Override
             public void onSuccess(Void aVoid) {
                 notifyDataSetChanged();
-                //Toast.makeText(context, "hello swipe", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "delete_from_favoutote", Toast.LENGTH_SHORT).show();
             }
         });
     }
