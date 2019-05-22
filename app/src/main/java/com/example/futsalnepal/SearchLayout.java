@@ -58,7 +58,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private FutsalRecycleView adapter;
     private String date;
 
-    public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    //public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -242,7 +242,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         timeSearch.setText(time);
 
     }
-
 
 
 }

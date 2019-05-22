@@ -1,6 +1,7 @@
 package com.example.futsalnepal.futsal;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -37,9 +38,13 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,6 +92,17 @@ public class FutsalInfoEdit extends AppCompatActivity {
         saveBtn.setEnabled(false);
         user_id = fAuth.getCurrentUser().getUid();
         String futsal_email = fAuth.getCurrentUser().getEmail();
+
+
+        String hello = loadJSONFromAsset(this);
+        try {
+            JSONObject json = new JSONObject(hello);
+            Log.d("JSONFILE", "onCreate: "+hello+"  "+json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
         fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -394,6 +410,31 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
             }
         }
+
+    }
+
+
+    public String loadJSONFromAsset(Context context) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("Provience.json");
+
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
 
     }
 }
