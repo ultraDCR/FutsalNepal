@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,15 +18,18 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.LocationDialog;
 import com.example.futsalnepal.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,6 +55,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,10 +66,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 
 
-public class FutsalInfoEdit extends AppCompatActivity {
+public class FutsalInfoEdit extends AppCompatActivity implements LocationDialog.ExampleDialogListener {
 
-    private static StringBuilder strOut = new StringBuilder();
-
+    private JSONObject n=null;
+    private ArrayList<String> clist,dlist,mlist;
+    private SpinnerAdapter dadapter;
     private CircleImageView fProfilePic;
     private Button saveBtn;
     private EditText fName, fAddress, fPhone, fOpenTime, fCloseTime, fWeakPriceM, fWeakPriceD, fWeakPriceE, fWeakendPriceM, fWeakendPriceD, fWeakendPriceE ;
@@ -103,24 +110,73 @@ public class FutsalInfoEdit extends AppCompatActivity {
         user_id = fAuth.getCurrentUser().getUid();
         String futsal_email = fAuth.getCurrentUser().getEmail();
 
-        ArrayList<String> clist = new ArrayList<>();
+
+
+
+        clist = new ArrayList<>();
         String hello = loadJSONFromAsset(this);
-        JSONObject json=null;
-        try {
-            json = new JSONObject(hello);
-            //Log.d("JSONFILE", "onCreate: "+json);
-            JSONObject n = json.getJSONObject("Province");
 
-            List<String> lst = new ArrayList<String>();
-            lst = findKeysOfJsonObject(n, lst);
-
-
+        fAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LocationDialog exampleDialog = new LocationDialog();
+                exampleDialog.show(getSupportFragmentManager(), "example dialog");
+            }
+        });
 
         Spinner spinn = findViewById(R.id.spinner);
+        Spinner dspin = findViewById(R.id.dspinn);
+        try {
+            n = new JSONObject(hello);
+            Log.d("JSONFILE", "onCreate: "+n);
+            clist.add(0,"-- select the province --");
+            clist = findKeysOfJsonObject(n, clist);
+            SpinnerAdapter adapter = new SpinnerAdapter(clist,FutsalInfoEdit.this);
+            spinn.setAdapter(adapter);
+            spinn.setDropDownVerticalOffset(100);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,lst);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinn.setAdapter(adapter);
+            spinn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    //((TextView)parent.getChildAt(position)).setTextColor(Color.RED);
+
+                    String dis = clist.get(position);
+
+                    try {
+                        dlist = new ArrayList<>();
+                        dadapter = new SpinnerAdapter(dlist,FutsalInfoEdit.this);
+                        dspin.setAdapter(dadapter);
+                        dspin.setDropDownVerticalOffset(100);
+                        dlist.clear();
+                        dlist.add(0,"-- select the district --");
+                        if(dis.equals("-- select the province --")){
+                            dadapter.notifyDataSetChanged();
+                        }else{
+                            JSONObject d = n.getJSONObject(dis);
+                            dlist = findKeysOfJsonObject(d, dlist);
+                            dadapter.notifyDataSetChanged();
+                        }
+
+
+
+
+                        Log.d("LISTCHECK", "onItemSelected: "+clist);
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    dlist.clear();
+                    dlist.add(0,"-- select the district --");
+                    dadapter.notifyDataSetChanged();
+                }
+            });
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -459,19 +515,30 @@ public class FutsalInfoEdit extends AppCompatActivity {
 
     }
 
-    private static List<String> findKeysOfJsonObject(JSONObject jsonIn, List<String> keys) {
+    private static ArrayList<String> findKeysOfJsonObject(JSONObject jsonIn, ArrayList<String> keys) {
 
         Iterator<String> itr = jsonIn.keys();
-        List<String> keysFromObj = makeList(itr);
+        ArrayList<String> keysFromObj = makeList(itr);
         keys.addAll(keysFromObj);
         return keys;
     }
 
-    public static List<String> makeList(Iterator<String> iter) {
-        List<String> list = new ArrayList<String>();
+    public static ArrayList<String> makeList(Iterator<String> iter) {
+        ArrayList<String> list = new ArrayList<String>();
         while (iter.hasNext()) {
             list.add(iter.next());
         }
         return list;
+    }
+
+
+
+    public void getLocation(){
+
+    }
+
+    @Override
+    public void applyTexts(String provienc, String district, String vdc) {
+
     }
 }
