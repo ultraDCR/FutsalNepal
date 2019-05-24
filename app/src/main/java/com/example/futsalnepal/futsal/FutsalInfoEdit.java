@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,15 +27,39 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.LocationServices;
+
+import android.location.Location;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -64,19 +89,26 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 
 public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final int LOCATION_REQUEST_CODE = 432;
+    private static final String TAG = "FUTSALINFOEDIT";
+    private Location currentLocation;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
     private Spinner pSpinner, dSpinner, vSpinner;
-    private JSONObject n=null;
-    private JSONObject d=null;
-    private ArrayList<String> clist,dlist,vlist;
-    private SpinnerAdapter dadapter,vadapter;
+    private JSONObject n = null;
+    private JSONObject d = null;
+    private ArrayList<String> clist, dlist, vlist;
+    private SpinnerAdapter dadapter, vadapter;
     String distric, vdc, provienc;
     private GoogleMap mMap;
     private CircleImageView fProfilePic;
     private Button saveBtn;
-    private EditText fName, fPhone, fOpenTime, fCloseTime, fWeakPriceM, fWeakPriceD, fWeakPriceE, fWeakendPriceM, fWeakendPriceD, fWeakendPriceE ;
+    private EditText fName, fPhone, fOpenTime, fCloseTime, fWeakPriceM, fWeakPriceD, fWeakPriceE, fWeakendPriceM, fWeakendPriceD, fWeakendPriceE;
     private TextView fAddress;
     private FirebaseAuth fAuth;
     private FirebaseFirestore fDatabase;
@@ -86,6 +118,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private Uri mainImageURI = null;
     private Bitmap compressedImageFile;
     private boolean isChanged = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,210 +150,210 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         pSpinner = findViewById(R.id.provienc_spinner);
         dSpinner = findViewById(R.id.district_spinner);
         vSpinner = findViewById(R.id.vdc_spinner);
+
+        //Location
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(FutsalInfoEdit.this);
+        fetchLastLocation();
+
+
         clist = new ArrayList<>();
         fAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 pSpinner.setVisibility(View.VISIBLE);
-            }
-        });
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-
-
-
-        String hello = loadJSONFromAsset(this);
-
-        try {
-            n = new JSONObject(hello);
-            Log.d("JSONFILE", "onCreate: "+n);
-            clist.clear();
-            clist.add(0,"-- select the province --");
-            clist = findKeysOfJsonObject(n, clist);
-            SpinnerAdapter adapter = new SpinnerAdapter(clist, FutsalInfoEdit.this);
-            pSpinner.setAdapter(adapter);
-            pSpinner.setDropDownVerticalOffset(100);
-
-            pSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    //((TextView)parent.getChildAt(position)).setTextColor(Color.RED);
-
-                    provienc = clist.get(position);
-
-                    try {
-                        dlist = new ArrayList<>();
-                        dadapter = new SpinnerAdapter(dlist,FutsalInfoEdit.this);
-                        dSpinner.setAdapter(dadapter);
-                        dSpinner.setDropDownVerticalOffset(100);
-                        dlist.clear();
-                        dlist.add(0,"-- select the district --");
-                        if(provienc.equals("-- select the province --")){
-                            fAddress.setText("");
-                            dadapter.notifyDataSetChanged();
-                            dSpinner.setVisibility(View.GONE);
-                            vSpinner.setVisibility(View.GONE);
-                        }else{
-                            fAddress.setText(provienc);
-                            d = n.getJSONObject(provienc);
-                            dlist = findKeysOfJsonObject(d, dlist);
-                            dadapter.notifyDataSetChanged();
-                            dSpinner.setVisibility(View.VISIBLE);
-                        }
-
-
-                        Log.d("LISTCHECK", "onItemSelected: " + clist);
-
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    dSpinner.setVisibility(View.GONE);
-                    vSpinner.setVisibility(View.GONE);
-                    dlist.clear();
-                    dlist.add(0,"-- select the district --");
-                    dadapter.notifyDataSetChanged();
-                }
-            });
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        dSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                distric = dlist.get(position);
-                String p1 = provienc+", "+distric;
-
+                String hello = loadJSONFromAsset(FutsalInfoEdit.this);
 
                 try {
-                    vlist = new ArrayList<>();
-                    vadapter = new SpinnerAdapter(vlist, FutsalInfoEdit.this);
-                    vSpinner.setAdapter(vadapter);
-                    vSpinner.setDropDownVerticalOffset(100);
-                    vlist.clear();
-                    vlist.add(0, "-- select the VDC --");
-                    if (distric.equals("-- select the district --")) {
-                        fAddress.setText(provienc);
-                        vSpinner.setVisibility(View.GONE);
-                        vadapter.notifyDataSetChanged();
-                    } else {
-                        fAddress.setText(p1);
-                        JSONArray v = d.getJSONArray(distric);
-                        Log.d("LISTCHECK1", "onItemSelected: " + v);
-                        for(int i = 0; i<v.length();i++){
-                            vlist.add(v.get(i).toString());
-                            vSpinner.setVisibility(View.GONE);
+                    n = new JSONObject(hello);
+                    Log.d("JSONFILE", "onCreate: " + n);
+                    clist.clear();
+                    clist.add(0, "-- select the province --");
+                    clist = findKeysOfJsonObject(n, clist);
+                    SpinnerAdapter adapter = new SpinnerAdapter(clist, FutsalInfoEdit.this);
+                    pSpinner.setAdapter(adapter);
+                    pSpinner.setDropDownVerticalOffset(100);
+
+                    pSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            //((TextView)parent.getChildAt(position)).setTextColor(Color.RED);
+
+                            provienc = clist.get(position);
+
+                            try {
+                                dlist = new ArrayList<>();
+                                dadapter = new SpinnerAdapter(dlist, FutsalInfoEdit.this);
+                                dSpinner.setAdapter(dadapter);
+                                dSpinner.setDropDownVerticalOffset(100);
+                                dlist.clear();
+                                dlist.add(0, "-- select the district --");
+                                if (provienc.equals("-- select the province --")) {
+                                    fAddress.setText("");
+                                    dadapter.notifyDataSetChanged();
+                                    dSpinner.setVisibility(View.GONE);
+                                    vSpinner.setVisibility(View.GONE);
+                                } else {
+                                    fAddress.setText(provienc);
+                                    d = n.getJSONObject(provienc);
+                                    dlist = findKeysOfJsonObject(d, dlist);
+                                    dadapter.notifyDataSetChanged();
+                                    dSpinner.setVisibility(View.VISIBLE);
+                                }
+
+
+                                Log.d("LISTCHECK", "onItemSelected: " + clist);
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        vadapter.notifyDataSetChanged();
-                        vSpinner.setVisibility(View.VISIBLE);
-                    }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            dSpinner.setVisibility(View.GONE);
+                            vSpinner.setVisibility(View.GONE);
+                            dlist.clear();
+                            dlist.add(0, "-- select the district --");
+                            dadapter.notifyDataSetChanged();
+                        }
+                    });
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                vSpinner.setVisibility(View.GONE);
-                vlist.clear();
-                vlist.add(0,"-- select the VDC --");
-                vadapter.notifyDataSetChanged();
-            }
-        });
-
-        vSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-           @Override
-           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               vdc = vlist.get(position);
-               String p = provienc+", "+distric;
-               String p1 = p+", "+vdc;
-               if (vdc.equals("-- select the VDC --")) {
-                   fAddress.setText(p);
-               }else{
-                   fAddress.setText(p1);
-                   pSpinner.setVisibility(View.GONE);
-                   dSpinner.setVisibility(View.GONE);
-                   vSpinner.setVisibility(View.GONE);
-
-               }
-           }
-
-           @Override
-           public void onNothingSelected(AdapterView<?> parent) {
-
-           }
-       });
 
 
-                fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                dSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                        if (task.isSuccessful()) {
-
-                            if (task.getResult().exists()) {
-                                if (task.getResult().getString("futsal_name") != null) {
-                                    Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
-                                    String name = task.getResult().getString("futsal_name");
-                                    String image = task.getResult().getString("futsal_logo");
-                                    String address = task.getResult().getString("futsal_address");
-                                    String phone = task.getResult().getString("futsal_phone");
-                                    String open_time = task.getResult().getString("opening_hour");
-                                    String close_time = task.getResult().getString("closing_hour");
-                                    Map<String, String> week_price = (Map<String, String>) task.getResult().get("week_end_price");
-                                    String w_morning = week_price.get("morning_price");
-                                    String w_day = week_price.get("day_price");
-                                    String w_evening = week_price.get("evening_price");
-                                    String we_morning = week_price.get("morning_price");
-                                    String we_day = week_price.get("day_price");
-                                    String we_evening = week_price.get("evening_price");
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        distric = dlist.get(position);
+                        String p1 = provienc + ", " + distric;
 
 
-                                    mainImageURI = Uri.parse(image);
-
-                                    fName.setText(name);
-                                    fAddress.setText(address);
-                                    fPhone.setText(phone);
-                                    fOpenTime.setText(open_time);
-                                    fCloseTime.setText(close_time);
-                                    fWeakPriceM.setText(w_morning);
-                                    fWeakPriceD.setText(w_day);
-                                    fWeakPriceE.setText(w_evening);
-                                    fWeakendPriceM.setText(we_morning);
-                                    fWeakendPriceD.setText(we_day);
-                                    fWeakendPriceE.setText(we_evening);
-
-                                    RequestOptions placeholderRequest = new RequestOptions();
-                                    placeholderRequest.placeholder(R.drawable.profile_image);
-
-                                    Glide.with(FutsalInfoEdit.this).setDefaultRequestOptions(placeholderRequest).load(image).into(fProfilePic);
+                        try {
+                            vlist = new ArrayList<>();
+                            vadapter = new SpinnerAdapter(vlist, FutsalInfoEdit.this);
+                            vSpinner.setAdapter(vadapter);
+                            vSpinner.setDropDownVerticalOffset(100);
+                            vlist.clear();
+                            vlist.add(0, "-- select the VDC --");
+                            if (distric.equals("-- select the district --")) {
+                                fAddress.setText(provienc);
+                                vSpinner.setVisibility(View.GONE);
+                                vadapter.notifyDataSetChanged();
+                            } else {
+                                fAddress.setText(p1);
+                                JSONArray v = d.getJSONArray(distric);
+                                Log.d("LISTCHECK1", "onItemSelected: " + v);
+                                for (int i = 0; i < v.length(); i++) {
+                                    vlist.add(v.get(i).toString());
+                                    vSpinner.setVisibility(View.GONE);
                                 }
-
+                                vadapter.notifyDataSetChanged();
+                                vSpinner.setVisibility(View.VISIBLE);
                             }
 
-                        } else {
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                            String error = task.getException().getMessage();
-                            Toast.makeText(FutsalInfoEdit.this, "(FIRESTORE Retrieve Error) : " + error, Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        vSpinner.setVisibility(View.GONE);
+                        vlist.clear();
+                        vlist.add(0, "-- select the VDC --");
+                        vadapter.notifyDataSetChanged();
+                    }
+                });
+
+                vSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        vdc = vlist.get(position);
+                        String p = provienc + ", " + distric;
+                        String p1 = p + ", " + vdc;
+                        if (vdc.equals("-- select the VDC --")) {
+                            fAddress.setText(p);
+                        } else {
+                            fAddress.setText(p1);
+
+                            pSpinner.setVisibility(View.GONE);
+                            dSpinner.setVisibility(View.GONE);
+                            vSpinner.setVisibility(View.GONE);
 
                         }
-                        saveBtn.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
 
                     }
                 });
+            }
+        });
+
+
+        fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+
+                    if (task.getResult().exists()) {
+                        if (task.getResult().getString("futsal_name") != null) {
+                            Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
+                            String name = task.getResult().getString("futsal_name");
+                            String image = task.getResult().getString("futsal_logo");
+                            String address = task.getResult().getString("futsal_address");
+                            String phone = task.getResult().getString("futsal_phone");
+                            String open_time = task.getResult().getString("opening_hour");
+                            String close_time = task.getResult().getString("closing_hour");
+                            Map<String, String> week_price = (Map<String, String>) task.getResult().get("week_end_price");
+                            String w_morning = week_price.get("morning_price");
+                            String w_day = week_price.get("day_price");
+                            String w_evening = week_price.get("evening_price");
+                            String we_morning = week_price.get("morning_price");
+                            String we_day = week_price.get("day_price");
+                            String we_evening = week_price.get("evening_price");
+
+
+                            mainImageURI = Uri.parse(image);
+
+                            fName.setText(name);
+                            fAddress.setText(address);
+                            fPhone.setText(phone);
+                            fOpenTime.setText(open_time);
+                            fCloseTime.setText(close_time);
+                            fWeakPriceM.setText(w_morning);
+                            fWeakPriceD.setText(w_day);
+                            fWeakPriceE.setText(w_evening);
+                            fWeakendPriceM.setText(we_morning);
+                            fWeakendPriceD.setText(we_day);
+                            fWeakendPriceE.setText(we_evening);
+
+                            RequestOptions placeholderRequest = new RequestOptions();
+                            placeholderRequest.placeholder(R.drawable.profile_image);
+
+                            Glide.with(FutsalInfoEdit.this).setDefaultRequestOptions(placeholderRequest).load(image).into(fProfilePic);
+                        }
+
+                    }
+
+                } else {
+
+                    String error = task.getException().getMessage();
+                    Toast.makeText(FutsalInfoEdit.this, "(FIRESTORE Retrieve Error) : " + error, Toast.LENGTH_LONG).show();
+
+                }
+                saveBtn.setEnabled(true);
+
+            }
+        });
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -339,8 +372,6 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 final String week_end_price_m = fWeakendPriceM.getText().toString();
                 final String week_end_price_d = fWeakendPriceD.getText().toString();
                 final String week_end_price_e = fWeakendPriceE.getText().toString();
-
-
 
 
                 if (!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
@@ -388,10 +419,10 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             public void onComplete(@NonNull Task<Uri> task) {
                                 if (task.isSuccessful()) {
                                     storeFirestore(task, futsal_name, futsal_address,
-                                            futsal_phone,opening_hour,closing_hour,
-                                            week_price_m,week_price_d,week_price_e,
-                                            week_end_price_m, week_end_price_d,week_end_price_e,futsal_email
-                                            );
+                                            futsal_phone, opening_hour, closing_hour,
+                                            week_price_m, week_price_d, week_price_e,
+                                            week_end_price_m, week_end_price_d, week_end_price_e, futsal_email
+                                    );
                                 } else {
                                     String error = task.getException().getMessage();
                                     Toast.makeText(FutsalInfoEdit.this, "(IMAGE Error) : " + error, Toast.LENGTH_LONG).show();
@@ -421,14 +452,14 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                     } else {
 
                         storeFirestore(null, futsal_name, futsal_address,
-                                futsal_phone,opening_hour,closing_hour,
-                                week_price_m,week_price_d,week_price_e,
-                                week_end_price_m, week_end_price_d,week_end_price_e,futsal_email
-                                );
+                                futsal_phone, opening_hour, closing_hour,
+                                week_price_m, week_price_d, week_price_e,
+                                week_end_price_m, week_end_price_d, week_end_price_e, futsal_email
+                        );
 
                     }
 
-                }else{
+                } else {
                     Toast.makeText(FutsalInfoEdit.this, "All the fields are required.", Toast.LENGTH_LONG).show();
                 }
 
@@ -441,9 +472,9 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                    if(ContextCompat.checkSelfPermission(FutsalInfoEdit.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    if (ContextCompat.checkSelfPermission(FutsalInfoEdit.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
 
                         Toast.makeText(FutsalInfoEdit.this, "Permission Denied", Toast.LENGTH_LONG).show();
                         ActivityCompat.requestPermissions(FutsalInfoEdit.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -467,14 +498,14 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String  futsal_address,
+    private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String futsal_address,
                                 String futsal_phone, String opening_hour, String closing_hour,
                                 String week_price_m, String week_price_d, String week_price_e,
                                 String week_end_price_m, String week_end_price_d, String week_end_price_e, String futsal_email) {
 
         Uri download_uri;
 
-        if(task != null) {
+        if (task != null) {
 
             download_uri = task.getResult();
 
@@ -490,12 +521,12 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 Map<String, Object> futsalMap = new HashMap<>();
                 futsalMap.put("futsal_name", futsal_name);
                 futsalMap.put("futsal_logo", download_uri.toString());
-                futsalMap.put("futsal_address",futsal_address);
-                futsalMap.put("futsal_phone",futsal_phone);
+                futsalMap.put("futsal_address", futsal_address);
+                futsalMap.put("futsal_phone", futsal_phone);
                 futsalMap.put("opening_hour", opening_hour);
                 futsalMap.put("closing_hour", closing_hour);
-                futsalMap.put("futsal_email",futsal_email);
-                futsalMap.put("token_id",task.getResult().getToken());
+                futsalMap.put("futsal_email", futsal_email);
+                futsalMap.put("token_id", task.getResult().getToken());
 
                 Map<String, Object> week_price = new HashMap<>();
                 week_price.put("morning_price", week_price_m);
@@ -516,7 +547,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             saveBtn.setEnabled(true);
                             pbar.setVisibility(View.GONE);
                             Toast.makeText(FutsalInfoEdit.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
@@ -537,8 +568,6 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 });
             }
         });
-
-
 
 
     }
@@ -573,26 +602,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         }
 
     }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng Kathmandu = new LatLng(27.710079542175304, 85.34410625696182);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Kathmandu,11));
-        mMap.addMarker(new MarkerOptions().position(Kathmandu).title("Marker in Sydney").draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(Kathmandu));
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                Log.d("MAPDATA", "onMapClick: "+latLng);
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latLng).title("Marker in Sydney").draggable(true));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-        }) ;
-
-    }
 
     public String loadJSONFromAsset(Context context) {
         String json = null;
@@ -633,4 +643,55 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         }
         return list;
     }
+
+    private void fetchLastLocation() {
+        Log.d(TAG, "fetchLastLocation: ");
+        if (ActivityCompat.checkSelfPermission(FutsalInfoEdit.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(FutsalInfoEdit.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(FutsalInfoEdit.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            return;
+        }
+        Task<Location> task = fusedLocationProviderClient.getLastLocation();
+        Log.d(TAG, "fetchLastLocation: "+task);
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    currentLocation = location;
+                    Toast.makeText(FutsalInfoEdit.this,currentLocation.getLatitude()+" "+currentLocation.getLongitude(),Toast.LENGTH_SHORT).show();
+                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.map);
+                    mapFragment.getMapAsync(FutsalInfoEdit.this::onMapReady);
+                }else{
+                    Toast.makeText(FutsalInfoEdit.this,"No Location recorded",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng latLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+        Log.d(TAG, "onMapReady:"+latLng);
+        //MarkerOptions are used to create a new Marker.You can specify location, title etc with MarkerOptions
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("You are Here");
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        googleMap.setMinZoomPreference(15);
+        //Adding the created the marker on the map
+        googleMap.addMarker(markerOptions);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResult) {
+        switch (requestCode) {
+            case LOCATION_REQUEST_CODE:
+                if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                    fetchLastLocation();
+                } else {
+                    Toast.makeText(FutsalInfoEdit.this,"Location permission missing",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 }
+

@@ -330,6 +330,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayout9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -554,7 +555,31 @@
                     app:layout_constraintStart_toStartOf="@+id/we_day_price"
                     app:layout_constraintTop_toBottomOf="@+id/we_day_price" />
             </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="16dp"
+                android:text="Location Pin Point"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout9" />
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView14"
+                tools:context=".futsal.FutsalInfoEdit" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
+
+
 
 </android.support.constraint.ConstraintLayout>
