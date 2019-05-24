@@ -1,10 +1,13 @@
 package com.example.futsalnepal.futsal;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -84,6 +87,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -98,6 +102,9 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private static final String TAG = "FUTSALINFOEDIT";
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private GoogleMap.OnCameraIdleListener onCameraIdleListener;
+    private TextView resutText;
+    private LatLng latLng;
 
     private Spinner pSpinner, dSpinner, vSpinner;
     private JSONObject n = null;
@@ -309,7 +316,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
                             String name = task.getResult().getString("futsal_name");
                             String image = task.getResult().getString("futsal_logo");
-                            String address = task.getResult().getString("futsal_address");
+                            //String address = task.getResult().getString("futsal_address");
                             String phone = task.getResult().getString("futsal_phone");
                             String open_time = task.getResult().getString("opening_hour");
                             String close_time = task.getResult().getString("closing_hour");
@@ -321,6 +328,19 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             String we_day = week_price.get("day_price");
                             String we_evening = week_price.get("evening_price");
 
+                            Map<String, Object> location = (Map<String, Object>) task.getResult().get("location");
+                            double longitude = (double) location.get("longitude");
+                            double latitude = (double) location.get("latitude");
+                            latLng = new LatLng(latitude,longitude);
+                            Log.d(TAG, "onComplete: "+latLng);
+
+                            provienc = location.get("province").toString();
+                            distric = location.get("district").toString();
+                            vdc = location.get("vdc").toString();
+
+                            String address = provienc+", "+distric+", "+vdc;
+
+                            fetchLastLocation();
 
                             mainImageURI = Uri.parse(image);
 
@@ -335,6 +355,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             fWeakendPriceM.setText(we_morning);
                             fWeakendPriceD.setText(we_day);
                             fWeakendPriceE.setText(we_evening);
+
 
                             RequestOptions placeholderRequest = new RequestOptions();
                             placeholderRequest.placeholder(R.drawable.profile_image);
@@ -372,13 +393,17 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 final String week_end_price_m = fWeakendPriceM.getText().toString();
                 final String week_end_price_d = fWeakendPriceD.getText().toString();
                 final String week_end_price_e = fWeakendPriceE.getText().toString();
+                double latitude = latLng.latitude;
+                double longitude =latLng.longitude;
 
 
-                if (!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
+                if (latLng != null &&!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
                         && !TextUtils.isEmpty(futsal_phone) && !TextUtils.isEmpty(opening_hour)
                         && !TextUtils.isEmpty(closing_hour) && !TextUtils.isEmpty(week_end_price_m)
                         && !TextUtils.isEmpty(week_price_d) && !TextUtils.isEmpty(week_price_e)
-                        && !TextUtils.isEmpty(week_price_m) && !TextUtils.isEmpty(week_end_price_d) && !TextUtils.isEmpty(week_end_price_e)
+                        && !TextUtils.isEmpty(week_price_m) && !TextUtils.isEmpty(week_end_price_d)
+                        && !TextUtils.isEmpty(week_end_price_e) &&  !TextUtils.isEmpty(provienc)
+                        && !TextUtils.isEmpty(distric) &&  !TextUtils.isEmpty(vdc)
                 ) {
 
                     if (isChanged) {
@@ -421,7 +446,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                                     storeFirestore(task, futsal_name, futsal_address,
                                             futsal_phone, opening_hour, closing_hour,
                                             week_price_m, week_price_d, week_price_e,
-                                            week_end_price_m, week_end_price_d, week_end_price_e, futsal_email
+                                            week_end_price_m, week_end_price_d, week_end_price_e, futsal_email,
+                                            longitude,latitude, provienc,distric,vdc
                                     );
                                 } else {
                                     String error = task.getException().getMessage();
@@ -454,7 +480,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                         storeFirestore(null, futsal_name, futsal_address,
                                 futsal_phone, opening_hour, closing_hour,
                                 week_price_m, week_price_d, week_price_e,
-                                week_end_price_m, week_end_price_d, week_end_price_e, futsal_email
+                                week_end_price_m, week_end_price_d, week_end_price_e,
+                                futsal_email, longitude, latitude,provienc,distric,vdc
                         );
 
                     }
@@ -501,7 +528,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String futsal_address,
                                 String futsal_phone, String opening_hour, String closing_hour,
                                 String week_price_m, String week_price_d, String week_price_e,
-                                String week_end_price_m, String week_end_price_d, String week_end_price_e, String futsal_email) {
+                                String week_end_price_m, String week_end_price_d, String week_end_price_e,
+                                String futsal_email, double log,double lat, String prov, String dist, String vd) {
 
         Uri download_uri;
 
@@ -541,6 +569,15 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 week_end_price.put("evening_price", week_end_price_e);
 
                 futsalMap.put("week_end_price", week_end_price);
+
+                Map<String ,Object> location = new HashMap<>();
+                location.put("latitude",lat);
+                location.put("longitude",log);
+                location.put("province",prov);
+                location.put("district",dist);
+                location.put("vdc",vd);
+
+                futsalMap.put("location",location);
 
 
                 fDatabase.collection("futsal_list").document(user_id).set(futsalMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -651,6 +688,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
             return;
         }
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
+
         Log.d(TAG, "fetchLastLocation: "+task);
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
@@ -661,6 +699,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
                     mapFragment.getMapAsync(FutsalInfoEdit.this::onMapReady);
+                    configureCameraIdle();
                 }else{
                     Toast.makeText(FutsalInfoEdit.this,"No Location recorded",Toast.LENGTH_SHORT).show();
                 }
@@ -668,17 +707,36 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         });
     }
 
-
+//https://www.youtube.com/watch?v=118wylgD_ig
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng latLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+        mMap = googleMap;
+        if(latLng == null) {
+            latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        }
+        mMap.setMyLocationEnabled(true);
         Log.d(TAG, "onMapReady:"+latLng);
         //MarkerOptions are used to create a new Marker.You can specify location, title etc with MarkerOptions
-        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("You are Here");
-        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        googleMap.setMinZoomPreference(15);
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("Current Position");
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         //Adding the created the marker on the map
-        googleMap.addMarker(markerOptions);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+        mMap.setOnCameraIdleListener(onCameraIdleListener);
+        mMap.addMarker(markerOptions);
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latuLng) {
+               latLng = latuLng;
+                mMap.clear();
+                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("Current Position");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mMap.addMarker(markerOptions);
+            }
+        });
+
     }
 
     @Override
@@ -692,6 +750,32 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 }
                 break;
         }
+    }
+
+    private void configureCameraIdle() {
+        onCameraIdleListener = new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+
+                LatLng latLng = mMap.getCameraPosition().target;
+                Geocoder geocoder = new Geocoder(FutsalInfoEdit.this);
+
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        String locality = addressList.get(0).getAddressLine(0);
+                        String country = addressList.get(0).getCountryName();
+                        if (!locality.isEmpty() && !country.isEmpty())
+//                            resutText.setText(locality + "  " + country);
+                        Log.d("FUTSAL", "onCameraIdle: "+locality + "  " + country);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
     }
 }
 
