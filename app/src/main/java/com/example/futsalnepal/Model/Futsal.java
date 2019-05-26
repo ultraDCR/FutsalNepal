@@ -1,5 +1,7 @@
 package com.example.futsalnepal.Model;
 
+import java.util.Map;
+
 public class Futsal extends com.example.futsalnepal.Model.FutsalId {
 
     public String futsal_name;
@@ -9,9 +11,14 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
     public String futsal_phone;
     public String futsal_logo;
     public float overall_rating;
+    public Map<String, Object> location;
 
     public  Futsal(){}
-    public Futsal(String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, float overall_rating) {
+
+
+    public Futsal(String futsal_name, String futsal_address, String opening_hour,
+                  String closing_hour, String futsal_phone, float overall_rating,
+                  Map<String, Object> location) {
 
         this.futsal_name = futsal_name;
         this.futsal_address = futsal_address;
@@ -20,6 +27,7 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
         this.futsal_phone = futsal_phone;
         this.futsal_logo = futsal_logo;
         this.overall_rating = overall_rating;
+        this.location = location;
 
     }
 
@@ -78,5 +86,14 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
 
     public void setOverall_rating(float overall_rating) {
         this.overall_rating = overall_rating;
+    }
+
+
+    public Map<String, Object> getLocation() {
+        return location;
+    }
+
+    public void setLocation(Map<String, Object> location) {
+        this.location = location;
     }
 }

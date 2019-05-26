@@ -16,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Futsal;
 
 import java.util.List;
+import java.util.Map;
 
 public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.FutsalViewHolder> {
 
@@ -43,7 +44,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             final String futsalId = list.get(position).FutsalId;
 
             holder.setFutsalName(list.get(position).getFutsal_name());
-            holder.setFutsalAddress(list.get(position).getFutsal_address());
+            holder.setFutsalAddress(list.get(position).getLocation());
             holder.setFutsalTime(list.get(position).getOpening_hour(),list.get(position).getClosing_hour());
             holder.setFutsalLogo(list.get(position).getFutsal_logo());
             holder.setFutsalRating(list.get(position).getOverall_rating());
@@ -116,13 +117,14 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             name.setText(futsal_name);
         }
 
-        public void setFutsalAddress(String futsal_address){
-            address =  itemView.findViewById(R.id.futsal_address);
-            address.setText(futsal_address);
+        public void setFutsalAddress(Map<String,Object> futsal_address){
+            address =  itemView.findViewById(R.id.location_search);
+            String location =futsal_address.get("vdc").toString()+", "+futsal_address.get("district").toString();
+            address.setText(location);
         }
         public void setFutsalTime(String open, String close){
             time =  itemView.findViewById(R.id.futsal_available_time);
-            time.setText(open+"-"+close);
+            time.setText(open+" - "+close);
         }
         public void setFutsalLogo(String futsal_logo){
             profile =  itemView.findViewById(R.id.futsal_profile);

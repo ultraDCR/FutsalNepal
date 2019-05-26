@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -74,9 +75,12 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     String futsal_name = task.getResult().getString("futsal_name");
-                    String futsal_address = task.getResult().getString("futsal_address");
+
                     String futsal_phone = task.getResult().getString("futsal_phone");
                     String futsal_logo = task.getResult().getString("futsal_logo");
+
+                    Map<String, Object> location = (Map<String, Object>) task.getResult().get("location");
+                    String futsal_address =  location.get("vdc")+", "+location.get("district");
 
                     collapsingToolbarLayout.setTitle(futsal_name);
                     fPhone.setText(futsal_phone);

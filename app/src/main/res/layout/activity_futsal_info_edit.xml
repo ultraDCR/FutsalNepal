@@ -162,13 +162,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/futsal_address"
-                    app:layout_constraintEnd_toStartOf="@+id/futsal_address"
-                    app:layout_constraintTop_toTopOf="@+id/futsal_address"
+                    app:layout_constraintBottom_toBottomOf="@+id/location_search"
+                    app:layout_constraintEnd_toStartOf="@+id/location_search"
+                    app:layout_constraintTop_toTopOf="@+id/location_search"
                     app:srcCompat="@drawable/ic_location_green_24dp" />
 
                 <TextView
-                    android:id="@+id/futsal_address"
+                    android:id="@+id/location_search"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -195,9 +195,9 @@
                     android:dropDownWidth="match_parent"
                     android:foregroundGravity="right"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/futsal_address"
-                    app:layout_constraintStart_toStartOf="@+id/futsal_address"
-                    app:layout_constraintTop_toBottomOf="@+id/futsal_address" />
+                    app:layout_constraintEnd_toEndOf="@+id/location_search"
+                    app:layout_constraintStart_toStartOf="@+id/location_search"
+                    app:layout_constraintTop_toBottomOf="@+id/location_search" />
 
                 <Spinner
                     android:id="@+id/vdc_spinner"

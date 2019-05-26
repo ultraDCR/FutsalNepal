@@ -142,7 +142,7 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
         }
 
         public void setFutsalAddress(String futsal_address){
-            address =  itemView.findViewById(R.id.futsal_address);
+            address =  itemView.findViewById(R.id.location_search);
             address.setText(futsal_address);
         }
         public void setFutsalTime(String open, String close){
