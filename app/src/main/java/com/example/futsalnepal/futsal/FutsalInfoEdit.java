@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.Model.BookTime;
 import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -110,12 +111,14 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private JSONObject n = null;
     private JSONObject d = null;
     private ArrayList<String> clist, dlist, vlist;
-    private SpinnerAdapter dadapter, vadapter;
+    private SpinnerAdapter dadapter, vadapter, openadapter, closeadapter;
     String distric, vdc, provienc;
     private GoogleMap mMap;
     private CircleImageView fProfilePic;
+    private Spinner openSpinner, closeSpinner;
+    private ArrayList<String> openList, closeList;
     private Button saveBtn;
-    private EditText fName, fPhone, fOpenTime, fCloseTime, fWeakPriceM, fWeakPriceD, fWeakPriceE, fWeakendPriceM, fWeakendPriceD, fWeakendPriceE;
+    private EditText fName, fPhone, fWeakPriceM, fWeakPriceD, fWeakPriceE, fWeakendPriceM, fWeakendPriceD, fWeakendPriceE;
     private TextView fAddress;
     private FirebaseAuth fAuth;
     private FirebaseFirestore fDatabase;
@@ -125,6 +128,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private Uri mainImageURI = null;
     private Bitmap compressedImageFile;
     private boolean isChanged = false;
+    private String open_time, close_time;
 
 
     @Override
@@ -140,8 +144,6 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         fName = findViewById(R.id.orgination_name);
         fAddress = findViewById(R.id.futsal_address);
         fPhone = findViewById(R.id.futsal_number);
-        fOpenTime = findViewById(R.id.opening_time);
-        fCloseTime = findViewById(R.id.closing_time);
         fWeakPriceM = findViewById(R.id.wd_morning_price);
         fWeakPriceD = findViewById(R.id.wd_day_price);
         fWeakPriceE = findViewById(R.id.wd_evening_price);
@@ -158,149 +160,67 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         dSpinner = findViewById(R.id.district_spinner);
         vSpinner = findViewById(R.id.vdc_spinner);
 
+//        open and close time spinner
+        openSpinner = findViewById(R.id.open_spinner);
+        closeSpinner = findViewById(R.id.close_spinner);
+
+        openList = new ArrayList<>();
+        closeList = new ArrayList<>();
+        openList = makeTimeArray();
+        openadapter = new SpinnerAdapter(openList, FutsalInfoEdit.this);
+        openSpinner.setAdapter(openadapter);
+        openSpinner.setDropDownVerticalOffset(100);
+        open_time = openSpinner.getSelectedItem().toString();
+        close_time = open_time;
+        //closeList = closeTimeArray(open_time, openList);
+        closeList.add(0, "");
+        closeadapter = new SpinnerAdapter(closeList, FutsalInfoEdit.this);
+        closeSpinner.setAdapter(closeadapter);
+        closeSpinner.setDropDownVerticalOffset(100);
+
+        openSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                open_time = openList.get(position);
+                closeList.clear();
+                closeList = closeTimeArray(open_time, openList);
+                int index1 = findIndex(closeList, close_time);
+                Log.d(TAG, "onComplete:1 " + index1);
+                closeadapter = new SpinnerAdapter(closeList, FutsalInfoEdit.this);
+                closeSpinner.setAdapter(closeadapter);
+                closeSpinner.setSelection(index1);
+                Log.d(TAG, "onItemSelected: " + closeadapter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        closeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                close_time = closeList.get(position);
+                Log.d(TAG, "onItemSelected: 2 -" + open_time + "-" + close_time);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         //Location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(FutsalInfoEdit.this);
         fetchLastLocation();
-
 
         clist = new ArrayList<>();
         fAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                pSpinner.setVisibility(View.VISIBLE);
-
-                String hello = loadJSONFromAsset(FutsalInfoEdit.this);
-
-                try {
-                    n = new JSONObject(hello);
-                    Log.d("JSONFILE", "onCreate: " + n);
-                    clist.clear();
-                    clist.add(0, "-- select the province --");
-                    clist = findKeysOfJsonObject(n, clist);
-                    SpinnerAdapter adapter = new SpinnerAdapter(clist, FutsalInfoEdit.this);
-                    pSpinner.setAdapter(adapter);
-                    pSpinner.setDropDownVerticalOffset(100);
-
-                    pSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            //((TextView)parent.getChildAt(position)).setTextColor(Color.RED);
-
-                            provienc = clist.get(position);
-
-                            try {
-                                dlist = new ArrayList<>();
-                                dadapter = new SpinnerAdapter(dlist, FutsalInfoEdit.this);
-                                dSpinner.setAdapter(dadapter);
-                                dSpinner.setDropDownVerticalOffset(100);
-                                dlist.clear();
-                                dlist.add(0, "-- select the district --");
-                                if (provienc.equals("-- select the province --")) {
-                                    fAddress.setText("");
-                                    dadapter.notifyDataSetChanged();
-                                    dSpinner.setVisibility(View.GONE);
-                                    vSpinner.setVisibility(View.GONE);
-                                } else {
-                                    fAddress.setText(provienc);
-                                    d = n.getJSONObject(provienc);
-                                    dlist = findKeysOfJsonObject(d, dlist);
-                                    dadapter.notifyDataSetChanged();
-                                    dSpinner.setVisibility(View.VISIBLE);
-                                }
-
-
-                                Log.d("LISTCHECK", "onItemSelected: " + clist);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-                            dSpinner.setVisibility(View.GONE);
-                            vSpinner.setVisibility(View.GONE);
-                            dlist.clear();
-                            dlist.add(0, "-- select the district --");
-                            dadapter.notifyDataSetChanged();
-                        }
-                    });
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                dSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        distric = dlist.get(position);
-                        String p1 = provienc + ", " + distric;
-
-
-                        try {
-                            vlist = new ArrayList<>();
-                            vadapter = new SpinnerAdapter(vlist, FutsalInfoEdit.this);
-                            vSpinner.setAdapter(vadapter);
-                            vSpinner.setDropDownVerticalOffset(100);
-                            vlist.clear();
-                            vlist.add(0, "-- select the VDC --");
-                            if (distric.equals("-- select the district --")) {
-                                fAddress.setText(provienc);
-                                vSpinner.setVisibility(View.GONE);
-                                vadapter.notifyDataSetChanged();
-                            } else {
-                                fAddress.setText(p1);
-                                JSONArray v = d.getJSONArray(distric);
-                                Log.d("LISTCHECK1", "onItemSelected: " + v);
-                                for (int i = 0; i < v.length(); i++) {
-                                    vlist.add(v.get(i).toString());
-                                    vSpinner.setVisibility(View.GONE);
-                                }
-                                vadapter.notifyDataSetChanged();
-                                vSpinner.setVisibility(View.VISIBLE);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        vSpinner.setVisibility(View.GONE);
-                        vlist.clear();
-                        vlist.add(0, "-- select the VDC --");
-                        vadapter.notifyDataSetChanged();
-                    }
-                });
-
-                vSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        vdc = vlist.get(position);
-                        String p = provienc + ", " + distric;
-                        String p1 = p + ", " + vdc;
-                        if (vdc.equals("-- select the VDC --")) {
-                            fAddress.setText(p);
-                        } else {
-                            fAddress.setText(p1);
-
-                            pSpinner.setVisibility(View.GONE);
-                            dSpinner.setVisibility(View.GONE);
-                            vSpinner.setVisibility(View.GONE);
-
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
+                loadLocatonSpinner();
             }
         });
 
@@ -318,8 +238,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             String image = task.getResult().getString("futsal_logo");
                             //String address = task.getResult().getString("futsal_address");
                             String phone = task.getResult().getString("futsal_phone");
-                            String open_time = task.getResult().getString("opening_hour");
-                            String close_time = task.getResult().getString("closing_hour");
+                            open_time = task.getResult().getString("opening_hour");
+                            close_time = task.getResult().getString("closing_hour");
                             Map<String, String> week_price = (Map<String, String>) task.getResult().get("week_end_price");
                             String w_morning = week_price.get("morning_price");
                             String w_day = week_price.get("day_price");
@@ -331,24 +251,32 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             Map<String, Object> location = (Map<String, Object>) task.getResult().get("location");
                             double longitude = (double) location.get("longitude");
                             double latitude = (double) location.get("latitude");
-                            latLng = new LatLng(latitude,longitude);
-                            Log.d(TAG, "onComplete: "+latLng);
+                            latLng = new LatLng(latitude, longitude);
+                            Log.d(TAG, "onComplete: " + latLng);
 
                             provienc = location.get("province").toString();
                             distric = location.get("district").toString();
                             vdc = location.get("vdc").toString();
 
-                            String address = provienc+", "+distric+", "+vdc;
+                            String address = provienc + ", " + distric + ", " + vdc;
 
                             fetchLastLocation();
+                            int index = findIndex(openList, open_time);
+                            openSpinner.setSelection(index);
+//                            closeList.clear();
+//                            closeList = closeTimeArray(open_time, openList);
+//                            Log.d(TAG, "onComplete: "+closeList);
+//                            int index1 = findIndex(closeList,close_time);
+//                            Log.d(TAG, "onComplete:1 "+index1);
+//                            closeadapter.notifyDataSetChanged();
+//                            closeSpinner.setSelection(index1);
+
 
                             mainImageURI = Uri.parse(image);
 
                             fName.setText(name);
                             fAddress.setText(address);
                             fPhone.setText(phone);
-                            fOpenTime.setText(open_time);
-                            fCloseTime.setText(close_time);
                             fWeakPriceM.setText(w_morning);
                             fWeakPriceD.setText(w_day);
                             fWeakPriceE.setText(w_evening);
@@ -385,8 +313,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 final String futsal_name = fName.getText().toString();
                 final String futsal_address = fAddress.getText().toString();
                 final String futsal_phone = fPhone.getText().toString();
-                final String opening_hour = fOpenTime.getText().toString();
-                final String closing_hour = fCloseTime.getText().toString();
+                final String opening_hour = open_time;
+                final String closing_hour = close_time;
                 final String week_price_m = fWeakPriceM.getText().toString();
                 final String week_price_d = fWeakPriceD.getText().toString();
                 final String week_price_e = fWeakPriceE.getText().toString();
@@ -394,16 +322,16 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                 final String week_end_price_d = fWeakendPriceD.getText().toString();
                 final String week_end_price_e = fWeakendPriceE.getText().toString();
                 double latitude = latLng.latitude;
-                double longitude =latLng.longitude;
+                double longitude = latLng.longitude;
 
 
-                if (latLng != null &&!TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
+                if (latLng != null && !TextUtils.isEmpty(futsal_name) && mainImageURI != null && !TextUtils.isEmpty(futsal_address)
                         && !TextUtils.isEmpty(futsal_phone) && !TextUtils.isEmpty(opening_hour)
                         && !TextUtils.isEmpty(closing_hour) && !TextUtils.isEmpty(week_end_price_m)
                         && !TextUtils.isEmpty(week_price_d) && !TextUtils.isEmpty(week_price_e)
                         && !TextUtils.isEmpty(week_price_m) && !TextUtils.isEmpty(week_end_price_d)
-                        && !TextUtils.isEmpty(week_end_price_e) &&  !TextUtils.isEmpty(provienc)
-                        && !TextUtils.isEmpty(distric) &&  !TextUtils.isEmpty(vdc)
+                        && !TextUtils.isEmpty(week_end_price_e) && !TextUtils.isEmpty(provienc)
+                        && !TextUtils.isEmpty(distric) && !TextUtils.isEmpty(vdc)
                 ) {
 
                     if (isChanged) {
@@ -447,7 +375,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                                             futsal_phone, opening_hour, closing_hour,
                                             week_price_m, week_price_d, week_price_e,
                                             week_end_price_m, week_end_price_d, week_end_price_e, futsal_email,
-                                            longitude,latitude, provienc,distric,vdc
+                                            longitude, latitude, provienc, distric, vdc
                                     );
                                 } else {
                                     String error = task.getException().getMessage();
@@ -481,7 +409,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                                 futsal_phone, opening_hour, closing_hour,
                                 week_price_m, week_price_d, week_price_e,
                                 week_end_price_m, week_end_price_d, week_end_price_e,
-                                futsal_email, longitude, latitude,provienc,distric,vdc
+                                futsal_email, longitude, latitude, provienc, distric, vdc
                         );
 
                     }
@@ -525,11 +453,12 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+
     private void storeFirestore(@NonNull Task<Uri> task, String futsal_name, String futsal_address,
                                 String futsal_phone, String opening_hour, String closing_hour,
                                 String week_price_m, String week_price_d, String week_price_e,
                                 String week_end_price_m, String week_end_price_d, String week_end_price_e,
-                                String futsal_email, double log,double lat, String prov, String dist, String vd) {
+                                String futsal_email, double log, double lat, String prov, String dist, String vd) {
 
         Uri download_uri;
 
@@ -570,14 +499,14 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
 
                 futsalMap.put("week_end_price", week_end_price);
 
-                Map<String ,Object> location = new HashMap<>();
-                location.put("latitude",lat);
-                location.put("longitude",log);
-                location.put("province",prov);
-                location.put("district",dist);
-                location.put("vdc",vd);
+                Map<String, Object> location = new HashMap<>();
+                location.put("latitude", lat);
+                location.put("longitude", log);
+                location.put("province", prov);
+                location.put("district", dist);
+                location.put("vdc", vd);
 
-                futsalMap.put("location",location);
+                futsalMap.put("location", location);
 
 
                 fDatabase.collection("futsal_list").document(user_id).set(futsalMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -641,6 +570,144 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     }
 
 
+    private void loadLocatonSpinner() {
+
+        pSpinner.setVisibility(View.VISIBLE);
+
+        String hello = loadJSONFromAsset(FutsalInfoEdit.this);
+
+        try {
+            n = new JSONObject(hello);
+            Log.d("JSONFILE", "onCreate: " + n);
+            clist.clear();
+            clist.add(0, "-- select the province --");
+            clist = findKeysOfJsonObject(n, clist);
+            SpinnerAdapter adapter = new SpinnerAdapter(clist, FutsalInfoEdit.this);
+            pSpinner.setAdapter(adapter);
+            pSpinner.setDropDownVerticalOffset(100);
+
+            pSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    //((TextView)parent.getChildAt(position)).setTextColor(Color.RED);
+
+                    provienc = clist.get(position);
+
+                    try {
+                        dlist = new ArrayList<>();
+                        dadapter = new SpinnerAdapter(dlist, FutsalInfoEdit.this);
+                        dSpinner.setAdapter(dadapter);
+                        dSpinner.setDropDownVerticalOffset(100);
+                        dlist.clear();
+                        dlist.add(0, "-- select the district --");
+                        if (provienc.equals("-- select the province --")) {
+                            fAddress.setText("");
+                            dadapter.notifyDataSetChanged();
+                            dSpinner.setVisibility(View.GONE);
+                            vSpinner.setVisibility(View.GONE);
+                        } else {
+                            fAddress.setText(provienc);
+                            d = n.getJSONObject(provienc);
+                            dlist = findKeysOfJsonObject(d, dlist);
+                            dadapter.notifyDataSetChanged();
+                            dSpinner.setVisibility(View.VISIBLE);
+                        }
+
+
+                        Log.d("LISTCHECK", "onItemSelected: " + clist);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    dSpinner.setVisibility(View.GONE);
+                    vSpinner.setVisibility(View.GONE);
+                    dlist.clear();
+                    dlist.add(0, "-- select the district --");
+                    dadapter.notifyDataSetChanged();
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        dSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                distric = dlist.get(position);
+                String p1 = provienc + ", " + distric;
+
+
+                try {
+                    vlist = new ArrayList<>();
+                    vadapter = new SpinnerAdapter(vlist, FutsalInfoEdit.this);
+                    vSpinner.setAdapter(vadapter);
+                    vSpinner.setDropDownVerticalOffset(100);
+                    vlist.clear();
+                    vlist.add(0, "-- select the VDC --");
+                    if (distric.equals("-- select the district --")) {
+                        fAddress.setText(provienc);
+                        vSpinner.setVisibility(View.GONE);
+                        vadapter.notifyDataSetChanged();
+                    } else {
+                        fAddress.setText(p1);
+                        JSONArray v = d.getJSONArray(distric);
+                        Log.d("LISTCHECK1", "onItemSelected: " + v);
+                        for (int i = 0; i < v.length(); i++) {
+                            vlist.add(v.get(i).toString());
+                            vSpinner.setVisibility(View.GONE);
+                        }
+                        vadapter.notifyDataSetChanged();
+                        vSpinner.setVisibility(View.VISIBLE);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                vSpinner.setVisibility(View.GONE);
+                vlist.clear();
+                vlist.add(0, "-- select the VDC --");
+                vadapter.notifyDataSetChanged();
+            }
+        });
+
+        vSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                vdc = vlist.get(position);
+                String p = provienc + ", " + distric;
+                String p1 = p + ", " + vdc;
+                if (vdc.equals("-- select the VDC --")) {
+                    fAddress.setText(p);
+                } else {
+                    fAddress.setText(p1);
+
+                    pSpinner.setVisibility(View.GONE);
+                    dSpinner.setVisibility(View.GONE);
+                    vSpinner.setVisibility(View.GONE);
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+
     public String loadJSONFromAsset(Context context) {
         String json = null;
         try {
@@ -689,31 +756,45 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         }
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
 
-        Log.d(TAG, "fetchLastLocation: "+task);
+        Log.d(TAG, "fetchLastLocation: " + task);
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-                    Toast.makeText(FutsalInfoEdit.this,currentLocation.getLatitude()+" "+currentLocation.getLongitude(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FutsalInfoEdit.this, currentLocation.getLatitude() + " " + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
                     mapFragment.getMapAsync(FutsalInfoEdit.this::onMapReady);
                     configureCameraIdle();
-                }else{
-                    Toast.makeText(FutsalInfoEdit.this,"No Location recorded",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FutsalInfoEdit.this, "No Location recorded", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-//https://www.youtube.com/watch?v=118wylgD_ig
-    @SuppressLint("MissingPermission")
+    //https://www.youtube.com/watch?v=118wylgD_ig
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if(latLng == null) {
+        mMap.clear();
+        if (latLng == null) {
             latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(FutsalInfoEdit.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+
+            return;
         }
         mMap.setMyLocationEnabled(true);
         Log.d(TAG, "onMapReady:"+latLng);
@@ -729,7 +810,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latuLng) {
-               latLng = latuLng;
+                latLng = latuLng;
                 mMap.clear();
                 MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("Current Position");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
@@ -767,7 +848,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                         String country = addressList.get(0).getCountryName();
                         if (!locality.isEmpty() && !country.isEmpty())
 //                            resutText.setText(locality + "  " + country);
-                        Log.d("FUTSAL", "onCameraIdle: "+locality + "  " + country);
+                            Log.d("FUTSAL", "onCameraIdle: "+locality + "  " + country);
                     }
 
                 } catch (IOException e) {
@@ -777,5 +858,62 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
             }
         };
     }
+
+    public  ArrayList<String> makeTimeArray() {
+
+        ArrayList<String> timeArray = new ArrayList<>();
+        timeArray.add("12AM");
+        timeArray.add("1AM");
+        timeArray.add("2AM");
+        timeArray.add("3AM");
+        timeArray.add("4AM");
+        timeArray.add("5AM");
+        timeArray.add("6AM");
+        timeArray.add("7AM");
+        timeArray.add("8AM");
+        timeArray.add("9AM");
+        timeArray.add("10AM");
+        timeArray.add("11AM");
+        timeArray.add("12PM");
+        timeArray.add("1PM");
+        timeArray.add("2PM");
+        timeArray.add("3PM");
+        timeArray.add("4PM");
+        timeArray.add("5PM");
+        timeArray.add("6PM");
+        timeArray.add("7PM");
+        timeArray.add("8PM");
+        timeArray.add("9PM");
+        timeArray.add("10PM");
+        timeArray.add("11PM");
+
+        return timeArray;
+
+    }
+
+     private ArrayList<String> closeTimeArray(String open,ArrayList<String> timeArray){
+         List<String> timeArray1 = new ArrayList<>();
+         int openIdx=-1;
+         for(int i = 0;i < timeArray.size();i++){
+             if(timeArray.get(i).equals(open)){
+                 openIdx = i;
+             }
+         }
+         timeArray1 = timeArray.subList(openIdx+1, timeArray.size());
+         Log.d("ARRAY4"," "+timeArray1);
+         return new ArrayList<String>(timeArray1);
+
+     }
+
+     private int findIndex(ArrayList<String> list, String time){
+        int index=-1;
+        for(int i = 0; i< list.size(); i++){
+            if(list.get(i).equals(time)){
+                index = i;
+            }
+        }
+        return index;
+     }
+
 }
 

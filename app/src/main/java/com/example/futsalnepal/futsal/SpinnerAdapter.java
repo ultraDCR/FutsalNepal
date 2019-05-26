@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.futsalnepal.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SpinnerAdapter extends BaseAdapter{
     private ArrayList<String> list;
