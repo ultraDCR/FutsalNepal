@@ -245,6 +245,12 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 //        });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        findViewById( R.id.search_views ).requestFocus();
+    }
+
     public void SearchItem(){
 
         Log.d("SEARCH", "SearchItem: "+vdc+"   "+distric+"   "+provienc);
