@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
+import com.example.futsalnepal.Model.BookTime;
 import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.futsal.FutsalInfoEdit;
 import com.example.futsalnepal.futsal.SpinnerAdapter;
@@ -42,6 +44,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -65,6 +68,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -74,6 +78,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private JSONObject n = null;
     private JSONObject d = null;
     private ArrayList<String> clist, dlist, vlist;
+    private List<String> timeList, booked,pending;
     private SpinnerAdapter dadapter, vadapter;
     String distric, vdc, provienc;
     private List<Futsal> futsalList, newList;
@@ -84,7 +89,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private FutsalRecycleView adapter;
     private String date;
 
-    //public static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +117,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         date = sdf.format(new Date());
         dateSearch.setText(date);
+        loadPendingAndBooked();
 
         //time picker
         timeSearch.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +159,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 //                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
                         date = sdf.format(now.getTime());
                         dateSearch.setText(date);
+                        loadPendingAndBooked();
                     }
                 },day,month,year);
                 dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
@@ -219,30 +225,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             }
         });
 
-
-//        Places.initialize(getApplicationContext(), "AIzaSyAoCtPfy1MC-V_08UJSFKYNikt_hMAUWuQ");
-//
-//        // Create a new Places client instance.
-//        PlacesClient placesClient = Places.createClient(this);
-//
-//        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-//                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-//        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-//
-//
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                Log.i("PLACE", "Place: " + place.getName() + ", " + place.getId());
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                Log.i("Error", "An error occurred: " + status);
-//            }
-//        });
     }
 
     @Override
@@ -261,43 +243,106 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             for (Futsal f : futsalList) {
                 if (f.getFutsal_name().toLowerCase().contains(searchTxt)) {
                     Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
-                    searchByLocation(f,1);
+                    Futsal fut = searchByLocation(f,1);
+                    if(fut != null) {
+                        timeList = makeTimeArray(fut.getOpening_hour(),fut.getClosing_hour());
+                        for(String time: pending){
+                            timeList.remove(time);
+                        }
+                        for(String time :booked){
+                            timeList.remove(time);
+                        }
+                        if(timeList.size()>1){
+                            newList.add(fut);
+                            adapter.notifyDataSetChanged();
+                        }
+                        else{
+                            adapter.notifyDataSetChanged();
+                        }
+
+                    }else{
+                        adapter.notifyDataSetChanged();
+                    }
+
                 }
             }
         }else {
             newList.clear();
             for (Futsal f : futsalList) {
                 Log.d("SEARCH", "SearchItem: " + f.getLocation() + "   " + provienc);
-                searchByLocation(f,2);
+                Futsal fut = searchByLocation(f,2);
+                if(fut != null) {
+                    newList.add(fut);
+                    adapter.notifyDataSetChanged();
+                }else{
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
 
-    private void searchByLocation(Futsal f,int i){
+    private void loadPendingAndBooked() {
+        String dSearch = dateSearch.getText().toString();
+        mDatabase.collection("futsal_list").document().
+                collection("booked").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(documentSnapshot != null){
+                    Map<String, Object> userIdMap = documentSnapshot.getData();
+                    if(userIdMap != null) {
+                        for (String user_id : userIdMap.keySet()) {
+                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                            for(String time :timeMap.keySet()){
+                                booked.add(time);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        mDatabase.collection("futsal_list").document().
+                collection("newrequest").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(documentSnapshot != null){
+                    Map<String, Object> userIdMap = documentSnapshot.getData();
+                    if(userIdMap != null) {
+                        for (String user_id : userIdMap.keySet()) {
+                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                            for(String time :timeMap.keySet()){
+                                pending.add(time);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+    private Futsal searchByLocation(Futsal f,int i){
         if(f.getLocation().get("province").equals(provienc)){
             String dis = f.getLocation().get("district").toString();
             String v =  f.getLocation().get("vdc").toString();
 
             if(dis.equals(distric)){
                 if(v.equals(vdc)){
-                    newList.add(f);
-                    adapter.notifyDataSetChanged();
+                    return f;
                 }else if(vdc.equals("-- select the VDC --")){
-                    newList.add(f);
-                    adapter.notifyDataSetChanged();
+                    return f;
                 }else{
-                    adapter.notifyDataSetChanged();
+                    return null;
                 }
             }else if(distric.equals("-- select the district --")){
-                newList.add(f);
-                adapter.notifyDataSetChanged();
+                return f;
             }else{
-                adapter.notifyDataSetChanged();
+                return null;
             }
         }else if (provienc.equals("-- select the province --" ) && i==1){
-            newList.add(f);
-            adapter.notifyDataSetChanged();
+            return f;
         }
+        return null;
     }
 
         // for toolbar
@@ -506,5 +551,56 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         return list;
     }
 
+    public  List<String> makeTimeArray(String open, String close) {
+
+        List<String> timeArray = new ArrayList<>();
+        timeArray.add("12AM");
+        timeArray.add("1AM");
+        timeArray.add("2AM");
+        timeArray.add("3AM");
+        timeArray.add("4AM");
+        timeArray.add("5AM");
+        timeArray.add("6AM");
+        timeArray.add("7AM");
+        timeArray.add("8AM");
+        timeArray.add("9AM");
+        timeArray.add("10AM");
+        timeArray.add("11AM");
+        timeArray.add("12PM");
+        timeArray.add("1PM");
+        timeArray.add("2PM");
+        timeArray.add("3PM");
+        timeArray.add("4PM");
+        timeArray.add("5PM");
+        timeArray.add("6PM");
+        timeArray.add("7PM");
+        timeArray.add("8PM");
+        timeArray.add("9PM");
+        timeArray.add("10PM");
+        timeArray.add("11PM");
+
+        List<String> timeArray1;
+        int openIdx=-1;
+        int closeIdx=-1;
+        for(int i = 0;i < timeArray.size();i++){
+            if(timeArray.get(i).equals(open)){
+                openIdx = i;
+            }else if(timeArray.get(i).equals(close)){
+                closeIdx =i;
+            }
+
+        }
+        Log.d("ARRAY2",""+open+"  "+close );
+
+        Log.d("ARRAY3", "makeTimeArray: "+openIdx+" "+closeIdx);
+        if (openIdx <= closeIdx) {
+            // straightforward case
+            timeArray1 = timeArray.subList(openIdx, closeIdx);
+            Log.d("ARRAY4"," "+timeArray1);
+            return timeArray1;
+        }
+        return timeArray;
+
+    }
 
 }
