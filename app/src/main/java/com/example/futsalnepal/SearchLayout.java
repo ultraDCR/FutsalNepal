@@ -1,15 +1,9 @@
 package com.example.futsalnepal;
 
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,30 +19,17 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
-import com.example.futsalnepal.Model.BookTime;
 import com.example.futsalnepal.Model.Futsal;
-import com.example.futsalnepal.futsal.FutsalInfoEdit;
 import com.example.futsalnepal.futsal.SpinnerAdapter;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 //import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -62,7 +43,6 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -78,7 +58,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private JSONObject n = null;
     private JSONObject d = null;
     private ArrayList<String> clist, dlist, vlist;
-    private List<String> timeList, booked,pending;
+    private List<String> timeList;
     private SpinnerAdapter dadapter, vadapter;
     String distric, vdc, provienc;
     private List<Futsal> futsalList, newList;
@@ -88,6 +68,9 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private FirebaseAuth mAuth;
     private FutsalRecycleView adapter;
     private String date;
+    private String fromTime = null;
+    private String toTime = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +100,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         date = sdf.format(new Date());
         dateSearch.setText(date);
-        loadPendingAndBooked();
+
 
         //time picker
         timeSearch.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +159,10 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         Log.d("TESTING", "onEvent: " + doc);
                         Futsal futsals = doc.toObject(Futsal.class).withId(futsalId);
                         futsalList.add(futsals);
+
                     }
+                    loadPendingAndBooked();
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -245,12 +231,29 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                     Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
                     Futsal fut = searchByLocation(f,1);
                     if(fut != null) {
+                        timeList = new ArrayList<>();
                         timeList = makeTimeArray(fut.getOpening_hour(),fut.getClosing_hour());
-                        for(String time: pending){
-                            timeList.remove(time);
+                        Log.d("HELLO", "SearchItem: "+timeList+" 0 "+fut.getPendingtime());
+                        if(fut.getPendingtime() != null){
+                            for(String time :fut.getPendingtime()){
+                                timeList.remove(time);
+                            }
                         }
-                        for(String time :booked){
-                            timeList.remove(time);
+                        if(fut.getBookedtime() != null) {
+                            for (String time : fut.getBookedtime()) {
+                                timeList.remove(time);
+                            }
+                        }
+                        for(String time: timeList){
+                            List<String> inputTime = new ArrayList<>();
+                            inputTime = makeTimeArray(fromTime,toTime);
+                            if(fromTime != null && toTime != null){
+                                for(String t: inputTime){
+                                    if(!t.equals(time)){
+                                        timeList.remove(time);
+                                    }
+                                }
+                            }
                         }
                         if(timeList.size()>1){
                             newList.add(fut);
@@ -281,44 +284,64 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         }
     }
 
-    private void loadPendingAndBooked() {
+    private void loadPendingAndBooked(){
+        loadPending();
+        loadBooked();
+    }
+
+    private void loadPending() {
         String dSearch = dateSearch.getText().toString();
-        mDatabase.collection("futsal_list").document().
-                collection("booked").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(documentSnapshot != null){
-                    Map<String, Object> userIdMap = documentSnapshot.getData();
-                    if(userIdMap != null) {
-                        for (String user_id : userIdMap.keySet()) {
-                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
-                            for(String time :timeMap.keySet()){
-                                booked.add(time);
+        for(Futsal f: futsalList) {
+            mDatabase.collection("futsal_list").document(f.FutsalId).
+                    collection("newrequest").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        List<String> btime;
+                        btime = new ArrayList<>();
+                        Log.d("HELLOTEST", "onEvent: " + documentSnapshot);
+                        Map<String, Object> userIdMap = documentSnapshot.getData();
+                        if (userIdMap != null) {
+                            for (String user_id : userIdMap.keySet()) {
+                                Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                                for (String time : timeMap.keySet()) {
+                                    btime.add(time);
+                                }
                             }
+                            f.setPendingtime(btime);
+                            SearchItem();
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+    }
 
-        mDatabase.collection("futsal_list").document().
-                collection("newrequest").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(documentSnapshot != null){
-                    Map<String, Object> userIdMap = documentSnapshot.getData();
-                    if(userIdMap != null) {
-                        for (String user_id : userIdMap.keySet()) {
-                            Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
-                            for(String time :timeMap.keySet()){
-                                pending.add(time);
+    private void loadBooked(){
+        String dSearch = dateSearch.getText().toString();
+        for(Futsal f: futsalList) {
+            mDatabase.collection("futsal_list").document(f.FutsalId).
+                    collection("booked").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        List<String> btime;
+                        btime = new ArrayList<>();
+                        Map<String, Object> userIdMap = documentSnapshot.getData();
+                        if (userIdMap != null) {
+                            for (String user_id : userIdMap.keySet()) {
+                                Map<String, Object> timeMap = (Map<String, Object>) userIdMap.get(user_id);
+                                for (String time : timeMap.keySet()) {
+                                    btime.add(time);
+                                }
                             }
+                            f.setBookedtime(btime);
+                            SearchItem();
                         }
                     }
                 }
-            }
-        });
-
+            });
+        }
     }
 
     private Futsal searchByLocation(Futsal f,int i){
@@ -358,23 +381,23 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("hha",Locale.US);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("ha",Locale.US);
 
         Date date1 ;
-        String str1 = null;
+
         Date date2 ;
-        String str2 = null;
+
 
         try {
             date1 = inputFormat.parse(""+hourOfDay);
-            str1 = outputFormat.format(date1);
+            fromTime = outputFormat.format(date1);
             date2 = inputFormat.parse(""+hourOfDayEnd);
-            str2 = outputFormat.format(date2);
+            toTime = outputFormat.format(date2);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        String time = str1+" - "+str2;
+        String time = fromTime+" - "+toTime;
         timeSearch.setText(time);
 
     }
