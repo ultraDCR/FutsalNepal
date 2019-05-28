@@ -95,6 +95,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         vSpinner = findViewById(R.id.vdc_search);
 
         clist = new ArrayList<>();
+        timeList = new ArrayList<>();
         loadLocatonSpinner();
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
@@ -122,11 +123,11 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 tpd.show(getFragmentManager(), "Timepickerdialog");
             }
         });
-
+        Calendar now = Calendar.getInstance();
         dateSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
+
                  int day = now.get(Calendar.YEAR); // Initial year selection
                  int month = now.get(Calendar.MONTH); // Initial month selection
                  int year = now.get(Calendar.DAY_OF_MONTH);// Inital day selection
@@ -162,7 +163,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
                     }
                     loadPendingAndBooked();
-                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -231,38 +231,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                     Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
                     Futsal fut = searchByLocation(f,1);
                     if(fut != null) {
-                        timeList = new ArrayList<>();
-                        timeList = makeTimeArray(fut.getOpening_hour(),fut.getClosing_hour());
-                        Log.d("HELLO", "SearchItem: "+timeList+" 0 "+fut.getPendingtime());
-                        if(fut.getPendingtime() != null){
-                            for(String time :fut.getPendingtime()){
-                                timeList.remove(time);
-                            }
-                        }
-                        if(fut.getBookedtime() != null) {
-                            for (String time : fut.getBookedtime()) {
-                                timeList.remove(time);
-                            }
-                        }
-                        for(String time: timeList){
-                            List<String> inputTime = new ArrayList<>();
-                            inputTime = makeTimeArray(fromTime,toTime);
-                            if(fromTime != null && toTime != null){
-                                for(String t: inputTime){
-                                    if(!t.equals(time)){
-                                        timeList.remove(time);
-                                    }
-                                }
-                            }
-                        }
-                        if(timeList.size()>1){
-                            newList.add(fut);
-                            adapter.notifyDataSetChanged();
-                        }
-                        else{
-                            adapter.notifyDataSetChanged();
-                        }
-
+                        dateFilter(fut);
                     }else{
                         adapter.notifyDataSetChanged();
                     }
@@ -275,8 +244,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 Log.d("SEARCH", "SearchItem: " + f.getLocation() + "   " + provienc);
                 Futsal fut = searchByLocation(f,2);
                 if(fut != null) {
-                    newList.add(fut);
-                    adapter.notifyDataSetChanged();
+                    dateFilter(fut);
                 }else{
                     adapter.notifyDataSetChanged();
                 }
@@ -284,22 +252,72 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         }
     }
 
+
+    private void dateFilter(Futsal fut){
+        timeList = makeTimeArray(fut.getOpening_hour(),fut.getClosing_hour(),"time");
+        Log.d("HELLO", "SearchItem: "+timeList+" 0 "+fut.getPendingtime()+"  0  "+fut.getBookedtime());
+        if(fut.getPendingtime() != null){
+            for(String time :fut.getPendingtime()){
+                timeList.remove(time);
+            }
+        }
+        if(fut.getBookedtime() != null) {
+            for (String time : fut.getBookedtime()) {
+                timeList.remove(time);
+            }
+        }
+//        List<String> newTimeArray = new ArrayList<>();
+//        newTimeArray = timeList;
+        int number = 0;
+        List<String> inputTime = new ArrayList<>();
+        if (fromTime != null && toTime != null) {
+            inputTime = makeTimeArray(fromTime, toTime,"input");
+            Log.d("HELLO1", "dateFilter: " + inputTime);
+            for (String t : inputTime) {
+                if (timeList.contains(t)) {
+                    number ++;
+                }
+            }
+            if(timeList.size()>1 && number != 0 ){
+                newList.add(fut);
+                adapter.notifyDataSetChanged();
+            }
+            else{
+                Log.d("HELLO3", "dateFilter: " + number);
+                adapter.notifyDataSetChanged();
+            }
+        }else{
+            if(timeList.size()>1){
+                newList.add(fut);
+                adapter.notifyDataSetChanged();
+            }
+            else{
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        Log.d("HELLO2", "dateFilter: "+timeList);
+
+    }
+
     private void loadPendingAndBooked(){
+        timeList.clear();
         loadPending();
         loadBooked();
     }
 
     private void loadPending() {
-        String dSearch = dateSearch.getText().toString();
+
         for(Futsal f: futsalList) {
+            f.setPendingtime(null);
             mDatabase.collection("futsal_list").document(f.FutsalId).
-                    collection("newrequest").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    collection("newrequest").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
                         List<String> btime;
                         btime = new ArrayList<>();
-                        Log.d("HELLOTEST", "onEvent: " + documentSnapshot);
+
                         Map<String, Object> userIdMap = documentSnapshot.getData();
                         if (userIdMap != null) {
                             for (String user_id : userIdMap.keySet()) {
@@ -310,18 +328,23 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                             }
                             f.setPendingtime(btime);
                             SearchItem();
+                            Log.d("HELLO!!", "onEvent: InSIDE"+date);
                         }
                     }
                 }
+
+
             });
+            SearchItem();
         }
+
     }
 
     private void loadBooked(){
-        String dSearch = dateSearch.getText().toString();
         for(Futsal f: futsalList) {
+            f.setBookedtime(null);
             mDatabase.collection("futsal_list").document(f.FutsalId).
-                    collection("booked").document(dSearch).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    collection("booked").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
@@ -341,10 +364,13 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                     }
                 }
             });
+            SearchItem();
         }
+
     }
 
     private Futsal searchByLocation(Futsal f,int i){
+//        Log.d("HELLO#", "searchByLocation: "+provienc);
         if(f.getLocation().get("province").equals(provienc)){
             String dis = f.getLocation().get("district").toString();
             String v =  f.getLocation().get("vdc").toString();
@@ -399,13 +425,14 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
         String time = fromTime+" - "+toTime;
         timeSearch.setText(time);
+        SearchItem();
 
     }
 
     private void loadLocatonSpinner() {
 
         String hello = loadJSONFromAsset(SearchLayout.this);
-
+        provienc ="";
         try {
             n = new JSONObject(hello);
             Log.d("JSONFILE", "onCreate: " + n);
@@ -574,7 +601,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         return list;
     }
 
-    public  List<String> makeTimeArray(String open, String close) {
+    public  List<String> makeTimeArray(String open, String close, String type) {
 
         List<String> timeArray = new ArrayList<>();
         timeArray.add("12AM");
@@ -602,20 +629,34 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         timeArray.add("10PM");
         timeArray.add("11PM");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("ha", Locale.US);
+        String currentTime = sdf.format(new Date());
+
+        SimpleDateFormat sdf1 = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+        String currentDate = sdf1.format(new Date());
+
         List<String> timeArray1;
         int openIdx=-1;
         int closeIdx=-1;
-        for(int i = 0;i < timeArray.size();i++){
-            if(timeArray.get(i).equals(open)){
-                openIdx = i;
-            }else if(timeArray.get(i).equals(close)){
-                closeIdx =i;
-            }
+
+        Log.d("HELLO@32", "makeTimeArray: "+timeArray.indexOf(currentTime));
+
+        if(type.equals("input")) {
 
         }
-        Log.d("ARRAY2",""+open+"  "+close );
+        if(type.equals("time")) {
+            if(currentDate.equals(date)) {
+                openIdx = timeArray.indexOf(currentTime);
 
-        Log.d("ARRAY3", "makeTimeArray: "+openIdx+" "+closeIdx);
+            }else{
+                openIdx = timeArray.indexOf(open);
+            }
+            closeIdx = timeArray.indexOf(close);
+        }
+        if(type.equals("input")){
+            openIdx = timeArray.indexOf(open);
+            closeIdx = timeArray.indexOf(close);
+        }
         if (openIdx <= closeIdx) {
             // straightforward case
             timeArray1 = timeArray.subList(openIdx, closeIdx);
