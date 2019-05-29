@@ -16,12 +16,14 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
     public List<String> pendingtime;
     public List<String> bookedtime;
 
+    public double distance = 0;
+
     public  Futsal(){}
 
     public Futsal(String futsal_name, String futsal_address, String opening_hour,
                   String closing_hour, String futsal_phone, String futsal_logo,
                   float overall_rating, Map<String, Object> location,
-                  List<String> pendingtime, List<String> bookedtime) {
+                  List<String> pendingtime, List<String> bookedtime, double distance) {
         this.futsal_name = futsal_name;
         this.futsal_address = futsal_address;
         this.opening_hour = opening_hour;
@@ -32,6 +34,7 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
         this.location = location;
         this.pendingtime = pendingtime;
         this.bookedtime = bookedtime;
+        this.distance = distance;
     }
 
 
@@ -115,5 +118,13 @@ public class Futsal extends com.example.futsalnepal.Model.FutsalId {
 
     public void setBookedtime(List<String> bookedtime) {
         this.bookedtime = bookedtime;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

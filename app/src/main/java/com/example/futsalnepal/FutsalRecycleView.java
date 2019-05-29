@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Futsal;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,9 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             holder.setFutsalTime(list.get(position).getOpening_hour(),list.get(position).getClosing_hour());
             holder.setFutsalLogo(list.get(position).getFutsal_logo());
             holder.setFutsalRating(list.get(position).getOverall_rating());
+            if(list.get(position).getDistance() != 0){
+                holder.setDistance(list.get(position).getDistance());
+            }
            // holder.setFutsalRating(list.get(position).getRating());
 
             //animate(holder);
@@ -97,9 +102,10 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         private CardView cv;
         private TextView name;
         private TextView address;
-        private TextView time;
+        private TextView time,distancetxt;
         private ImageView profile;
         private RatingBar ratingBar;
+        private Button bookNow;
         private View mView;
 
         public FutsalViewHolder(View itemView) {
@@ -113,31 +119,44 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         }
 
         public void setFutsalName(String futsal_name){
-            name =  itemView.findViewById(R.id.futsal_name);
+            name =  mView.findViewById(R.id.futsal_name);
             name.setText(futsal_name);
         }
 
         public void setFutsalAddress(Map<String,Object> futsal_address){
-            address =  itemView.findViewById(R.id.location_search);
+            address =  mView.findViewById(R.id.location_search);
             String location =futsal_address.get("vdc").toString()+", "+futsal_address.get("district").toString();
             address.setText(location);
         }
         public void setFutsalTime(String open, String close){
-            time =  itemView.findViewById(R.id.futsal_available_time);
+            time =  mView.findViewById(R.id.futsal_available_time);
             time.setText(open+" - "+close);
         }
         public void setFutsalLogo(String futsal_logo){
-            profile =  itemView.findViewById(R.id.futsal_profile);
+            profile =  mView.findViewById(R.id.futsal_profile);
             RequestOptions placeholderRequest = new RequestOptions();
             placeholderRequest.placeholder(R.drawable.logo);
 
             Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(profile);
         }
         public void setFutsalRating(float rating){
-            ratingBar =  itemView.findViewById(R.id.futsal_rating);
+            ratingBar =  mView.findViewById(R.id.futsal_rating);
             ratingBar.setRating(rating);
         }
 
+        public void setDistance(double distance) {
+            bookNow = mView.findViewById(R.id.book_now_btn);
+            distancetxt =  mView.findViewById(R.id.distance);
+            String d;
+            if(distance <1000) {
+                d = (new DecimalFormat("#").format(distance))+"M far";
+            }else{
+                d = (new DecimalFormat("#.#").format(distance/1000))+"M far";
+            }
+            bookNow.setVisibility(View.GONE);
+            distancetxt.setVisibility(View.VISIBLE);
+            distancetxt.setText(d);
+        }
     }
 
 }

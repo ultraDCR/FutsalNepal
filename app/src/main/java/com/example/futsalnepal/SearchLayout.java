@@ -4,6 +4,9 @@ package com.example.futsalnepal;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,12 +22,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.borax12.materialdaterangepicker.time.RadialPickerLayout;
 import com.borax12.materialdaterangepicker.time.TimePickerDialog;
 import com.example.futsalnepal.Model.Futsal;
+import com.example.futsalnepal.futsal.FutsalInfoEdit;
 import com.example.futsalnepal.futsal.SpinnerAdapter;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -40,10 +50,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +66,10 @@ import javax.annotation.Nullable;
 
 public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
     DatePickerDialog dpd;
+    private static final int LOCATION_REQUEST_CODE = 432;
+    private Location currentLocation;
+    double lang ,latu ;
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private Spinner pSpinner, dSpinner, vSpinner;
     private JSONObject n = null;
     private JSONObject d = null;
@@ -162,7 +178,9 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         futsalList.add(futsals);
 
                     }
+                    distanceCalculationAndSort();
                     loadPendingAndBooked();
+
                 }
             }
         });
@@ -213,6 +231,69 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     }
 
+    private void distanceCalculationAndSort() {
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(SearchLayout.this);
+            if (ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(SearchLayout.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                return;
+            }
+            Task<Location> task = fusedLocationProviderClient.getLastLocation();
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        currentLocation = location;
+                        lang= currentLocation.getLongitude();
+                        latu = currentLocation.getLatitude();
+                        storeAndSort();
+                    } else {
+                        Toast.makeText(SearchLayout.this, "No Location recorded", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+
+            });
+
+
+    }
+
+    private void storeAndSort() {
+        for(Futsal f : futsalList) {
+            double distance = (distance((double) f.getLocation().get("latitude"), (double) f.getLocation().get("longitude"), latu, lang))*1000;
+
+            f.setDistance(distance);
+            Toast.makeText(this, ""+distance, Toast.LENGTH_SHORT).show();
+
+
+        }
+        Collections.sort(futsalList,
+                (o1, o2) -> Double.valueOf(o1.getDistance()).compareTo(Double.valueOf(o2.getDistance()))
+        );
+    }
+
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1))
+                * Math.sin(deg2rad(lat2))
+                + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2))
+                * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -220,7 +301,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     }
 
     public void SearchItem(){
-
+        distanceCalculationAndSort();
         Log.d("SEARCH", "SearchItem: "+vdc+"   "+distric+"   "+provienc);
         String searchTxt = searchByName.getText().toString().toLowerCase();
         String location = searchByLocation.getText().toString();
@@ -404,16 +485,9 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     @Override
     public void onTimeSet(RadialPickerLayout view, int hourOfDay,int minute, int hourOfDayEnd, int minuteEnd) {
-
-
         SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
         SimpleDateFormat outputFormat = new SimpleDateFormat("ha",Locale.US);
-
-        Date date1 ;
-
-        Date date2 ;
-
-
+        Date date1 ,date2 ;
         try {
             date1 = inputFormat.parse(""+hourOfDay);
             fromTime = outputFormat.format(date1);
@@ -426,7 +500,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         String time = fromTime+" - "+toTime;
         timeSearch.setText(time);
         SearchItem();
-
     }
 
     private void loadLocatonSpinner() {
