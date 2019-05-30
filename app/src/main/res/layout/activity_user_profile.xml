@@ -233,11 +233,11 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:src="@drawable/open_document"
+
                 app:layout_constraintBottom_toBottomOf="@+id/created_date"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/created_txt"
-                app:srcCompat="@drawable/open_document" />
+                />
 
             <TextView
                 android:id="@+id/created_txt"
@@ -268,7 +268,7 @@
         android:id="@+id/call_now"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/call_with_bg"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

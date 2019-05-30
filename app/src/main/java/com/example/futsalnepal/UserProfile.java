@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -51,9 +52,10 @@ public class UserProfile extends AppCompatActivity {
 
                 Glide.with(this).load(doc.get("user_profile_image").toString()).into(uprofile);
 
-                Date timestamp = (Date)doc.get("created_at");
+                Timestamp timestamp = (Timestamp) doc.get("created_at");
 
-                long millisecond = timestamp.getTime();
+
+                long millisecond = timestamp.toDate().getTime();
                 String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
                 uregister.setText(dateString);
 
