@@ -1,6 +1,7 @@
 package com.example.futsalnepal.futsal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingUser;
 import com.example.futsalnepal.R;
+import com.example.futsalnepal.UserProfile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,6 +62,13 @@ public class FutsalHistoryRecyclerView extends RecyclerView.Adapter<FutsalHistor
         Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).user_profile_image).into(holder.profile);
 
         //animate(holder);
+
+        holder.layout.setOnClickListener(view ->{
+            Intent userProfile = new Intent(context, UserProfile.class);
+            userProfile.putExtra("user_id",list.get(position).user_id);
+            context.startActivity(userProfile);
+
+        });
 
 
     }

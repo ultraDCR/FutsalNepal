@@ -1,6 +1,6 @@
 package com.example.futsalnepal.Model;
 
-public class User {
+public class User extends UserId{
     public String user_full_name;
     public String user_profile_image;
     public String user_address;
