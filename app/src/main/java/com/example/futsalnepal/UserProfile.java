@@ -56,7 +56,7 @@ public class UserProfile extends AppCompatActivity {
 
 
                 long millisecond = timestamp.toDate().getTime();
-                String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
+                String dateString = DateFormat.format("MM dd, yyyy", new Date(millisecond)).toString();
                 uregister.setText(dateString);
 
             }
