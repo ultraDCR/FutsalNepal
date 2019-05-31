@@ -1,9 +1,11 @@
 package com.example.futsalnepal;
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +33,9 @@ import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.futsal.FutsalInfoEdit;
 import com.example.futsalnepal.futsal.SpinnerAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,11 +69,15 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import static com.example.futsalnepal.AppConstants.LOCATION_REQUEST;
+
 public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
     DatePickerDialog dpd;
-    private static final int LOCATION_REQUEST_CODE = 432;
     private Location currentLocation;
+    private boolean isGPS =false;
     double lang ,latu ;
+
+
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Spinner pSpinner, dSpinner, vSpinner;
     private JSONObject n = null;
@@ -112,6 +121,11 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
         clist = new ArrayList<>();
         timeList = new ArrayList<>();
+        new GpsUtils(SearchLayout.this).turnGPSOn(isGPSEnable -> {
+            // turn on GPS
+            isGPS = isGPSEnable;
+        });
+
         loadLocatonSpinner();
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
@@ -178,7 +192,12 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         futsalList.add(futsals);
 
                     }
-                    distanceCalculationAndSort();
+
+                    if(isGPS) {
+                        distanceCalculationAndSort();
+                    }else{
+                        Toast.makeText(SearchLayout.this, "Turn on the GPS to find the distance between you and futsal and sort by nearest.", Toast.LENGTH_LONG).show();
+                    }
                     loadPendingAndBooked();
 
                 }
@@ -231,11 +250,22 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == AppConstants.GPS_REQUEST) {
+                isGPS = true; // flag maintain before get location
+            }
+        }
+    }
+
     private void distanceCalculationAndSort() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(SearchLayout.this);
             if (ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(SearchLayout.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(SearchLayout.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
                 return;
             }
             Task<Location> task = fusedLocationProviderClient.getLastLocation();
@@ -248,7 +278,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         latu = currentLocation.getLatitude();
                         storeAndSort();
                     } else {
-                        Toast.makeText(SearchLayout.this, "No Location recorded", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SearchLayout.this, "No Location recorded", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -261,9 +291,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     private void storeAndSort() {
         for(Futsal f : futsalList) {
             double distance = (distance((double) f.getLocation().get("latitude"), (double) f.getLocation().get("longitude"), latu, lang))*1000;
-
             f.setDistance(distance);
-            Toast.makeText(this, ""+distance, Toast.LENGTH_SHORT).show();
 
 
         }
@@ -740,4 +768,16 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResult) {
+        switch (requestCode) {
+            case LOCATION_REQUEST:
+                if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                    distanceCalculationAndSort();
+                } else {
+                    Toast.makeText(SearchLayout.this,"Location permission missing",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.futsalnepal.futsal;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,8 +29,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.futsalnepal.AppConstants;
+import com.example.futsalnepal.GpsUtils;
 import com.example.futsalnepal.R;
+import com.example.futsalnepal.SearchLayout;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -87,6 +94,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
     private TextView resutText;
     private LatLng latLng;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
 
     private Spinner pSpinner, dSpinner, vSpinner;
     private JSONObject n = null;
@@ -110,6 +119,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
     private Bitmap compressedImageFile;
     private boolean isChanged = false;
     private String open_time, close_time;
+    boolean isGPS =false;
 
 
     @Override
@@ -140,6 +150,12 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         pSpinner = findViewById(R.id.provienc_spinner);
         dSpinner = findViewById(R.id.district_spinner);
         vSpinner = findViewById(R.id.vdc_spinner);
+
+        new GpsUtils(FutsalInfoEdit.this).turnGPSOn(isGPSEnable -> {
+            // turn on GPS
+            isGPS = isGPSEnable;
+        });
+
 
 //        open and close time spinner
         openSpinner = findViewById(R.id.open_spinner);
@@ -194,8 +210,27 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
 
 
         //Location
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10 * 1000); // 10 seconds
+        locationRequest.setFastestInterval(5 * 1000); // 5 seconds
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(FutsalInfoEdit.this);
         fetchLastLocation();
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        currentLocation = location;
+
+                    }
+                }
+            }
+        };
 
         clist = new ArrayList<>();
         fAddress.setOnClickListener(new View.OnClickListener() {
@@ -534,8 +569,11 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
 
+                if (requestCode == AppConstants.GPS_REQUEST) {
+                    isGPS = true; // flag maintain before get location
+                }
                 mainImageURI = result.getUri();
                 fProfilePic.setImageURI(mainImageURI);
 
@@ -729,6 +767,8 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
         return list;
     }
 
+
+
     private void fetchLastLocation() {
         Log.d(TAG, "fetchLastLocation: ");
         if (ActivityCompat.checkSelfPermission(FutsalInfoEdit.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(FutsalInfoEdit.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -743,7 +783,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-                    Toast.makeText(FutsalInfoEdit.this, currentLocation.getLatitude() + " " + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FutsalInfoEdit.this, currentLocation.getLatitude() + " " + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
                     mapFragment.getMapAsync(FutsalInfoEdit.this::onMapReady);
