@@ -185,6 +185,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if(!queryDocumentSnapshots.isEmpty()) {
+                    futsalList.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String futsalId = doc.getId();
                         Log.d("TESTING", "onEvent: " + doc);
@@ -192,12 +193,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         futsalList.add(futsals);
 
                     }
-
-                    if(isGPS) {
-                        distanceCalculationAndSort();
-                    }else{
-                        Toast.makeText(SearchLayout.this, "Turn on the GPS to find the distance between you and futsal and sort by nearest.", Toast.LENGTH_LONG).show();
-                    }
+                    distanceCalculationAndSort();
                     loadPendingAndBooked();
 
                 }
@@ -209,7 +205,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         newList = new ArrayList<>();
         futsalList = new ArrayList<>();
         RecyclerView recyclerView = findViewById(R.id.search_item_rview);
-        adapter = new FutsalRecycleView(newList,this);
+        adapter = new FutsalRecycleView(newList,this,this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -276,7 +272,11 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                         currentLocation = location;
                         lang= currentLocation.getLongitude();
                         latu = currentLocation.getLatitude();
-                        storeAndSort();
+                        if(isGPS){
+                            storeAndSort();
+                        }else{
+                            Toast.makeText(SearchLayout.this, "Turn on the GPS to find the distance between you and futsal and sort by nearest.", Toast.LENGTH_LONG).show();
+                        }
                     } else {
                         //Toast.makeText(SearchLayout.this, "No Location recorded", Toast.LENGTH_SHORT).show();
                     }

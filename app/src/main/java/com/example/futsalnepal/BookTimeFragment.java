@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -125,7 +126,7 @@ public class BookTimeFragment extends Fragment {
     private void loadRecycler(View view, String date1) {
         RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        BookTimeViewAdapter adapter = new BookTimeViewAdapter(timeInHr,date,futsal_id,getContext(),getActivity());
+        BookTimeViewAdapter adapter = new BookTimeViewAdapter(timeInHr,date,futsal_id,getContext(),this);
         recyclerView.setAdapter(adapter);
     }
 

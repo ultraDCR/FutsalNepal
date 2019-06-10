@@ -1,12 +1,14 @@
 package com.example.futsalnepal;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -49,6 +51,11 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.setIsRecyclable(false);
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
         String user_name = users_list.get(position).getUser_full_name();
         String user_profile = users_list.get(position).getUser_profile_image();
 
@@ -95,6 +102,7 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
         CircleImageView profile;
         RatingBar rating;
         View mView;
+        CardView cv;
 
         ReviewViewHolder(View itemView) {
             super(itemView);
@@ -105,6 +113,7 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
             time = itemView.findViewById(R.id.review_date);
             rating = itemView.findViewById(R.id.rating_bar);
             reviewText = itemView.findViewById(R.id.review_text);
+            cv = itemView.findViewById(R.id.review_card_view);
         }
 
         public void setUserInfo(String user_name, String profile_pic){

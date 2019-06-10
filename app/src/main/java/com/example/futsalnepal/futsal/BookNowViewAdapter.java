@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -65,6 +66,11 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
 
     @Override
     public void onBindViewHolder(BookTimeViewHolder holder, int position) {
+
+        holder.book_time.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.bookBtn.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
         mauth = FirebaseAuth.getInstance();
         futsal_id = mauth.getCurrentUser().getUid();
 

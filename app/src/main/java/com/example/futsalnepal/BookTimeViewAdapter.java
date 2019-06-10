@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,11 +52,12 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
     Context context;
     FirebaseAuth mauth;
     FirebaseFirestore mDatabase;
-    Activity activity;
+    Fragment activity;
     String date;
     String futsal_id;
+    DialogFragment newFragment;
 
-    public BookTimeViewAdapter(List<BookTime> list, String date, String futsal_id, Context context, Activity activity) {
+    public BookTimeViewAdapter(List<BookTime> list, String date, String futsal_id, Context context, Fragment activity) {
         this.list = list;
         this.date = date;
         this.futsal_id = futsal_id;
@@ -60,6 +66,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
         this.activity = activity;
         mauth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
+        newFragment = new LoginAndSignUp();
     }
 
     @Override
@@ -75,6 +82,12 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
     @Override
     public void onBindViewHolder(BookTimeViewHolder holder, int position) {
         mauth = FirebaseAuth.getInstance();
+
+        holder.book_time.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.bookBtn.setAnimation(AnimationUtils.loadAnimation(context,R.anim.book_time_animation));
+
+
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.book_time.setText(list.get(position).book_time);
         Log.d("ARRAY4", "onBindViewHolder: "+futsal_id+"  "+date);
@@ -89,8 +102,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                 public void onClick(View v) {
                     Log.d("CLICKABLE", "onBindViewHolder: "+holder.own_pending);
                     if (mauth.getCurrentUser() == null) {
-                        LoginDialog dialog = new LoginDialog(context, activity);
-                        dialog.startLoginDialog();
+                        newFragment.show(activity.getFragmentManager(),"dd");
                         Log.d("pressed", "alertdialog");
                     }else {
                         if (holder.own_pending) {
@@ -224,6 +236,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
         TextView book_time;
         Button bookBtn;
         boolean own_pending = false;
+        ConstraintLayout layout;
 
 
 
@@ -231,7 +244,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
             super(itemView);
             book_time =  itemView.findViewById(R.id.book_time);
             bookBtn =  itemView.findViewById(R.id.book_time_btn);
-
+            layout = itemView.findViewById(R.id.book_time_layout);
 
         }
 

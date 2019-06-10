@@ -2,6 +2,7 @@ package com.example.futsalnepal.futsal;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingUser;
 import com.example.futsalnepal.R;
+import com.example.futsalnepal.UserProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -60,6 +63,11 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<FutsalNew
 
     @Override
     public void onBindViewHolder(FutsalNewRequestRecyclerView.FutsalViewHolder holder, int position) {
+
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.layout.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         futsal_id = mauth.getCurrentUser().getUid();
@@ -166,7 +174,12 @@ public class FutsalNewRequestRecyclerView extends RecyclerView.Adapter<FutsalNew
         });
 
         //animate(holder);
+        holder.layout.setOnClickListener(view ->{
+            Intent userProfile = new Intent(context, UserProfile.class);
+            userProfile.putExtra("user_id",list.get(position).user_id);
+            context.startActivity(userProfile);
 
+        });
 
     }
 

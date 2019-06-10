@@ -1,12 +1,15 @@
 package com.example.futsalnepal;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -24,10 +27,13 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
 
         List<Futsal> list ;
         Context context;
+        Activity activity;
 
-        public FutsalRecycleView(List<Futsal> list, Context context) {
+        public FutsalRecycleView(List<Futsal> list, Context context, Activity activity) {
             this.list = list;
             this.context = context;
+            this.activity = activity;
+
         }
 
         @Override
@@ -44,6 +50,10 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         public void onBindViewHolder(FutsalViewHolder holder, int position) {
 
             final String futsalId = list.get(position).FutsalId;
+
+            holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+            holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
 
             holder.setFutsalName(list.get(position).getFutsal_name());
             holder.setFutsalAddress(list.get(position).getLocation());
@@ -63,7 +73,9 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
                 public void onClick(View v) {
                     Intent futsal = new Intent(context, FutsalIndivisualDetails.class);
                     futsal.putExtra("futsal_id", futsalId);
+                    // start the new activity
                     context.startActivity(futsal);
+                    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
             });
 
@@ -107,6 +119,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         private RatingBar ratingBar;
         private Button bookNow;
         private View mView;
+        private ConstraintLayout container;
 
         public FutsalViewHolder(View itemView) {
             super(itemView);
@@ -115,6 +128,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
             cv =  itemView.findViewById(R.id.futsal_card_view);
             profile =  itemView.findViewById(R.id.futsal_profile);
             ratingBar = itemView.findViewById(R.id.futsal_rating);
+            container = itemView.findViewById(R.id.content_layout);
 
         }
 
@@ -135,7 +149,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         public void setFutsalLogo(String futsal_logo){
             profile =  mView.findViewById(R.id.futsal_profile);
             RequestOptions placeholderRequest = new RequestOptions();
-            placeholderRequest.placeholder(R.drawable.logo);
+            placeholderRequest.placeholder(R.drawable.futsal_time_logo);
 
             Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(profile);
         }

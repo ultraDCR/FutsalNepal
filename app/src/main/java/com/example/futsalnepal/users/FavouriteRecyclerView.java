@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -53,7 +54,12 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
 
     final String futsalId = list.get(position).FutsalId;
 
-            holder.setFutsalName(list.get(position).getFutsal_name());
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
+        holder.setFutsalName(list.get(position).getFutsal_name());
             holder.setFutsalAddress(list.get(position).getFutsal_address());
             holder.setFutsalTime(list.get(position).getOpening_hour(),list.get(position).getClosing_hour());
             holder.setFutsalLogo(list.get(position).getFutsal_logo());
@@ -152,7 +158,7 @@ public class FavouriteRecyclerView extends RecyclerView.Adapter<FavouriteRecycle
         public void setFutsalLogo(String futsal_logo){
             profile =  itemView.findViewById(R.id.futsal_profile);
             RequestOptions placeholderRequest = new RequestOptions();
-            placeholderRequest.placeholder(R.drawable.logo);
+            placeholderRequest.placeholder(R.drawable.futsal_time_logo);
 
             Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(futsal_logo).into(profile);
         }

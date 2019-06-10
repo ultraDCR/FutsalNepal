@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +45,11 @@ public class FutsalHistoryRecyclerView extends RecyclerView.Adapter<FutsalHistor
 
     @Override
     public void onBindViewHolder(FutsalHistoryRecyclerView.FutsalViewHolder holder, int position) {
+
+
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.layout.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).user_full_name);

@@ -62,22 +62,24 @@ public class Favourite extends AppCompatActivity {
                     }
                     if (snapshot != null && snapshot.exists()) {
                         ArrayList<String> futsalId = (ArrayList<String>) snapshot.get("favourite_futsal");
-                        futsalList.clear();
-                        for (int i = 0; i < futsalId.size(); i++) {
-                            String futsal_id = futsalId.get(i);
-                            Log.d("TESTING", "onEvent: " + futsal_id + "   ---" + futsalId);
-                            mDatabase.collection("futsal_list").document(futsal_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                                    if (documentSnapshot != null) {
-                                        Log.d("TESTING", "onEvent: " + documentSnapshot);
-                                        Futsal futsals = documentSnapshot.toObject(Futsal.class).withId(futsal_id);
-                                        Log.d("TESTING1", "onComplete: " + futsals);
-                                        futsalList.add(futsals);
-                                        adapter.notifyDataSetChanged();
+                        if(futsalId != null) {
+                            futsalList.clear();
+                            for (int i = 0; i < futsalId.size(); i++) {
+                                String futsal_id = futsalId.get(i);
+                                Log.d("TESTING", "onEvent: " + futsal_id + "   ---" + futsalId);
+                                mDatabase.collection("futsal_list").document(futsal_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                        if (documentSnapshot != null) {
+                                            Log.d("TESTING", "onEvent: " + documentSnapshot);
+                                            Futsal futsals = documentSnapshot.toObject(Futsal.class).withId(futsal_id);
+                                            Log.d("TESTING1", "onComplete: " + futsals);
+                                            futsalList.add(futsals);
+                                            adapter.notifyDataSetChanged();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
                 }

@@ -25,7 +25,7 @@ public class MyMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
                 .setContentTitle(title)
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.drawable.futsal_time_logo)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentText(message)

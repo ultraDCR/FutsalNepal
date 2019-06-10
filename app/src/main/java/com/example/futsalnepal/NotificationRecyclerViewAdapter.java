@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,6 +62,13 @@ public class NotificationRecyclerViewAdapter extends RecyclerView.Adapter<Notifi
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int i) {
         user_id = mAuth.getCurrentUser().getUid();
+
+        holder.futsalImage.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.cardView.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
+
         holder.setSenderInfo(user_type,notificationsList.get(i).from);
         holder.fmessage.setText(notificationsList.get(i).message);
         holder.setTime(notificationsList.get(i).timestamp);

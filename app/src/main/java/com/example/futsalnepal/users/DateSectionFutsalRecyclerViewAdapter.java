@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.example.futsalnepal.Model.SectionModel;
@@ -52,6 +53,10 @@ public class DateSectionFutsalRecyclerViewAdapter extends RecyclerView.Adapter<D
         Log.d("DATETEST10",""+holder+""+position);
 
         final SectionModel sectionModel = sectionModelArrayList.get(position);
+
+        holder.sectionLabel.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
         holder.sectionLabel.setText(sectionModel.getSectionLabel());
 
         //recycler view for items

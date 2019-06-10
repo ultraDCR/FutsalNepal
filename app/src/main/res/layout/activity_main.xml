@@ -45,53 +45,52 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
-
-        <Button
-            android:id="@+id/home_search"
-            android:layout_width="329dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/custom_search_shape"
-            android:drawableStart="@drawable/ic_search_icon"
-            android:drawableLeft="@drawable/ic_search_icon"
-            android:drawablePadding="10dp"
-            android:ems="10"
-            android:hint="Search"
-            android:minHeight="100px"
-            android:paddingLeft="15dp"
-            android:text="Search"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@android:color/darker_gray"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlCompat" />
-    </android.support.constraint.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
 
-    <com.daimajia.slider.library.SliderLayout
-        android:id="@+id/slider"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+            <Button
+                android:id="@+id/home_search"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/custom_search_shape"
+                android:drawableLeft="@drawable/ic_search_green_24dp"
+                android:drawablePadding="12dp"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="Search"
+                android:minHeight="100px"
+                android:padding="8dp"
+                android:text="Search"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="18sp"
+                android:transitionName="searchBtn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="RtlCompat" />
+        </android.support.constraint.ConstraintLayout>
 
-    </com.daimajia.slider.library.SliderLayout>
+        <com.daimajia.slider.library.SliderLayout
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+        </com.daimajia.slider.library.SliderLayout>
 
     <TextView
         android:id="@+id/textView"
@@ -116,12 +115,7 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="2dp"
             android:fillViewport="true"
             android:scrollbars="none"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -134,6 +128,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
+                android:paddingTop="16dp"
                 app:layout_constrainedHeight="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

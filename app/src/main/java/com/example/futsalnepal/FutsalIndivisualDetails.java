@@ -3,10 +3,14 @@ package com.example.futsalnepal;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +22,9 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,6 +74,9 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
         fAddress = findViewById(R.id.tab_address);
         fLogo = findViewById(R.id.futsal_logo);
         favBtn = findViewById(R.id.favourite_btn);
+
+//        Animation hyperspaceJump = AnimationUtils.loadAnimation(this, R.anim.hyperspace_jump);
+//        fLogo.startAnimation(hyperspaceJump);
 
         futsal_id = getIntent().getStringExtra("futsal_id");
 
@@ -131,6 +141,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                             }
                             else{
                                 favBtn.setImageResource(R.drawable.ic_favourite_unselected_white);
+
                                 favBtn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -149,8 +160,8 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
             favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    LoginDialog dialog = new LoginDialog(FutsalIndivisualDetails.this, FutsalIndivisualDetails.this);
-                    dialog.startLoginDialog();
+                    DialogFragment newFragment = new LoginAndSignUp();
+                    newFragment.show(getSupportFragmentManager(), "favioutar");
                     Log.d("pressed", "alertdialog");
                 }
             });
@@ -176,7 +187,7 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                         Log.d("ALERTTEST", "onClick: YES" + user_id + "  " + futsal_id);
                         mDatabase.collection("users_list").document(user_id).update("favourite_futsal", FieldValue.arrayUnion(futsal_id));
 //                        Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
-//                        favBtn.setImageResource(R.drawable.ic_favorite_selected);
+                        favBtn.setImageResource(R.drawable.ic_favorite_selected);
 
                     }
                 })
@@ -202,7 +213,9 @@ public class FutsalIndivisualDetails extends AppCompatActivity {
                             Log.d("ALERTTEST", "onClick: YES"+user_id+"  "+futsal_id);
                             mDatabase.collection("users_list").document(user_id).update("favourite_futsal", FieldValue.arrayRemove(futsal_id));
                             //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on Yes"+user_id+"   "+futsal_id, Toast.LENGTH_SHORT).show();
+
                             favBtn.setImageResource(R.drawable.ic_favorite_selected);
+
 
                         }
                     })

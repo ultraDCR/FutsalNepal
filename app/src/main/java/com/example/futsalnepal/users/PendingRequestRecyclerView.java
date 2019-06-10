@@ -5,11 +5,13 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -65,6 +67,11 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<PendingRequ
 
     @Override
     public void onBindViewHolder(PendingRequestRecyclerView.FutsalViewHolder holder, int position) {
+
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).futsal_name);
@@ -251,6 +258,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<PendingRequ
         RatingBar ratingBar;
         ConstraintLayout layout;
         Button cancleBtn;
+        CardView cv;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -261,6 +269,7 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<PendingRequ
             ratingBar = itemView.findViewById(R.id.p_futsal_rating);
             layout = itemView.findViewById(R.id.background_pending);
             cancleBtn =itemView.findViewById(R.id.cancle_btn);
+            cv = itemView.findViewById(R.id.futsal_card_view);
 
         }
     }

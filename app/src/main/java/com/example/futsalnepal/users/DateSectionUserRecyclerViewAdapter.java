@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.example.futsalnepal.futsal.FutsalBookedRecyclerView;
@@ -53,6 +54,9 @@ public class DateSectionUserRecyclerViewAdapter extends RecyclerView.Adapter<Dat
     @Override
     public void onBindViewHolder(SectionViewHolder holder, int position) {
         Log.d("DATETEST10",""+holder+""+position);
+
+        holder.sectionLabel.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
 
         final SectionModel sectionModel = sectionModelArrayList.get(position);
         holder.sectionLabel.setText(sectionModel.getSectionLabel());

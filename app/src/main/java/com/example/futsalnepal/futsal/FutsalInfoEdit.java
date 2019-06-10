@@ -370,7 +370,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] thumbData = baos.toByteArray();
-                        StorageReference ref = fStorage.child("futsal_pic_list").child(user_id).child("logo").child("logo.png");
+                        StorageReference ref = fStorage.child("futsal_pic_list").child(user_id).child("futsal_time_logo").child("futsal_time_logo.png");
                         UploadTask image_path = ref.putBytes(thumbData);
 
                         Task<Uri> urlTask = image_path.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {

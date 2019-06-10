@@ -1,11 +1,13 @@
 package com.example.futsalnepal.users;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -43,6 +45,11 @@ public class HistoryRecyclerView extends RecyclerView.Adapter<HistoryRecyclerVie
     @Override
     public void onBindViewHolder(HistoryRecyclerView.FutsalViewHolder holder, int position) {
 
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).futsal_name);
         holder.address.setText(list.get(position).futsal_address);
@@ -56,7 +63,7 @@ public class HistoryRecyclerView extends RecyclerView.Adapter<HistoryRecyclerVie
         holder.time.setText(from_time+" - "+to_time);
 
         RequestOptions placeholderRequest = new RequestOptions();
-        placeholderRequest.placeholder(R.drawable.logo);
+        placeholderRequest.placeholder(R.drawable.futsal_time_logo);
         Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).futsal_logo).into(holder.profile);
 
         holder.ratingBar.setRating(list.get(position).overall_rating);
@@ -96,6 +103,7 @@ public class HistoryRecyclerView extends RecyclerView.Adapter<HistoryRecyclerVie
         TextView time;
         ImageView profile;
         RatingBar ratingBar;
+        CardView cv;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -104,6 +112,7 @@ public class HistoryRecyclerView extends RecyclerView.Adapter<HistoryRecyclerVie
             time =  itemView.findViewById(R.id.bh_futsal_available_time);
             profile =  itemView.findViewById(R.id.bh_futsal_profile);
             ratingBar = itemView.findViewById(R.id.bh_futsal_rating);
+            cv = itemView.findViewById(R.id.futsal_card_view);
 
         }
     }

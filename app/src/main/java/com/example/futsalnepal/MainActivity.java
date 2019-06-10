@@ -1,14 +1,22 @@
 package com.example.futsalnepal;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -18,7 +26,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +41,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.example.futsalnepal.Model.Futsal;
 import com.example.futsalnepal.futsal.FutsalHome;
@@ -38,6 +49,7 @@ import com.example.futsalnepal.users.BookingInformation;
 import com.example.futsalnepal.users.Favourite;
 import com.example.futsalnepal.users.UserInfoEdit;
 import com.example.futsalnepal.users.UserNotificationActivity;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -55,6 +67,8 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +129,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
+
+//          for generating hash key for facebook
+
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo(
+//                    "com.example.futsalnepal",
+//                    PackageManager.GET_SIGNATURES);for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//
+//        } catch (NoSuchAlgorithmException e) {
+//
+//        }
+
+
         //nav bar header elements
         View header = navigationView.getHeaderView(0);
         dUserName = header.findViewById(R.id.user_name);
@@ -138,15 +170,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String uid = mAuth.getCurrentUser().getUid();
                 Map<String,Object> tokenMap = new HashMap<>();
                 tokenMap.put("token_id", FieldValue.delete());
-                mDatabase.collection("users_list").document(uid).set(tokenMap, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mAuth.signOut();
-                        Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
-                        startActivity(signOutIntent);
-                        finish();
-                    }
-                });
+                mDatabase.collection("users_list").document(uid).set(tokenMap, SetOptions.merge());
+                LoginManager.getInstance().logOut();
+                mAuth.signOut();
+                Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(signOutIntent);
+                finish();
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        LoginManager.getInstance().logOut();
+//                        mAuth.signOut();
+//                        Intent signOutIntent = new Intent(MainActivity.this, MainActivity.class);
+//                        startActivity(signOutIntent);
+//                        finish();
+//                    }
+//                });
 
             }
         });
@@ -183,13 +222,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             DefaultSliderView sliderView = new DefaultSliderView(this);
             sliderView
                     .image(images[position])
-                    //.setScaleType(BaseSliderView.ScaleType.Fit)
+                    .setScaleType(BaseSliderView.ScaleType.Fit)
             ;
 
             sliderShow.addSlider(sliderView);
         }
 
-        sliderShow.setPresetTransformer(SliderLayout.Transformer.ZoomOutSlide);
+        sliderShow.setPresetTransformer(SliderLayout.Transformer.DepthPage);
         sliderShow.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         sliderShow.setCustomAnimation(new DescriptionAnimation());
         sliderShow.setDuration(9000);
@@ -200,14 +239,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 Intent searchIntent = new Intent(MainActivity.this, SearchLayout.class);
-                startActivity(searchIntent);
+
+                ActivityOptions options = ActivityOptions
+                        .makeSceneTransitionAnimation(MainActivity.this, Pair.create(searchBtn, "searchBtn"));
+                // start the new activity
+                startActivity(searchIntent, options.toBundle());
             }
         });
 
         //top rated futsal
         futsalList = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
-        FutsalRecycleView adapter = new FutsalRecycleView(futsalList, getApplication());
+        FutsalRecycleView adapter = new FutsalRecycleView(futsalList, this,this);
         recyclerView.setAdapter(adapter);
         //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -385,25 +428,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case R.id.action_login_btn:
-                LoginDialog dialog = new LoginDialog(MainActivity.this,this);
-                dialog.startLoginDialog();
-//                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomAlertDialog));
-//
-//                LayoutInflater inflater = this.getLayoutInflater();
-//                View dialogView = inflater.inflate(R.layout.login_signup_dialog, null);
-//                builder.setView(dialogView);
-//
-//                LoginSignupFragmentPagerAdapter adapter = new LoginSignupFragmentPagerAdapter(MainActivity.this);
-//                ViewPager viewPager = dialogView.findViewById(R.id.login_signup_view);
-//                TabLayout tabLayout =  dialogView.findViewById(R.id.login_sign_maintab);
-//                tabLayout.setupWithViewPager(viewPager);
-//                viewPager.setAdapter(adapter);
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
-//                dialog.getWindow().clearFlags(
-//                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//                                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+
+                DialogFragment newFragment = new LoginAndSignUp();
+                newFragment.show(getSupportFragmentManager(), "main activity");
+
+
 
                 return true;
             case android.R.id.home:
@@ -468,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        List<Data> data = new ArrayList<>();
 //
 //        data.add(new Data("WhiteHouse", "Kapan-3","6AM - 6PM", R.mipmap.ic_futsal_foreground,4));
-//        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.logo,2));
+//        data.add(new Data("BlackHouses", "Chabahil","9AM - 9PM", R.drawable.futsal_time_logo,2));
 //
 //        return data;
 //    }

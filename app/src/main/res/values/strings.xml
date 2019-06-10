@@ -22,4 +22,9 @@
     <string name="new_request"> New Request</string>
     <string name="default_notification_channel_id">FutsalTime_CH1</string>
     <string name="title_activity_maps">Map</string>
+
+
+    <!--facebook-->
+    <string name="facebook_app_id">333728753971664</string>
+    <string name="fb_login_protocol_scheme">fb333728753971664</string>
 </resources>

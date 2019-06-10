@@ -1,11 +1,14 @@
 package com.example.futsalnepal.futsal;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingUser;
 import com.example.futsalnepal.R;
+import com.example.futsalnepal.UserProfile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +46,11 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
     @Override
     public void onBindViewHolder(FutsalBookedRecyclerView.FutsalViewHolder holder, int position) {
 
+        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+
+        holder.layout.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+
+
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).user_full_name);
         holder.date.setText(date);
@@ -58,6 +67,12 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
         RequestOptions placeholderRequest = new RequestOptions();
         Glide.with(context).setDefaultRequestOptions(placeholderRequest).load(list.get(position).user_profile_image).into(holder.profile);
 
+        holder.layout.setOnClickListener(view ->{
+            Intent userProfile = new Intent(context, UserProfile.class);
+            userProfile.putExtra("user_id",list.get(position).user_id);
+            context.startActivity(userProfile);
+
+        });
         //animate(holder);
 
 
@@ -120,6 +135,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
         TextView time;
         TextView phone;
         ImageView profile;
+        ConstraintLayout layout;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -128,7 +144,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
             time = itemView.findViewById(R.id.a_book_time);
             profile = itemView.findViewById(R.id.a_profile_pic);
             phone = itemView.findViewById(R.id.a_book_phone);
-
+            layout = itemView.findViewById(R.id.br_background);
 
         }
     }
