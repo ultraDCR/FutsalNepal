@@ -30,6 +30,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@color/white"
+            android:scaleType="centerCrop"
             android:transitionName="futsalProfile"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

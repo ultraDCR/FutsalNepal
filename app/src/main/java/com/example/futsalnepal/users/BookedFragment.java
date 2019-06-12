@@ -182,7 +182,7 @@ public class BookedFragment extends Fragment {
                                                     futsal1.setTime(time);
                                                     futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
                                                     futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
-                                                    futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
+                                                    futsal1.setLocation(futsal_list.get(i).getLocation());
                                                     futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
                                                     futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
                                                     futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());
@@ -239,7 +239,7 @@ public class BookedFragment extends Fragment {
                                                     futsal1.setTime(time);
                                                     futsal1.setFutsal_name(futsal_list.get(i).getFutsal_name());
                                                     futsal1.setFutsal_id(futsal_list.get(i).getFutsal_id());
-                                                    futsal1.setFutsal_address(futsal_list.get(i).getFutsal_address());
+                                                    futsal1.setLocation(futsal_list.get(i).getLocation());
                                                     futsal1.setFutsal_phone(futsal_list.get(i).getFutsal_phone());
                                                     futsal1.setFutsal_logo(futsal_list.get(i).getFutsal_logo());
                                                     futsal1.setOverall_rating(futsal_list.get(i).getOverall_rating());

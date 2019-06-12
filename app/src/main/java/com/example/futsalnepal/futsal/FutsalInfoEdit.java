@@ -252,7 +252,7 @@ public class FutsalInfoEdit extends AppCompatActivity implements OnMapReadyCallb
                             Log.d("TestingData", "onComplete: " + task.getResult().get("week_end_price"));
                             String name = task.getResult().getString("futsal_name");
                             String image = task.getResult().getString("futsal_logo");
-                            //String address = task.getResult().getString("futsal_address");
+                            //String address = task.getResult().getString("-");
                             String phone = task.getResult().getString("futsal_phone");
                             open_time = task.getResult().getString("opening_hour");
                             close_time = task.getResult().getString("closing_hour");

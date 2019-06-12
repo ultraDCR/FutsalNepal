@@ -75,7 +75,9 @@ public class PendingRequestRecyclerView extends RecyclerView.Adapter<PendingRequ
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).futsal_name);
-        holder.address.setText(list.get(position).futsal_address);
+        Map<String,Object> futsal_address = list.get(position).location;
+        String location =futsal_address.get("vdc").toString()+", "+futsal_address.get("district").toString();
+        holder.address.setText(location);
         String from_time = list.get(position).time;
 
         //setting from and to time in time

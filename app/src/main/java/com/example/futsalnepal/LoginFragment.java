@@ -193,7 +193,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
 //                prg_layout.setVisibility(View.VISIBLE);
-                showCustomLoadingDialog(view);
+                loading.showDialog();
                 String email = name.getText().toString();
                 String password = pass.getText().toString();
 
@@ -212,7 +212,7 @@ public class LoginFragment extends Fragment {
                     login_userId(email,password);
                 }
                 else if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || usertype.equals("None")) {
-                    prg_layout.setVisibility(View.GONE);
+                    loading.hideDialog();
                     if(TextUtils.isEmpty(email)){
                         name.setError("Field required");
                     }
@@ -223,7 +223,7 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    prg_layout.setVisibility(View.GONE);
+                    loading.hideDialog();
                     Toast.makeText(getContext(), "Some error occur. Check you information and try again.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -248,7 +248,7 @@ public class LoginFragment extends Fragment {
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            prg_layout.setVisibility(View.GONE);
+                            loading.hideDialog();
                             Log.w("signIn", "signInWithEmail:failure", task.getException());
                             Toast.makeText(context, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -303,7 +303,7 @@ public class LoginFragment extends Fragment {
                             Log.d("GoogleSignIn", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             boolean isfirst = task.getResult().getAdditionalUserInfo().isNewUser();
-                            prg_layout.setVisibility(View.VISIBLE);
+                            loading.showDialog();
                             if(isfirst){
                                 googleSignUp(user);
                             }else{
@@ -339,7 +339,7 @@ public class LoginFragment extends Fragment {
                                 fDatabase.collection("users_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        prg_layout.setVisibility(View.GONE);
+                                        loading.hideDialog();
                                         Intent signin = new Intent(context, MainActivity.class);
                                         context.startActivity(signin);
                                         ((Activity) context).finish();
@@ -360,7 +360,7 @@ public class LoginFragment extends Fragment {
                                 fDatabase.collection("futsal_list").document(user_id).update(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        prg_layout.setVisibility(View.GONE);
+                                        loading.hideDialog();
                                         Intent signin = new Intent(context, FutsalHome.class);
                                         context.startActivity(signin);
                                         ((Activity) context).finish();
@@ -370,14 +370,14 @@ public class LoginFragment extends Fragment {
                         });
                     }
                 }else{
-                    prg_layout.setVisibility(View.GONE);
+                    loading.hideDialog();
                     mAuth.signOut();
                     Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
                             Toast.LENGTH_SHORT).show();
                 }
 
             } else {
-                prg_layout.setVisibility(View.GONE);
+                loading.hideDialog();
                 Toast.makeText(context, "Something went wrong",
                         Toast.LENGTH_SHORT).show();
 
@@ -412,13 +412,13 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            prg_layout.setVisibility(View.GONE);
+                            loading.hideDialog();
                             Intent futsalUserIntent = new Intent(context, UserInfoEdit.class);
                             context.startActivity(futsalUserIntent);
                             ((Activity) context).finish();
 
                         } else {
-                            prg_layout.setVisibility(View.GONE);
+                            loading.hideDialog();
                             String error = task.getException().getMessage();
                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
@@ -431,13 +431,13 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            prg_layout.setVisibility(View.GONE);
+                            loading.hideDialog();
                             Intent futsalUserIntent = new Intent(context, FutsalInfoEdit.class);
                             context.startActivity(futsalUserIntent);
                             ((Activity) context).finish();
 
                         } else {
-                            prg_layout.setVisibility(View.GONE);
+                            loading.hideDialog();
                             String error = task.getException().getMessage();
                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
@@ -463,7 +463,7 @@ public class LoginFragment extends Fragment {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             boolean isfirst = task.getResult().getAdditionalUserInfo().isNewUser();
-                            prg_layout.setVisibility(View.VISIBLE);
+                            loading.showDialog();
                             if(isfirst){
                                 googleSignUp(user);
                             }else{

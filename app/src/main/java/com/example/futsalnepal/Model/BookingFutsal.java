@@ -1,9 +1,11 @@
 package com.example.futsalnepal.Model;
 
+import java.util.Map;
+
 public class BookingFutsal {
     public String futsal_id;
     public String futsal_name;
-    public String futsal_address;
+    public Map<String, Object> location;
     public String opening_hour;
     public String closing_hour;
     public String futsal_phone;
@@ -16,10 +18,10 @@ public class BookingFutsal {
 
 
 
-    public BookingFutsal(String futsal_id, String futsal_name, String futsal_address, String opening_hour, String closing_hour, String futsal_phone, float overall_rating, String time) {
+    public BookingFutsal(String futsal_id, String futsal_name,  Map<String, Object> location, String opening_hour, String closing_hour, String futsal_phone, float overall_rating, String time) {
 
         this.futsal_name = futsal_name;
-        this.futsal_address = futsal_address;
+        this.location = location;
         this.opening_hour = opening_hour;
         this.closing_hour = closing_hour;
         this.futsal_phone = futsal_phone;
@@ -36,12 +38,12 @@ public class BookingFutsal {
         this.futsal_name = futsal_name;
     }
 
-    public String getFutsal_address() {
-        return futsal_address;
+    public Map<String, Object> getLocation() {
+        return location;
     }
 
-    public void setFutsal_address(String futsal_address) {
-        this.futsal_address = futsal_address;
+    public void setLocation(Map<String, Object> location) {
+        this.location = location;
     }
 
     public String getOpening_hour() {

@@ -38,7 +38,7 @@ import java.util.Map;
  * A simple {@link Fragment} subclass.
  */
 public class SignUpFragment extends Fragment {
-
+    private Loading loading;
     private Context context;
     private FirebaseAuth mAuth;
     private int resId = 0;
@@ -66,11 +66,12 @@ public class SignUpFragment extends Fragment {
         RadioGroup signup_type_radio = view.findViewById(R.id.radio_group);
         Button usignup = view.findViewById(R.id.signup_btn);
         ProgressBar signup_prog = view.findViewById(R.id.signup_pbar);
+        loading = new Loading(getActivity());
 
         usignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signup_prog.setVisibility(View.VISIBLE);
+                loading.showDialog();
                 String email = name.getText().toString();
                 String password = pass.getText().toString();
                 String passPattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}";
@@ -95,17 +96,16 @@ public class SignUpFragment extends Fragment {
                         else{
                             Toast.makeText(context, "Password must contain more than 6 character with atleast one uppercase, one special character and no space.",
                                     Toast.LENGTH_LONG).show();
-                            signup_prog.setVisibility(View.GONE);
-
+                            loading.hideDialog();
                         }
                     }
                     else{
-                        signup_prog.setVisibility(View.GONE);
+                        loading.hideDialog();
                         cpass.setError("Doesn't match with password");
                     }
                 }
                 else if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)|| TextUtils.isEmpty(confirm_password) || type.equals("None")) {
-                    signup_prog.setVisibility(View.GONE);
+                    loading.hideDialog();
                     if(TextUtils.isEmpty(email)){
                         name.setError("Field required");
                     }
@@ -120,7 +120,7 @@ public class SignUpFragment extends Fragment {
                     }
 
                 } else {
-                    signup_prog.setVisibility(View.GONE);
+                    loading.hideDialog();
                     Toast.makeText(context, "Some error occure. Check you information and try again.",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -147,13 +147,13 @@ public class SignUpFragment extends Fragment {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
-                                            signup_prog.setVisibility(View.GONE);
+                                            loading.hideDialog();
                                             Intent futsalUserIntent = new Intent(context, UserInfoEdit.class);
                                             context.startActivity(futsalUserIntent);
                                             ((Activity) context).finish();
 
                                         } else {
-                                            signup_prog.setVisibility(View.GONE);
+                                            loading.hideDialog();
                                             String error = task.getException().getMessage();
                                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
@@ -166,13 +166,13 @@ public class SignUpFragment extends Fragment {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
-                                            signup_prog.setVisibility(View.GONE);
+                                            loading.hideDialog();
                                             Intent futsalUserIntent = new Intent(context, FutsalInfoEdit.class);
                                             context.startActivity(futsalUserIntent);
                                             ((Activity) context).finish();
 
                                         } else {
-                                            signup_prog.setVisibility(View.GONE);
+                                            loading.hideDialog();
                                             String error = task.getException().getMessage();
                                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
@@ -183,7 +183,7 @@ public class SignUpFragment extends Fragment {
                             }
 
                         } else {
-                            signup_prog.setVisibility(View.GONE);
+                            loading.hideDialog();
                             // If sign in fails, display a message to the user.
                             Toast.makeText(context, "Authentication failed."+task.getException(),
                                     Toast.LENGTH_LONG).show();
@@ -195,7 +195,7 @@ public class SignUpFragment extends Fragment {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                signup_prog.setVisibility(View.GONE);
+                loading.hideDialog();
                 Toast.makeText(context, "Connection failed."+e,
                         Toast.LENGTH_LONG).show();
             }

@@ -20,6 +20,7 @@ import com.example.futsalnepal.R;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class BookedRecyclerView extends RecyclerView.Adapter<BookedRecyclerView.FutsalViewHolder>{
     List<BookingFutsal> list = Collections.emptyList();
@@ -47,7 +48,9 @@ public class BookedRecyclerView extends RecyclerView.Adapter<BookedRecyclerView.
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(list.get(position).futsal_name);
-        holder.address.setText(list.get(position).futsal_address);
+        Map<String,Object> futsal_address = list.get(position).location;
+        String location =futsal_address.get("vdc").toString()+", "+futsal_address.get("district").toString();
+        holder.address.setText(location);
         holder.time.setText(list.get(position).futsal_phone);
 
         String from_time = list.get(position).time;

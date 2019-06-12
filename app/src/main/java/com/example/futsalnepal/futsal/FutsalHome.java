@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,8 +18,13 @@ import android.widget.TextView;
 
 import com.example.futsalnepal.MainActivity;
 import com.example.futsalnepal.R;
+import com.example.futsalnepal.users.UserInfoEdit;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -96,6 +102,35 @@ public class FutsalHome extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null) {
+            user_id = mAuth.getCurrentUser().getUid();
+            fDatabase.collection("futsal_list").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.d("TestingInfo4", "onComplete: "+task);
+                if (task.isSuccessful()) {
+                    Log.d("TestingInfo4", "onComplete: "+ task.getResult().exists());
+                    if (task.getResult().exists()) {
+                        if (task.getResult().getString("futsal_phone") == null) {
+                            Intent futsal_info_edit = new Intent(FutsalHome.this, FutsalInfoEdit.class);
+                            startActivity(futsal_info_edit);
+                            finish();
+                        }
+
+                    }
+                }
+            }
+        });
+
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Log.d("TestingInfo4", "onComplete: "+ task.getResult().exists());
                                         if (task.getResult().exists()) {
                                             Log.d("TestingInfo", "onComplete: " + task.getResult().getString("user_full_name"));
-                                            if (task.getResult().getString("user_full_name") == null) {
+                                            if (task.getResult().getString("user_phone_number") == null) {
                                                 Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
                                                 startActivity(user_info_edit);
                                                 finish();
