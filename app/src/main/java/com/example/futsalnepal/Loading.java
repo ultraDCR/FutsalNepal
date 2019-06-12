@@ -2,6 +2,8 @@ package com.example.futsalnepal;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Window;
 import android.widget.ImageView;
 
@@ -23,7 +25,7 @@ public class Loading {
         //...set cancelable false so that it's never get hidden
         dialog.setCancelable(false);
         //...that's the layout i told you will inflate later
-        dialog.setContentView(R.layout.loafing_dialog);
+        dialog.setContentView(R.layout.loading_dialog);
 
         //...initialize the imageView form infalted layout
         ImageView gifImageView = dialog.findViewById(R.id.custom_loading_imageView);
@@ -44,6 +46,7 @@ public class Loading {
 
         //...finaly show it
         dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
     }
 
     //..also create a method which will hide the dialog when some work is done
