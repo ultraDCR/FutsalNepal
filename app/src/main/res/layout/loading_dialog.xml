@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/custom_loading_imageView"
         android:layout_width="130dp"
         android:layout_height="130dp"
@@ -13,5 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/loading_anim" />
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="loading_anim.json"
+        app:lottie_loop="true" />
 </android.support.constraint.ConstraintLayout>

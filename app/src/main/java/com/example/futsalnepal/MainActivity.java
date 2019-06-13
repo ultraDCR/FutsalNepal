@@ -49,6 +49,7 @@ import com.example.futsalnepal.users.BookingInformation;
 import com.example.futsalnepal.users.Favourite;
 import com.example.futsalnepal.users.UserInfoEdit;
 import com.example.futsalnepal.users.UserNotificationActivity;
+import com.example.futsalnepal.users.UserSetting;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent settingIntent = new Intent(MainActivity.this, UserInfoEdit.class);
+                Intent settingIntent = new Intent(MainActivity.this, UserSetting.class);
                 startActivity(settingIntent);
             }
         });

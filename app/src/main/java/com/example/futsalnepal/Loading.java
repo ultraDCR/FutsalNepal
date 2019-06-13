@@ -28,21 +28,21 @@ public class Loading {
         dialog.setContentView(R.layout.loading_dialog);
 
         //...initialize the imageView form infalted layout
-        ImageView gifImageView = dialog.findViewById(R.id.custom_loading_imageView);
-
-        /*
-        it was never easy to load gif into an ImageView before Glide or Others library
-        and for doing this we need DrawableImageViewTarget to that ImageView
-        */
-        DrawableImageViewTarget imageViewTarget = new DrawableImageViewTarget(gifImageView);
-
-        //...now load that gif which we put inside the drawble folder here with the help of Glide
-
-        Glide.with(activity)
-                .load(R.drawable.loading_anim)
-                .placeholder(R.drawable.loading_anim)
-                .centerCrop()
-                .into(imageViewTarget);
+//        ImageView gifImageView = dialog.findViewById(R.id.custom_loading_imageView);
+//
+//        /*
+//        it was never easy to load gif into an ImageView before Glide or Others library
+//        and for doing this we need DrawableImageViewTarget to that ImageView
+//        */
+//        DrawableImageViewTarget imageViewTarget = new DrawableImageViewTarget(gifImageView);
+//
+//        //...now load that gif which we put inside the drawble folder here with the help of Glide
+//
+//        Glide.with(activity)
+//                .load(R.drawable.loading_anim)
+//                .placeholder(R.drawable.loading_anim)
+//                .centerCrop()
+//                .into(imageViewTarget);
 
         //...finaly show it
         dialog.show();
