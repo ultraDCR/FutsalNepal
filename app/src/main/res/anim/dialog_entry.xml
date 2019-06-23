@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
+
+
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <alpha android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="300" />
+        android:duration="100" />
 
     <scale android:fromXScale="0.0"
         android:fromYScale="0.0"
         android:toXScale="1.020"
         android:toYScale="1.020"
-        android:duration="300"
+        android:duration="100"
         android:fillBefore="false"
         android:pivotX="100%"/>
     <set android:interpolator="@android:anim/accelerate_interpolator"
-    android:startOffset="300">
+    android:startOffset="100">
         <scale
             android:fromXScale="1.020"
             android:toXScale="1.0"
