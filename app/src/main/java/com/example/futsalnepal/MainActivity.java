@@ -204,14 +204,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nav_Menu.findItem(R.id.book_info_menu).setVisible(true);
             nav_Menu.findItem(R.id.favourite_menu).setVisible(true);
             nav_Menu.findItem(R.id.notification_menu).setVisible(true);
+            settingBtn.setVisibility(View.VISIBLE);
 
             logOutBtn.setVisibility(View.VISIBLE);
         }else{
             nav_Menu.findItem(R.id.book_info_menu).setVisible(false);
             nav_Menu.findItem(R.id.favourite_menu).setVisible(false);
             nav_Menu.findItem(R.id.notification_menu).setVisible(false);
+            settingBtn.setVisibility(View.GONE);
 
-            logOutBtn.setVisibility(View.INVISIBLE);
+            logOutBtn.setVisibility(View.GONE);
         }
 
 
