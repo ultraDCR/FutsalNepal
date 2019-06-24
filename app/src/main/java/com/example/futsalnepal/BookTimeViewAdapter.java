@@ -92,11 +92,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
         holder.book_time.setText(list.get(position).book_time);
         Log.d("ARRAY4", "onBindViewHolder: "+futsal_id+"  "+date);
         boolean pastTime = holder.pastTimeDisable(list.get(position).book_time, date);
-        if(pastTime) {
-            holder.firstLoadPendingData(list.get(position).book_time);
-
-
-
+        holder.firstLoadPendingData(list.get(position).book_time,pastTime);
             holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -192,7 +188,6 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
                 }
             });
-        }
 
     }
 
@@ -234,6 +229,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
 
         TextView book_time;
+        Button pastTimeLayout;
         Button bookBtn;
         boolean own_pending = false;
         ConstraintLayout layout;
@@ -245,6 +241,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
             book_time =  itemView.findViewById(R.id.book_time);
             bookBtn =  itemView.findViewById(R.id.book_time_btn);
             layout = itemView.findViewById(R.id.book_time_layout);
+            pastTimeLayout = itemView.findViewById(R.id.transparent_layer);
 
         }
 
@@ -256,7 +253,10 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
             own_pending = false;
 
         }
-        public void firstLoadPendingData(String bookdate){
+        public void firstLoadPendingData(String bookdate,boolean pastTime){
+            if(!pastTime){
+                pastTimeLayout.setVisibility(View.VISIBLE);
+            }
             mDatabase.collection("futsal_list").document(futsal_id)
                     .collection("newrequest").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -282,9 +282,12 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                             bookBtn.setClickable(true);
                                             bookBtn.setBackgroundResource(R.drawable.own_pending_btn);
                                             own_pending = true;
+                                            if(!pastTime){
+                                                pastTimeLayout.setVisibility(View.VISIBLE);
+                                            }
 
                                         }
-                                        firstLoadBookedData(bookdate);
+                                        firstLoadBookedData(bookdate,pastTime);
                                     }
                                 }else {
 //                                    if(timeMap.size() == 0)
@@ -292,7 +295,10 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                     bookBtn.setBackgroundResource(R.drawable.input_field);
                                     bookBtn.setText("Book Now");
                                     bookBtn.setClickable(true);
-                                    firstLoadBookedData(bookdate);
+                                    firstLoadBookedData(bookdate,pastTime);
+                                }
+                                if(!pastTime){
+                                    pastTimeLayout.setVisibility(View.VISIBLE);
                                 }
 
 
@@ -304,8 +310,10 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         }
 
-        public void firstLoadBookedData(String book_time) {
-
+        public void firstLoadBookedData(String book_time,boolean pastTime) {
+            if(!pastTime){
+               pastTimeLayout.setVisibility(View.VISIBLE);
+            }
             mDatabase.collection("futsal_list").document(futsal_id)
                     .collection("booked").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -320,6 +328,9 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                     bookBtn.setBackgroundResource(R.drawable.already_booked_button);
                                     bookBtn.setText("Already Booked");
                                     bookBtn.setClickable(false);
+                                    if(!pastTime){
+                                        pastTimeLayout.setVisibility(View.VISIBLE);
+                                    }
                                     if (mauth.getCurrentUser() != null) {
                                         String uid = mauth.getCurrentUser().getUid();
                                         Log.d("MAP2", "onComplete: " + uid + "      " + user_id);
@@ -328,7 +339,9 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
                                             bookBtn.setBackgroundResource(R.drawable.your_booking_button);
                                             bookBtn.setText("Booked");
                                             bookBtn.setClickable(false);
-
+                                            if(!pastTime){
+                                                pastTimeLayout.setVisibility(View.VISIBLE);
+                                            }
                                         }
                                     }
                                 }

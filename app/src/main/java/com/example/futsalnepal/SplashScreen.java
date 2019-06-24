@@ -21,7 +21,7 @@ public class SplashScreen extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                viewanim.startAnimation(zoomin);
+                
                 Intent main = new Intent(SplashScreen.this, MainActivity.class);
                 startActivity(main);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

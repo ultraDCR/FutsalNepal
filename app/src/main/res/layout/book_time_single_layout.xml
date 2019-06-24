@@ -39,9 +39,21 @@
         android:background="@drawable/green_strok_button"
         android:text="Book now"
         android:textColor="@color/colorAccent"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/divider3"
         app:layout_constraintTop_toBottomOf="@+id/book_time" />
+
+    <Button
+        android:id="@+id/transparent_layer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/halfTransparent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/book_time_btn"
+        app:layout_constraintEnd_toEndOf="@+id/book_time_btn"
+        app:layout_constraintStart_toStartOf="@+id/book_time_btn"
+        app:layout_constraintTop_toTopOf="@+id/book_time_btn" />
 
 </android.support.constraint.ConstraintLayout>
