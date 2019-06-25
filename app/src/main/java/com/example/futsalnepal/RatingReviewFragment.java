@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -169,6 +170,7 @@ public class RatingReviewFragment extends Fragment {
         users_list = new ArrayList<>();
         review_list = new ArrayList<>();
         RecyclerView recyclerView = view.findViewById(R.id.review_rview);
+        recyclerView.setAnimation(AnimationUtils.loadAnimation(getContext(),R.anim.recyclerview));
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         ReviewRecyclerView adapter = new ReviewRecyclerView(users_list, review_list, getContext());
         recyclerView.setAdapter(adapter);
@@ -343,5 +345,6 @@ public class RatingReviewFragment extends Fragment {
                 break;
         }
     }
+
 
 }

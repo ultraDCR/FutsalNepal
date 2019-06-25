@@ -372,6 +372,7 @@ public class LoginFragment extends Fragment {
                 }else{
                     loading.hideDialog();
                     mAuth.signOut();
+                    LoginManager.getInstance().logOut();
                     Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
                             Toast.LENGTH_SHORT).show();
                 }

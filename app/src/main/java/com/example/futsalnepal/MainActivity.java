@@ -32,6 +32,7 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -253,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //top rated futsal
         futsalList = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.top_rated_futsal);
+        recyclerView.setAnimation(AnimationUtils.loadAnimation(this,R.anim.recyclerview));
         FutsalRecycleView adapter = new FutsalRecycleView(futsalList, this,this);
         recyclerView.setAdapter(adapter);
         //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);

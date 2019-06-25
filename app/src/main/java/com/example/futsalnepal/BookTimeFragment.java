@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
@@ -124,7 +125,9 @@ public class BookTimeFragment extends Fragment {
     }
 
     private void loadRecycler(View view, String date1) {
+
         RecyclerView recyclerView =  view.findViewById(R.id.book_time_rview);
+        recyclerView.setAnimation(AnimationUtils.loadAnimation(getContext(),R.anim.recyclerview));
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         BookTimeViewAdapter adapter = new BookTimeViewAdapter(timeInHr,date,futsal_id,getContext(),this);
         recyclerView.setAdapter(adapter);
