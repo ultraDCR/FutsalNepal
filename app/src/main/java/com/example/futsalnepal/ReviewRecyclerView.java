@@ -51,9 +51,9 @@ public class ReviewRecyclerView extends RecyclerView.Adapter<com.example.futsaln
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.setIsRecyclable(false);
-        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
-
-        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+//        holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+//
+        holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.book_time_animation));
 
 
         String user_name = users_list.get(position).getUser_full_name();

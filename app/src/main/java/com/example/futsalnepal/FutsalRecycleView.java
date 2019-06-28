@@ -51,9 +51,9 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
 
             final String futsalId = list.get(position).FutsalId;
 
-            holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
-
-            holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
+//            holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
+//
+//            holder.cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
 
             holder.setFutsalName(list.get(position).getFutsal_name());
             holder.setFutsalAddress(list.get(position).getLocation());
@@ -76,6 +76,16 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
                     // start the new activity
                     context.startActivity(futsal);
                     activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }
+            });
+            holder.bookNow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent futsal = new Intent(context, FutsalIndivisualDetails.class);
+                    futsal.putExtra("futsal_id", futsalId);
+                    // start the new activity
+                    context.startActivity(futsal);
+                    activity.overridePendingTransition(android.R.animator.fade_in,android.R.animator.fade_out);
                 }
             });
 
@@ -124,6 +134,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         public FutsalViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
+            bookNow = mView.findViewById(R.id.book_now_btn);
 
             cv =  itemView.findViewById(R.id.futsal_card_view);
             profile =  itemView.findViewById(R.id.futsal_profile);
@@ -159,13 +170,12 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
         }
 
         public void setDistance(double distance) {
-            bookNow = mView.findViewById(R.id.book_now_btn);
             distancetxt =  mView.findViewById(R.id.distance);
             String d;
             if(distance <1000) {
                 d = (new DecimalFormat("#").format(distance))+"M far";
             }else{
-                d = (new DecimalFormat("#.#").format(distance/1000))+"M far";
+                d = (new DecimalFormat("#.#").format(distance/1000))+"KM far";
             }
             bookNow.setVisibility(View.GONE);
             distancetxt.setVisibility(View.VISIBLE);

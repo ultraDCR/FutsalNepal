@@ -49,7 +49,7 @@
         android:id="@+id/transparent_layer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/halfTransparent"
+        android:background="@drawable/past_time_button"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/book_time_btn"
         app:layout_constraintEnd_toEndOf="@+id/book_time_btn"
