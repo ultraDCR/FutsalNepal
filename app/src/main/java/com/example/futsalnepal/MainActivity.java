@@ -156,14 +156,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dUserPhone = header.findViewById(R.id.user_number);
         dUserPic = header.findViewById(R.id.user_image);
 
+        dUserPic.setOnClickListener(v ->{
+            user_id = mAuth.getCurrentUser().getUid();
+            Intent profile = new Intent(MainActivity.this,UserProfile.class);
+            profile.putExtra("user_id",user_id);
+            startActivity(profile);
+        });
         settingBtn = header.findViewById(R.id.setting_btn);
 
-        settingBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent settingIntent = new Intent(MainActivity.this, UserSetting.class);
-                startActivity(settingIntent);
-            }
+        settingBtn.setOnClickListener(v -> {
+            Intent settingIntent = new Intent(MainActivity.this, UserSetting.class);
+            startActivity(settingIntent);
         });
         logOutBtn = header.findViewById(R.id.logout_btn);
         logOutBtn.setOnClickListener(new View.OnClickListener() {

@@ -85,7 +85,7 @@ public class FutsalRecycleView extends RecyclerView.Adapter<FutsalRecycleView.Fu
                     futsal.putExtra("futsal_id", futsalId);
                     // start the new activity
                     context.startActivity(futsal);
-                    activity.overridePendingTransition(android.R.animator.fade_in,android.R.animator.fade_out);
+                    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
             });
 

@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,6 +61,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -71,7 +74,7 @@ import javax.annotation.Nullable;
 
 import static com.example.futsalnepal.AppConstants.LOCATION_REQUEST;
 
-public class SearchLayout extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
+public class SearchLayout extends AppCompatActivity implements com.example.futsalnepal.TimePickerDialog.EditDialogListener {
     DatePickerDialog dpd;
     private Location currentLocation;
     private boolean isGPS =false;
@@ -137,20 +140,22 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         timeSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
-                TimePickerDialog tpd = TimePickerDialog.newInstance(
-                        SearchLayout.this,
-                        now.get(Calendar.HOUR_OF_DAY),
-                        now.get(Calendar.MINUTE),
-                        false
-                );
-                tpd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        Log.d("TimePicker", "Dialog was cancelled");
-                    }
-                });
-                tpd.show(getFragmentManager(), "Timepickerdialog");
+//                Calendar now = Calendar.getInstance();
+//                TimePickerDialog tpd = TimePickerDialog.newInstance(
+//                        SearchLayout.this,
+//                        now.get(Calendar.HOUR_OF_DAY),
+//                        now.get(Calendar.MINUTE),
+//                        false
+//                );
+//                tpd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialogInterface) {
+//                        Log.d("TimePicker", "Dialog was cancelled");
+//                    }
+//                });
+//
+                DialogFragment newFragment = com.example.futsalnepal.TimePickerDialog.newInstance();
+                newFragment.show(getSupportFragmentManager(),"timepicker");
             }
         });
         Calendar now = Calendar.getInstance();
@@ -257,6 +262,20 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResult) {
+        switch (requestCode) {
+            case LOCATION_REQUEST:
+                if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
+                    distanceCalculationAndSort();
+                } else {
+                    Toast.makeText(SearchLayout.this,"Location permission missing",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    //Dstance calculation and sort start
     private void distanceCalculationAndSort() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(SearchLayout.this);
@@ -292,8 +311,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         for(Futsal f : futsalList) {
             double distance = (distance((double) f.getLocation().get("latitude"), (double) f.getLocation().get("longitude"), latu, lang))*1000;
             f.setDistance(distance);
-
-
         }
         Collections.sort(futsalList,
                 (o1, o2) -> Double.valueOf(o1.getDistance()).compareTo(Double.valueOf(o2.getDistance()))
@@ -311,10 +328,13 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         dist = Math.acos(dist);
         dist = rad2deg(dist);
         dist = dist * 60 * 1.1515;
+        Log.d("DISTANCE", "distance: "+dist);
         return (dist);
+
     }
 
     private double deg2rad(double deg) {
+
         return (deg * Math.PI / 180.0);
     }
 
@@ -322,10 +342,16 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         return (rad * 180.0 / Math.PI);
     }
 
+//    End of distance calculaion and sort
+
     @Override
     protected void onStart() {
         super.onStart();
         findViewById( R.id.search_views ).requestFocus();
+        if (ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(SearchLayout.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(SearchLayout.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
+            return;
+        }
     }
 
     public void SearchItem(){
@@ -333,32 +359,61 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         Log.d("SEARCH", "SearchItem: "+vdc+"   "+distric+"   "+provienc);
         String searchTxt = searchByName.getText().toString().toLowerCase();
         String location = searchByLocation.getText().toString();
-        if(!searchTxt.equals("")) {
-            newList.clear();
-            for (Futsal f : futsalList) {
-                if (f.getFutsal_name().toLowerCase().contains(searchTxt)) {
-                    Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
-                    Futsal fut = searchByLocation(f,1);
-                    if(fut != null) {
-                        dateFilter(fut);
-                    }else{
-                        adapter.notifyDataSetChanged();
-                    }
-
-                }
-            }
-        }else {
-            newList.clear();
-            for (Futsal f : futsalList) {
-                Log.d("SEARCH", "SearchItem: " + f.getLocation() + "   " + provienc);
-                Futsal fut = searchByLocation(f,2);
-                if(fut != null) {
-                    dateFilter(fut);
-                }else{
-                    adapter.notifyDataSetChanged();
-                }
-            }
+        String dateSearch = date;
+        Futsal f1;
+        newList.clear();
+        for (Futsal f : futsalList) {
+            f1= textSearch(searchTxt,f);
+            if(f1!=null)
+                f1 = searchByLocation(f1, 2);
+            if(f1 != null)
+                dateFilter(f1);
         }
+
+//        if(!searchTxt.equals("")) {
+//            newList.clear();
+//            for (Futsal f : futsalList) {
+//                if (f.getFutsal_name().toLowerCase().contains(searchTxt)) {
+//                    Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
+//                    Futsal fut = searchByLocation(f,2);
+//                    if(fut != null) {
+//                        dateFilter(fut);
+//                    }else{
+//                        adapter.notifyDataSetChanged();
+//                    }
+//
+//                }
+//            }
+//        }else if(provienc.equals("-- select the province --" ) && searchTxt.equals("") ) {
+//            newList.clear();
+//            for (Futsal f : futsalList) {
+//                Log.d("SEARCH", "SearchItem: " + f.getLocation() + "   " + provienc);
+//                    dateFilter(f);
+//
+////                    adapter.notifyDataSetChanged();
+//
+//            }
+//        }
+//        else{
+//            newList.clear();
+//            for (Futsal f : futsalList) {
+//                Log.d("SEARCH", "SearchItem: " + f.getLocation() + "   " + provienc);
+//                Futsal fut = searchByLocation(f,2);
+//                if(fut != null) {
+//                    dateFilter(fut);
+//                }else{
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
+//        }
+    }
+
+    private Futsal textSearch(String searchTxt, Futsal f) {
+        if (f.getFutsal_name().toLowerCase().contains(searchTxt)) {
+            Log.d("SEARCH", "SearchItem: "+f.getLocation()+"   "+provienc);
+            return f;
+        }
+        return null;
     }
 
 
@@ -375,8 +430,7 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
                 timeList.remove(time);
             }
         }
-//        List<String> newTimeArray = new ArrayList<>();
-//        newTimeArray = timeList;
+
         int number = 0;
         List<String> inputTime = new ArrayList<>();
         if (fromTime != null && toTime != null) {
@@ -497,7 +551,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
             }else{
                 return null;
             }
-        }else if (provienc.equals("-- select the province --" ) && i==1){
+        }
+        else if (provienc.equals("-- select the province --" )){
             return f;
         }
         return null;
@@ -511,25 +566,26 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
     }
 
 
-    @Override
-    public void onTimeSet(RadialPickerLayout view, int hourOfDay,int minute, int hourOfDayEnd, int minuteEnd) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("ha",Locale.US);
-        Date date1 ,date2 ;
-        try {
-            date1 = inputFormat.parse(""+hourOfDay);
-            fromTime = outputFormat.format(date1);
-            date2 = inputFormat.parse(""+hourOfDayEnd);
-            toTime = outputFormat.format(date2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//    @Override
+//    public void onTimeSet(RadialPickerLayout view, int hourOfDay,int minute, int hourOfDayEnd, int minuteEnd) {
+//        SimpleDateFormat inputFormat = new SimpleDateFormat("HH");
+//        SimpleDateFormat outputFormat = new SimpleDateFormat("ha",Locale.US);
+//        Date date1 ,date2 ;
+//        try {
+//            date1 = inputFormat.parse(""+hourOfDay);
+//            fromTime = outputFormat.format(date1);
+//            date2 = inputFormat.parse(""+hourOfDayEnd);
+//            toTime = outputFormat.format(date2);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        String time = fromTime+" - "+toTime;
+//        timeSearch.setText(time);
+//        SearchItem();
+//    }
 
-        String time = fromTime+" - "+toTime;
-        timeSearch.setText(time);
-        SearchItem();
-    }
-
+    //Start of location spinner
     private void loadLocatonSpinner() {
 
         String hello = loadJSONFromAsset(SearchLayout.this);
@@ -693,6 +749,8 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         keys.addAll(keysFromObj);
         return keys;
     }
+//end of location spinner
+
 
     public static ArrayList<String> makeList(Iterator<String> iter) {
         ArrayList<String> list = new ArrayList<String>();
@@ -741,10 +799,6 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
         int closeIdx=-1;
 
         Log.d("HELLO@32", "makeTimeArray: "+timeArray.indexOf(currentTime));
-
-        if(type.equals("input")) {
-
-        }
         if(type.equals("time")) {
             if(currentDate.equals(date)) {
                 openIdx = timeArray.indexOf(currentTime);
@@ -768,16 +822,18 @@ public class SearchLayout extends AppCompatActivity implements TimePickerDialog.
 
     }
 
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResult) {
-        switch (requestCode) {
-            case LOCATION_REQUEST:
-                if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
-                    distanceCalculationAndSort();
-                } else {
-                    Toast.makeText(SearchLayout.this,"Location permission missing",Toast.LENGTH_SHORT).show();
-                }
-                break;
+    public void updateResult(String from, String to) {
+        fromTime = from;
+        toTime = to;
+        String time;
+        if(fromTime == null&& toTime==null){
+           time = "Any Time";
+        }else {
+            time = fromTime + " - " + toTime;
         }
+        timeSearch.setText(time);
+        SearchItem();
     }
 }
