@@ -1,6 +1,7 @@
 package com.example.futsalnepal.futsal;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -38,7 +40,7 @@ public class FutsalProfile extends Fragment {
 
     private TextView fPhone, fAddress,fName, fclose, fopen, wPriceM,wPriceD, wPriceE, wePriceM,wePriceD, wePriceE;
     private CircleImageView fLogo;
-    private ImageView favBtn;
+    private Button editBtn;
     private String futsal_id;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
@@ -68,6 +70,7 @@ public class FutsalProfile extends Fragment {
         fAddress = view.findViewById(R.id.f_address);
         fLogo = view.findViewById(R.id.f_logo);
         fName  = view.findViewById(R.id.f_name);
+        editBtn = view.findViewById(R.id.edit_btn);
 
         fclose = view.findViewById(R.id.closing_time);
         fopen = view.findViewById(R.id.opening_time);
@@ -77,6 +80,10 @@ public class FutsalProfile extends Fragment {
         wePriceM = view.findViewById(R.id.fwe_morning_price);
         wePriceD = view.findViewById(R.id.fwe_day_price);
         wePriceE = view.findViewById(R.id.fwe_evening_price);
+        editBtn.setOnClickListener(v ->{
+            Intent settingIntent = new Intent(getActivity(), FutsalInfoEdit.class);
+            startActivity(settingIntent);
+        });
 
         if(mAuth.getCurrentUser() != null) {
             futsal_id = mAuth.getCurrentUser().getUid();

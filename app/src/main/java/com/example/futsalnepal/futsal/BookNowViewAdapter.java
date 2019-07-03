@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.futsalnepal.Model.BookTime;
 import com.example.futsalnepal.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -81,8 +82,6 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
         boolean pastTime = holder.pastTimeDisable(list.get(position).book_time, date);
         if(pastTime) {
             holder.firstLoadPendingData(list.get(position).book_time);
-            holder.firstLoadBookedData(list.get(position).book_time);
-
 
             holder.bookBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -136,8 +135,12 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+
                                         mDatabase.collection("futsal_list").document(futsal_id)
-                                                .collection("booked").document(date).set(futsalMap, SetOptions.merge());
+                                                .collection("booked").document(date).set(futsalMap, SetOptions.merge())
+                                                .addOnSuccessListener(aVoid -> {
+                                                    holder.cancelbooking();
+                                                });
                                         if(holder.id != futsal_id){
                                             mDatabase.collection("users_list").document(holder.id)
                                                     .collection("booked").document(date).set(user, SetOptions.merge());
@@ -145,6 +148,7 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                                                     .collection("Notification").add(notificationMap);
 
                                         }
+                                        //holder.firstLoadPendingData(list.get(position).book_time);
                                     }
                                 })
                                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -224,7 +228,16 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
             bookBtn.setText("Booked");
             bookBtn.setClickable(false);
         }
+        public void cancelbooking(){
+            bookBtn.setTextColor(Color.parseColor("#5FBA3A"));
+            bookBtn.setBackgroundResource(R.drawable.green_strok_button);
+            bookBtn.setText("Book Now");
+            bookBtn.setClickable(true);
+            status = "normal";
+
+        }
         public void firstLoadPendingData(String bookdate){
+            firstLoadBookedData(bookdate);
             mDatabase.collection("futsal_list").document(futsal_id)
                     .collection("newrequest").document(date).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -244,8 +257,10 @@ public class BookNowViewAdapter extends RecyclerView.Adapter<BookNowViewAdapter.
                                     bookBtn.setClickable(false);
 
                                 }
+                                firstLoadBookedData(bookdate);
 
                             }
+
                         }
                     }
                 }

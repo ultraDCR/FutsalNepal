@@ -187,10 +187,6 @@ public class FutsalHome extends AppCompatActivity {
                     }
                 });
                 return true;
-            case R.id.setting_btn:
-                Intent settingIntent = new Intent(FutsalHome.this, FutsalInfoEdit.class);
-                startActivity(settingIntent);
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }

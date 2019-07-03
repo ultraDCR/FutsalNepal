@@ -88,7 +88,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
 
         });
 
-        holder.layout.setOnClickListener(v ->{
+        holder.cancel.setOnClickListener(v ->{
             String futsal_id = mAuth.getCurrentUser().getUid();
 
             Map<String, Object> futsalMap = new HashMap<>();

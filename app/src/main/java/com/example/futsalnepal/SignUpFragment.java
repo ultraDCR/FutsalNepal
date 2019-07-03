@@ -154,7 +154,7 @@ public class  SignUpFragment extends Fragment {
 
                                         } else {
                                             loading.hideDialog();
-                                            String error = task.getException().getMessage();
+                                            String error = task.getException().getLocalizedMessage();
                                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
                                         }
@@ -173,7 +173,7 @@ public class  SignUpFragment extends Fragment {
 
                                         } else {
                                             loading.hideDialog();
-                                            String error = task.getException().getMessage();
+                                            String error = task.getException().getLocalizedMessage();
                                             Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
 
                                         }
@@ -185,7 +185,7 @@ public class  SignUpFragment extends Fragment {
                         } else {
                             loading.hideDialog();
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(context, "Authentication failed."+task.getException(),
+                            Toast.makeText(context, "Authentication failed."+task.getException().getLocalizedMessage(),
                                     Toast.LENGTH_LONG).show();
 
                         }
@@ -196,7 +196,7 @@ public class  SignUpFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Exception e) {
                 loading.hideDialog();
-                Toast.makeText(context, "Connection failed."+e,
+                Toast.makeText(context, "Connection failed."+e.getLocalizedMessage(),
                         Toast.LENGTH_LONG).show();
             }
         });

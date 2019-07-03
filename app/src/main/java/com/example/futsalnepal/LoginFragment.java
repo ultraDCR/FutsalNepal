@@ -86,6 +86,7 @@ public class LoginFragment extends Fragment {
     private View view;
     private LoginButton fblogin;
     private ImageView fbBtn;
+    private ErrorDialog error;
     private CallbackManager mCallbackManager;
 
     public LoginFragment() {
@@ -104,6 +105,8 @@ public class LoginFragment extends Fragment {
         fDatabase = FirebaseFirestore.getInstance();
 
         loading = new Loading(getActivity());
+
+        error = new ErrorDialog(getActivity());
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -133,7 +136,8 @@ public class LoginFragment extends Fragment {
                 }
                 fblogin.performClick();
             }else{
-                Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
+                error.showDialog("User should not be none.");
+                //Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -136,4 +136,17 @@
         </ScrollView>
     </android.support.constraint.ConstraintLayout>
 
+    <Button
+        android:id="@+id/edit_btn"
+        android:layout_width="60dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/tab_custom_shape"
+        android:text="Edit"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/htab_header2"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

@@ -53,6 +53,7 @@ import com.example.futsalnepal.users.UserNotificationActivity;
 import com.example.futsalnepal.users.UserSetting;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SliderLayout sliderShow;
 
     private Button searchBtn;
-
+    private Loading loading;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView = null;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dUserAddress = header.findViewById(R.id.user_address);
         dUserPhone = header.findViewById(R.id.user_number);
         dUserPic = header.findViewById(R.id.user_image);
+        ImageView player = header.findViewById(R.id.player_logo);
 
         dUserPic.setOnClickListener(v ->{
             user_id = mAuth.getCurrentUser().getUid();
@@ -305,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             dUserAddress.setText(address);
                             dUserPhone.setText(phone);
 
-
+                            player.setVisibility(View.GONE);
                             RequestOptions placeholderRequest = new RequestOptions();
                             placeholderRequest.placeholder(R.drawable.profile_image);
 
@@ -364,9 +366,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+        loading = new Loading(MainActivity.this);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d("TestingInfo1", "onComplete: "+ currentUser);
 
+        loading.showDialog();
         if(currentUser != null) {
 
             user_id = mAuth.getCurrentUser().getUid();
@@ -378,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.d("TestingInfo2", "onComplete: "+ currentUser);
                         if (task.getResult().exists()) {
                             //redirect to futsal page
+                            loading.hideDialog();
                             Intent futsalhome = new Intent(MainActivity.this, FutsalHome.class);
                             startActivity(futsalhome);
                             finish();
@@ -392,22 +397,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         if (task.getResult().exists()) {
                                             Log.d("TestingInfo", "onComplete: " + task.getResult().getString("user_full_name"));
                                             if (task.getResult().getString("user_phone_number") == null) {
+                                                loading.hideDialog();
                                                 Intent user_info_edit = new Intent(MainActivity.this, UserInfoEdit.class);
                                                 startActivity(user_info_edit);
                                                 finish();
+                                            }else{
+                                                loading.hideDialog();
                                             }
 
+                                        }else{
+                                            loading.hideDialog();
                                         }
+                                    }else{
+                                        loading.hideDialog();
                                     }
                                 }
+                            }).addOnFailureListener(e-> {
+                                loading.hideDialog();
                             });
 
                         }
                     }
                 }
+            }).addOnFailureListener(e-> {
+                loading.hideDialog();
             });
 
+        }else{
+            loading.hideDialog();
         }
+
     }
 
     @Override

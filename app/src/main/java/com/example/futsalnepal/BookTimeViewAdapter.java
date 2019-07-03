@@ -248,7 +248,7 @@ public class BookTimeViewAdapter extends RecyclerView.Adapter<BookTimeViewAdapte
 
         public void cancelbooking(){
             bookBtn.setTextColor(Color.parseColor("#5FBA3A"));
-            bookBtn.setBackgroundResource(R.drawable.input_field);
+            bookBtn.setBackgroundResource(R.drawable.green_strok_button);
             bookBtn.setText("Book Now");
             bookBtn.setClickable(true);
             own_pending = false;
