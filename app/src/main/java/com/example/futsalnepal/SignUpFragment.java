@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SignUpFragment extends Fragment {
+public class  SignUpFragment extends Fragment {
     private Loading loading;
     private Context context;
     private FirebaseAuth mAuth;

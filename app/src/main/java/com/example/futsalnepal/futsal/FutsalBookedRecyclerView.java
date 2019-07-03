@@ -1,14 +1,17 @@
 package com.example.futsalnepal.futsal;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,13 +20,21 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.BookingUser;
 import com.example.futsalnepal.R;
 import com.example.futsalnepal.UserProfile;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedRecyclerView.FutsalViewHolder>  {
     List<BookingUser> list;
     Context context;
+    FirebaseAuth mAuth;
+    FirebaseFirestore mdatabase;
     String date;
     String bookTime[] = {"12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM","10PM", "11PM"};
 
@@ -31,6 +42,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
         this.list = list;
         this.context = context;
         this.date = date;
+
     }
 
     @Override
@@ -46,6 +58,8 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
     @Override
     public void onBindViewHolder(FutsalBookedRecyclerView.FutsalViewHolder holder, int position) {
 
+        mAuth = FirebaseAuth.getInstance();
+        mdatabase = FirebaseFirestore.getInstance();
         holder.profile.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_transition));
 
         holder.layout.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_transition));
@@ -72,6 +86,52 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
             userProfile.putExtra("user_id",list.get(position).user_id);
             context.startActivity(userProfile);
 
+        });
+
+        holder.layout.setOnClickListener(v ->{
+            String futsal_id = mAuth.getCurrentUser().getUid();
+
+            Map<String, Object> futsalMap = new HashMap<>();
+            Map<String, Object> timeMap1 = new HashMap<>();
+            timeMap1.put(from_time, FieldValue.delete());
+            futsalMap.put(list.get(position).user_id, timeMap1);
+
+            Map<String, Object> user = new HashMap<>();
+            Map<String, Object> usertime = new HashMap<>();
+            usertime.put(list.get(position).time, FieldValue.delete());
+            user.put(futsal_id, timeMap1);
+
+            String message = "Booking request received on "+date+" at "+list.get(position).time+"has been canceled. Please call us for more information.";
+            Map<String, Object> notificationMap = new HashMap<>();
+            notificationMap.put("from", futsal_id);
+            notificationMap.put("type", "cancled");
+            notificationMap.put("message", message);
+            notificationMap.put("status","notseen");
+            notificationMap.put("timestamp",FieldValue.serverTimestamp());
+
+            new AlertDialog.Builder(context)
+                    .setMessage("Do you want to calcel booking at " + list.get(position).time + " ?")
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mdatabase.collection("futsal_list").document(futsal_id)
+                                    .collection("booked").document(date).set(futsalMap, SetOptions.merge());
+
+                            mdatabase.collection("users_list").document(list.get(position).user_id)
+                                    .collection("booked").document(date).set(user, SetOptions.merge());
+                            mdatabase.collection("users_list").document(list.get(position).user_id)
+                                    .collection("Notification").add(notificationMap);
+
+
+                        }
+                    })
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Toast.makeText(FutsalIndivisualDetails.this, "You Clicked on NO", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
         });
         //animate(holder);
 
@@ -136,6 +196,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
         TextView phone;
         ImageView profile;
         ConstraintLayout layout;
+        Button cancel;
 
         FutsalViewHolder(View itemView) {
             super(itemView);
@@ -145,6 +206,7 @@ public class FutsalBookedRecyclerView extends RecyclerView.Adapter<FutsalBookedR
             profile = itemView.findViewById(R.id.a_profile_pic);
             phone = itemView.findViewById(R.id.a_book_phone);
             layout = itemView.findViewById(R.id.br_background);
+            cancel = itemView.findViewById(R.id.cancel_book);
 
         }
     }
