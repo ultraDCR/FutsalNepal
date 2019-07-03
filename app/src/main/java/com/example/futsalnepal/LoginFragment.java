@@ -188,7 +188,8 @@ public class LoginFragment extends Fragment {
                 }
                 googleSignIn();
             }else{
-                Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
+                error.showDialog("User should not be none.");
+//                Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -224,12 +225,15 @@ public class LoginFragment extends Fragment {
                         pass.setError("Field required");
                     }
                     if(usertype.equals("None")){
-                        Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
+                        error.showDialog("User should not be none.");
+                        //Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     loading.hideDialog();
-                    Toast.makeText(getContext(), "Some error occur. Check you information and try again.",
-                            Toast.LENGTH_SHORT).show();
+                    error.showDialog("Some error occur. Check you information and try again.");
+
+                   // Toast.makeText(getContext(), "Some error occur. Check you information and try again.",
+                           // Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -377,14 +381,16 @@ public class LoginFragment extends Fragment {
                     loading.hideDialog();
                     mAuth.signOut();
                     LoginManager.getInstance().logOut();
-                    Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
-                            Toast.LENGTH_SHORT).show();
+                    error.showDialog("Wrong user type. Try switching user type and try again to login.");
+//                    Toast.makeText(context, "Wrong user type. Try switching user type and try again to login.",
+//                            Toast.LENGTH_SHORT).show();
                 }
 
             } else {
                 loading.hideDialog();
-                Toast.makeText(context, "Something went wrong",
-                        Toast.LENGTH_SHORT).show();
+                error.showDialog("Something went wrong");
+//                Toast.makeText(context, "Something went wrong",
+//                        Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -424,8 +430,9 @@ public class LoginFragment extends Fragment {
 
                         } else {
                             loading.hideDialog();
-                            String error = task.getException().getMessage();
-                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+                            String e = task.getException().getMessage();
+                            error.showDialog("FIRESTORE Error : " + e);
+                            //Toast.makeText(context, "(FIRESTORE Error) : " + e, Toast.LENGTH_LONG).show();
 
                         }
                     }
@@ -443,8 +450,9 @@ public class LoginFragment extends Fragment {
 
                         } else {
                             loading.hideDialog();
-                            String error = task.getException().getMessage();
-                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+                            String e = task.getException().getMessage();
+                            error.showDialog("FIRESTORE Error : " + e);
+                            //Toast.makeText(context, "(FIRESTORE Error) : " + e, Toast.LENGTH_LONG).show();
 
                         }
                     }
@@ -478,8 +486,9 @@ public class LoginFragment extends Fragment {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed :" +task.getException(),
-                                    Toast.LENGTH_SHORT).show();
+                            error.showDialog("Authentication failed : " + task.getException().getLocalizedMessage());
+//                            Toast.makeText(getContext(), "Authentication failed :" +task.getException(),
+//                                    Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
 
                         }

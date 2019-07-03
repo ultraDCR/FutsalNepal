@@ -39,6 +39,7 @@ import java.util.Map;
  */
 public class  SignUpFragment extends Fragment {
     private Loading loading;
+    private ErrorDialog error;
     private Context context;
     private FirebaseAuth mAuth;
     private int resId = 0;
@@ -67,6 +68,7 @@ public class  SignUpFragment extends Fragment {
         Button usignup = view.findViewById(R.id.signup_btn);
         ProgressBar signup_prog = view.findViewById(R.id.signup_pbar);
         loading = new Loading(getActivity());
+        error = new ErrorDialog(getActivity());
 
         usignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,8 +96,9 @@ public class  SignUpFragment extends Fragment {
                             signup_userId(email,password,type,signup_prog);
                         }
                         else{
-                            Toast.makeText(context, "Password must contain more than 6 character with atleast one uppercase, one special character and no space.",
-                                    Toast.LENGTH_LONG).show();
+                            error.showDialog("Password must contain more than 6 character with atleast one uppercase, one special character and no space.");
+//                            Toast.makeText(context, "Password must contain more than 6 character with atleast one uppercase, one special character and no space.",
+//                                    Toast.LENGTH_LONG).show();
                             loading.hideDialog();
                         }
                     }
@@ -116,13 +119,15 @@ public class  SignUpFragment extends Fragment {
                         cpass.setError("Field required");
                     }
                     if(usertype.equals("None")){
-                        Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
+                        error.showDialog("User should not be none.");
+//                        Toast.makeText(getContext(),"User should not be none.",Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
                     loading.hideDialog();
-                    Toast.makeText(context, "Some error occure. Check you information and try again.",
-                            Toast.LENGTH_SHORT).show();
+                    error.showDialog("Some error occure. Check you information and try again.");
+//                    Toast.makeText(context, "Some error occure. Check you information and try again.",
+//                            Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -154,8 +159,9 @@ public class  SignUpFragment extends Fragment {
 
                                         } else {
                                             loading.hideDialog();
-                                            String error = task.getException().getLocalizedMessage();
-                                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+                                            String e = task.getException().getLocalizedMessage();
+                                            error.showDialog("FIRESTORE Error : " + e);
+//                                            Toast.makeText(context, "FIRESTORE Error : " + e, Toast.LENGTH_LONG).show();
 
                                         }
                                     }
@@ -173,8 +179,9 @@ public class  SignUpFragment extends Fragment {
 
                                         } else {
                                             loading.hideDialog();
-                                            String error = task.getException().getLocalizedMessage();
-                                            Toast.makeText(context, "(FIRESTORE Error) : " + error, Toast.LENGTH_LONG).show();
+                                            String e = task.getException().getLocalizedMessage();
+                                            error.showDialog("FIRESTORE Error : " + e);
+//                                            Toast.makeText(context, "(FIRESTORE Error) : " + e, Toast.LENGTH_LONG).show();
 
                                         }
                                     }
@@ -182,11 +189,12 @@ public class  SignUpFragment extends Fragment {
 
                             }
 
-                        } else {
-                            loading.hideDialog();
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(context, "Authentication failed."+task.getException().getLocalizedMessage(),
-                                    Toast.LENGTH_LONG).show();
+//                        } else {
+//                            loading.hideDialog();
+//                            // If sign in fails, display a message to the user.
+//                            error.showDialog("Authentication failed."+task.getException().getLocalizedMessage());
+////                            Toast.makeText(context, "Authentication failed."+task.getException().getLocalizedMessage(),
+////                                    Toast.LENGTH_LONG).show();
 
                         }
 
@@ -196,8 +204,9 @@ public class  SignUpFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Exception e) {
                 loading.hideDialog();
-                Toast.makeText(context, "Connection failed."+e.getLocalizedMessage(),
-                        Toast.LENGTH_LONG).show();
+                error.showDialog(e.getLocalizedMessage());
+//                Toast.makeText(context, "Connection failed."+e.getLocalizedMessage(),
+//                        Toast.LENGTH_LONG).show();
             }
         });
 
