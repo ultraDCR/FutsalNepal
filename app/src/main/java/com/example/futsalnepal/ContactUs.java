@@ -1,0 +1,56 @@
+package com.example.futsalnepal;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.example.futsalnepal.R;
+
+public class ContactUs extends AppCompatActivity {
+    private EditText message,email,name;
+    private Button send;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_contact_us);
+        Toolbar toolbar = findViewById(R.id.contact_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        name = findViewById(R.id.sender_name);
+        email = findViewById(R.id.sender_email);
+        message = findViewById(R.id.sender_message);
+        send = findViewById(R.id.send_btn);
+
+        send.setOnClickListener(v -> {
+            sendMail();
+        });
+
+    }
+
+    private void sendMail() {
+        String subject = name.getText().toString();
+        String emailAddress = email.getText().toString();
+        String mesg = message.getText().toString();
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_EMAIL, emailAddress);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, mesg);
+
+        intent.setType("message/rfc822");
+        startActivity(Intent.createChooser(intent,"Choose an email client"));
+
+    }
+
+    // for toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+}
