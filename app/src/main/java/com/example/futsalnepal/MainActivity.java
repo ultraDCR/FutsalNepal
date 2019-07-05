@@ -497,7 +497,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.about_us_menu:
-
+                Intent contactus = new Intent(MainActivity.this,ContactUs.class);
+                startActivity(contactus);
                 return true;
 
         }

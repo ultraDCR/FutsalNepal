@@ -36,9 +36,12 @@ public class ContactUs extends AppCompatActivity {
         String subject = name.getText().toString();
         String emailAddress = email.getText().toString();
         String mesg = message.getText().toString();
+        String[] TO = {"futsaltimeofficial@gmail.com"};
+        String[] CC = {emailAddress};
 
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_EMAIL, emailAddress);
+        intent.putExtra(Intent.EXTRA_CC,CC);
+        intent.putExtra(Intent.EXTRA_EMAIL, TO);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, mesg);
 
