@@ -1,10 +1,7 @@
 package com.example.futsalnepal;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.SetOptions;
+import androidx.appcompat.app.AlertDialog;
 
 public class ErrorDialog {
     private  Activity activity;

@@ -1,8 +1,8 @@
 package com.example.futsalnepal;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +17,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.futsalnepal.Model.Review;
 import com.example.futsalnepal.Model.User;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
